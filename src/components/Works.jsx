@@ -14,6 +14,7 @@ const ProjectCard = ({
   description,
   tags,
   image,
+  link,
   source_code_link,
 }) => {
   return (
@@ -26,7 +27,7 @@ const ProjectCard = ({
         }}
         className='bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full'
       >
-        <div className='relative w-full h-[230px]'>
+        <div className='relative w-full h-[230px]' onClick={() => window.open(link, "_blank")}>
           <img
             src={image}
             alt='project_image'
@@ -97,4 +98,4 @@ const Works = () => {
   );
 };
 
-export default SectionWrapper(Works, "");
+export default SectionWrapper(Works, "project");
