@@ -78,9 +78,9 @@ const Contact = () => {
             <h3 className={styles.sectionHeadText}>Contact.</h3>
           </div>
           <div>
-            <a className=' text-[10px] sm:text-[20px] text-white-300' href='https://drive.google.com/file/d/1bij11HuUXkNLiFN8QxMhjz_UREjkoFU_/view?usp=drive_link'>
-              <button className="flex shadow-lg active:translate-y-1 active:shadow-none shadow-pink-900 bg-black hover:bg-brown-900 text-white font-bold py-2 px-4 sm:py-1 sm:px-2 sm:border-b-2 border-b-4 border-pink-700 active:border-b-0 rounded">
-              <svg className="fill-current sm:w-2 sm:h-4 w-4 h-7 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
+            <a className='text-[10px] sm:text-[20px] text-white-300' href='https://drive.google.com/file/d/1bij11HuUXkNLiFN8QxMhjz_UREjkoFU_/view?usp=drive_link'>
+              <button className="flex shadow-lg active:translate-y-1 active:shadow-none shadow-pink-900 bg-black hover:bg-brown-900 text-white font-bold py-1 px-2 sm:py-2 sm:px-4 border-b-2 sm:border-b-4 border-pink-700 active:border-b-0 rounded">
+              <svg className="fill-current sm:w-4 sm:h-7 w-2 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                 Resume
               </button>
               </a>
