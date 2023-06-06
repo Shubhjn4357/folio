@@ -4,11 +4,11 @@ import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
 
-const Computers = ({ isMobile }) => {
-  const computer = useGLTF("./desktop_pc/scene.gltf");
+const PlannetModel = ({ isMobile }) => {
+  const plannet = useGLTF("./lpe/scene.gltf");
 
   return (
-    <mesh>
+    <mesh position={isMobile?[0,-3,0]:[0,-4,0]}>
       <hemisphereLight intensity={0.15} groundColor='#2a003d' />
       <spotLight
         position={[-20, 50, 10]}
@@ -20,16 +20,16 @@ const Computers = ({ isMobile }) => {
       />
       <pointLight intensity={1} />
       <primitive
-        object={computer.scene}
-        scale={isMobile ? 0.7: 0.75}
-        position={isMobile ? [0, -3, -2.2] : [0, -3.25, -0.5]}
-        rotation={[-0.01, -0.5, -0.01]}
+        object={plannet.scene}
+        scale={isMobile?1.2:1.7}
+        position-y={0}
+        rotation-y={0}
       />
-    </mesh>
+     </mesh>
   );
 };
 
-const ComputersCanvas = () => {
+const PlannetCanvas = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -58,21 +58,22 @@ const ComputersCanvas = () => {
       frameloop='demand'
       shadows
       dpr={[1, 2]}
-      camera={{ position: [20, 3, 5], fov: 25 }}
+      camera={{ position: [-4, 3, 6], near: 0.1,
+        far: 200,fov: 25 }}
       gl={{ preserveDrawingBuffer: true }}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
+          autoRotate
           enableZoom={false}
-          maxPolarAngle={Math.PI / 2}
+          maxPolarAngle={Math.PI/2}
           minPolarAngle={Math.PI / 2}
         />
-        <Computers isMobile={isMobile} />
+        <PlannetModel isMobile={isMobile} />
       </Suspense>
-
       <Preload all />
     </Canvas>
   );
 };
 
-export default ComputersCanvas;
+export default PlannetCanvas;

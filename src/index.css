@@ -18,7 +18,9 @@
   padding-bottom: 100px;
   display: block;
 }
-
+.bg-hero-pattern{
+  background: url('./assets/herobg.png');
+}
 .black-gradient {
   background: #000000; /* fallback for old browsers */
   background: -webkit-linear-gradient(
