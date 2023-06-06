@@ -21,6 +21,25 @@
 .bg-hero-pattern{
   background: url('./assets/herobg.png');
 }
+.nav-link{
+  position: relative;
+}
+.nav-link::before{
+  content:'';
+  position: absolute;
+  bottom:0;
+  height:2px;
+  width:100%;
+  transform: scale(0);
+  transform-origin: center;
+  border-radius: 0.5rem;
+  background-color: #f1f1f1;
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.nav-link:hover::before{
+
+  transform: scale(1);
+}
 .black-gradient {
   background: #000000; /* fallback for old browsers */
   background: -webkit-linear-gradient(

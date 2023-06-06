@@ -72,9 +72,21 @@ const Contact = () => {
         variants={slideIn("left", "tween", 0.2, 1)}
         className='flex-[0.75] bg-black-100 p-8 rounded-2xl'
       >
-        <p className={styles.sectionSubText}>Get in touch</p>
-        <h3 className={styles.sectionHeadText}>Contact.</h3>
-
+        <div className='flex justify-between'>
+          <div>
+            <p className={styles.sectionSubText}>Get in touch</p>
+            <h3 className={styles.sectionHeadText}>Contact.</h3>
+          </div>
+          <div>
+            <a className=' text-[20px] text-white-300' href='https://drive.google.com/file/d/1bij11HuUXkNLiFN8QxMhjz_UREjkoFU_/view?usp=drive_link'>
+              <button className="flex shadow-lg active:translate-y-1 active:shadow-none shadow-pink-900 bg-black hover:bg-brown-900 text-white font-bold py-2 px-4 border-b-4 border-pink-700 active:border-b-0 rounded">
+              <svg className="fill-current w-4 h-7 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
+                Resume
+              </button>
+              </a>
+          </div>
+        </div>
+        
         <form
           ref={formRef}
           onSubmit={handleSubmit}
