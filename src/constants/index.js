@@ -19,6 +19,9 @@ import {
   tododapp,
   spotify,
   threejs,
+  github,
+  insta,
+  linkdin
 } from "../assets";
 
 export const navLinks = [
@@ -191,7 +194,26 @@ const technologies = [
 //     image: "https://randomuser.me/api/portraits/women/6.jpg",
 //   },
 // ];
-
+const links=[
+  {
+    link:'https://github.com/Shubhjn4357',
+    icon:github,
+    color:'black-gradient',
+    name:'Github'
+  },
+  {
+    link:'https://www.instagram.com/shubh._jn/',
+    icon:insta,
+    color:'high-gradient',
+    name:'Instagram'
+  },
+  {
+    link:'www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=shubham-jain-b46999135',
+    icon:linkdin,
+    color:'sky-gradient',
+    name:'Linkedin'
+  },
+]
 const projects = [
   {
     name: "MtvHub",
@@ -261,4 +283,4 @@ const projects = [
   },
 ];
 
-export { services, technologies, projects };
+export { services, technologies, projects,links };

@@ -1,12 +1,12 @@
 import React, { Suspense, useEffect, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas} from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
 
 const PlannetModel = ({ isMobile }) => {
   const plannet = useGLTF("./lpe/scene.gltf");
-
+  
   return (
     <mesh position={isMobile?[0,-3,0]:[0,-4,0]}>
       <hemisphereLight intensity={0.15} groundColor='#2a003d' />

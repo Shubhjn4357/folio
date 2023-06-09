@@ -97,6 +97,7 @@ const Contact = () => {
             <input
               type='text'
               name='name'
+              autoComplete='true'
               value={form.name}
               onChange={handleChange}
               placeholder="What's your good name?"
@@ -108,6 +109,7 @@ const Contact = () => {
             <input
               type='email'
               name='email'
+              autoComplete='true'
               value={form.email}
               onChange={handleChange}
               placeholder="What's your web address?"
@@ -119,6 +121,7 @@ const Contact = () => {
             <textarea
               rows={7}
               name='message'
+              autoComplete='true'
               value={form.message}
               onChange={handleChange}
               placeholder='What you want to say?'

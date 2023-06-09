@@ -1,12 +1,12 @@
 import { BrowserRouter } from "react-router-dom";
 
-import { About, Contact, Hero, Navbar, Tech, Works, StarsCanvas } from "./components";
-
+import { About, Contact, Hero, Navbar, Tech, Works, StarsCanvas ,Footer} from "./components";
+import { herobg } from "./assets";
 const App = () => {
   return (
     <BrowserRouter>
-      <div className='relative z-0 bg-primary'>
-        <div className='bg-hero-pattern bg-cover bg-no-repeat bg-center'>
+      <div className='relative  z-0 bg-primary'>
+        <div style={{'background':`#080038 linear-gradient(90deg, #160030,#1d013d) url(${herobg})`}} className='hero'>
           <Navbar />
           <Hero />
         </div>
@@ -17,6 +17,7 @@ const App = () => {
           <Contact />
           <StarsCanvas />
         </div>
+        <Footer/>
       </div>
     </BrowserRouter>
   );

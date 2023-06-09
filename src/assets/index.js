@@ -6,7 +6,7 @@ import web from "./web.png";
 import github from "./github.png";
 import menu from "./menu.svg";
 import close from "./close.svg";
-
+import herobg from "./galaxy.png";
 import css from "./tech/css.png";
 import docker from "./tech/docker.png";
 import figma from "./tech/figma.png";
@@ -20,11 +20,12 @@ import redux from "./tech/redux.png";
 import tailwind from "./tech/tailwind.png";
 import typescript from "./tech/typescript.png";
 import threejs from "./tech/threejs.svg";
-
+import insta from './insta.png';
+import linkdin from './linkdin.png';
 import mtv from "./mtv.png";
 import tododapp from "./tododapp.png";
 import spotify from "./spotify.png";
-
+import shubh from './shubh.png';
 export {
   logo,
   backend,
@@ -32,8 +33,11 @@ export {
   mobile,
   web,
   github,
+  insta,
+  linkdin,
   menu,
   close,
+  herobg,
   css,
   docker,
   figma,
@@ -50,4 +54,5 @@ export {
   mtv,
   tododapp,
   spotify,
+  shubh
 };
