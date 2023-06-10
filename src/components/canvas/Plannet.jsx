@@ -22,8 +22,10 @@ const PlannetModel = ({ isMobile }) => {
       <primitive
         object={plannet.scene}
         scale={isMobile?1.2:1.7}
-        
+        maxPolarAngle={Math.PI/2}
+        minPolarAngle={Math.PI/2}
       />
+      <Preload all/>
      </mesh>
   );
 };
