@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { styles } from "../styles";
 import { PlannetCanvas } from "./canvas";
 import {shubh} from '../assets/index';
+import Typist from "./Typist";
 const Hero = () => {
   return (
     <section className={`relative w-full h-screen mx-auto`}>
@@ -11,17 +12,18 @@ const Hero = () => {
       >
         <div className="flex flex-row">
           <div className='flex flex-col justify-center items-center mt-5'>
-            <div className='w-5 h-5 rounded-full bg-[#915EFF]' />
+            <div className='w-5 h-5 rounded-full violet-gradient' />
             <div className='w-1 sm:h-80 h-40 violet-gradient' />
           </div>
 
-          <div>
+          <div className='ml-4'>
             <h1 className={`${styles.heroHeadText} text-white`}>
-              Hi, I'm <span className='text-[#915EFF]'>Shubham</span>
+              Hi, I'm&nbsp; <span className='blue-text-gradient'><Typist words={['Shubham']} delay={250}/></span>
             </h1>
             <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-              I develop 3D visuals, user <br className='sm:block hidden' />
-              interfaces and web applications
+              I develop &nbsp; <span className='font-black text-blue-600'>
+                  <Typist words={['User Interface','UI/UX','Web App','Web Pages','Decentralze App']} delay={1000} loop={true}/>
+                </span>
             </p>
           </div>
         </div>
@@ -29,9 +31,9 @@ const Hero = () => {
           <img className="rounded-full h-[16rem] w-[16rem] sky-gradient object-cover" src={shubh} alt='profile-photo'/>
         </div>
       </div>
-
-      <PlannetCanvas />
-
+      <div className="absolute z-10 w-full h-full bottom-0 right-0">
+        <PlannetCanvas />
+      </div>
       <div className='absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center'>
         <a href='#about'>
           <div className='w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2'>

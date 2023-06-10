@@ -265,7 +265,7 @@
   width:0.5rem;
 }
 ::-webkit-scrollbar-track{
-  background: #000000; /* fallback for old browsers */
+  background: #14001a; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to bottom,
     #434343,
@@ -280,6 +280,16 @@
 ::-webkit-scrollbar-thumb{
   width:0.5rem;
   height:2rem;
-  background: #804dee;
+  background: #200020;
+  background: -webkit-linear-gradient(
+    to left,
+    #200200,
+    #200020
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to left,
+    #200200,
+    #200020
+  ); 
   border-radius: 1rem;
 }

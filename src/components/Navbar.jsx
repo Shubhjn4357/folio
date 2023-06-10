@@ -24,7 +24,7 @@ const Navbar = () => {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
+console.log(scrolled)
   return (
     <nav
       className={`${

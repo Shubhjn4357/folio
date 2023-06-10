@@ -6,9 +6,9 @@ import CanvasLoader from "../Loader";
 
 const PlannetModel = ({ isMobile }) => {
   const plannet = useGLTF("./lpe/scene.gltf");
-  
+  // position={isMobile?[0,-3,0]:[0,-4,0]}
   return (
-    <mesh position={isMobile?[0,-3,0]:[0,-4,0]}>
+    <mesh position={[0,isMobile?-3:-4,0]}>
       <hemisphereLight intensity={0.15} groundColor='#2a003d' />
       <spotLight
         position={[-20, 50, 10]}
@@ -22,8 +22,7 @@ const PlannetModel = ({ isMobile }) => {
       <primitive
         object={plannet.scene}
         scale={isMobile?1.2:1.7}
-        position-y={0}
-        rotation-y={0}
+        
       />
      </mesh>
   );
@@ -58,16 +57,15 @@ const PlannetCanvas = () => {
       frameloop='demand'
       shadows
       dpr={[1, 2]}
-      camera={{ position: [-4, 3, 6], near: 0.1,
+      camera={{ position: [-4,-4, -5], near: 0.1,
         far: 200,fov: 25 }}
       gl={{ preserveDrawingBuffer: true }}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
-          autoRotate
-          enableZoom={false}
-          maxPolarAngle={Math.PI/2}
-          minPolarAngle={Math.PI / 2}
+         enableZoom={false}
+         maxPolarAngle={Math.PI/2}
+         minPolarAngle={Math.PI/2}
         />
         <PlannetModel isMobile={isMobile} />
       </Suspense>
