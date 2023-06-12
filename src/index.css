@@ -172,8 +172,8 @@
 /* canvas- styles */
 
 .effective-bg{
-  background-image:  repeating-radial-gradient(circle at 0 0, transparent 0, #07075a 68px), repeating-linear-gradient(#00001b, #5c0083);
-background-color: #07075a;
+  background: #07075a;
+  background:  repeating-radial-gradient(circle at 0 0, transparent 0, #07075a 68px), repeating-linear-gradient(#00001b, #5c0083);
 }
 .magicpattern { 
   width: 100%;
