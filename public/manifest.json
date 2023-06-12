@@ -1,0 +1,15 @@
+{
+    "short_name": "",
+    "name": "",
+    "icons": [
+    {
+      "src":"/public/logo.svg",
+      "sizes": "48x48",
+      "type": "icons"
+    }
+   ],
+   "start_url": "",
+   "background_color": "#200020",
+   "Theme_color": "#200020",
+   "display":""
+  }
