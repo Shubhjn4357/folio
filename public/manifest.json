@@ -1,6 +1,6 @@
 {
-    "short_name": "",
-    "name": "",
+    "short_name": "shubh",
+    "name": "shubham jain",
     "icons": [
     {
       "src":"/public/logo.svg",
@@ -8,7 +8,7 @@
       "type": "icons"
     }
    ],
-   "start_url": "",
+   "start_url": "/",
    "background_color": "#200020",
    "Theme_color": "#200020",
    "display":""
