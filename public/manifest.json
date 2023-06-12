@@ -4,11 +4,10 @@
     "icons": [
     {
       "src":"/public/logo.svg",
-      "sizes": "48x48",
+      "sizes": "512x512s",
       "type": "icons"
     }
    ],
-   "start_url": "/",
    "background_color": "#200020",
    "Theme_color": "#200020",
    "display":""
