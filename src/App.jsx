@@ -5,10 +5,10 @@ const App = () => {
   return (
     <BrowserRouter>
       <div className='relative z-0 bg-primary'>
-        
+        <div className='effective-bg'>
           <Navbar />
           <Hero />
-        
+        </div>
         <About />
         <Tech />
         <Works />
