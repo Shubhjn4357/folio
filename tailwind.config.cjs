@@ -18,9 +18,6 @@ module.exports = {
       screens: {
         xs: "450px",
       },
-      backgroundImage:{
-        hero:"repeating-radial-gradient(circle at 0 0, transparent 0, #07075a 68px), repeating-linear-gradient(#00001b, #5c0083)"
-      }
     },
   },
   plugins: [],
