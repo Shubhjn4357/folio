@@ -73,7 +73,7 @@ const Navbar = () => {
           <div
             className={`${
               !toggle ? "scale-0" : "flex scale-100"
-            } p-6 bg-gradient-to-r blue-gradient  w-screen origin-right absolute transition duration-500 ease-in-out top-0 right-0 h-screen z-10 rounded-xl`}
+            } p-6 effective-bg w-screen origin-right absolute transition duration-500 ease-in-out top-0 right-0 h-screen z-10 rounded-xl`}
           >
             <ul className='list-none flex justify-center items-center flex-1 flex-col gap-4'>
               {navLinks.map((nav,i) => (
