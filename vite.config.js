@@ -7,7 +7,9 @@ export default defineConfig({
   server:{
     port:4000
   },
+  base:"/",
   build:{
     manifest:true
-  }
+  },
+  
 })
