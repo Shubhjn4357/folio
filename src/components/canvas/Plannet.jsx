@@ -1,38 +1,47 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState ,useRef} from "react";
 import { Canvas} from "@react-three/fiber";
-import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
-
+import { OrbitControls, useGLTF } from "@react-three/drei";
 import CanvasLoader from "../Loader";
 
 const PlannetModel = ({ isMobile }) => {
-  const plannet = useGLTF("./lpe/scene.gltf");
-  // position={isMobile?[0,-3,0]:[0,-4,0]}
+  const plannet = useGLTF("/lpe/scene.gltf",true);
   return (
-    <mesh position={[0,isMobile?-3:-4,0]}>
-      <hemisphereLight intensity={0.15} groundColor='#2a003d' />
+    <mesh position={isMobile?[0,-4,0]:[0,-5,0]}>
+    <ambientLight intensity={0.01} />
+    <hemisphereLight intensity={0.1} groundColor='#2a003d' />
       <spotLight
-        position={[-20, 50, 10]}
-        angle={0.12}
+        position={[-30, 50, 12]}
+        angle={0.10}
         penumbra={1}
         intensity={1}
-        castShadow
         shadow-mapSize={1024}
       />
       <pointLight intensity={1} />
       <primitive
         object={plannet.scene}
-        scale={isMobile?1.2:1.7}
-        maxPolarAngle={Math.PI/2}
-        minPolarAngle={Math.PI/2}
+        scale={isMobile?1.5:2}
       />
-      
-     </mesh>
+      </mesh>
   );
 };
 
 const PlannetCanvas = () => {
+  
   const [isMobile, setIsMobile] = useState(false);
+  const canvasRef = useRef();
 
+  useEffect(() => {
+    return () => {
+      const canvas = canvasRef.current;
+      const renderer = canvas?.getGlContexts()?.webgl?.renderer;
+
+      if (renderer) {
+        // Clean up and dispose the renderer
+        renderer.forceContextLoss();
+        renderer.dispose();
+      }
+    };
+  }, []);
   useEffect(() => {
     // Add a listener for changes to the screen size
     const mediaQuery = window.matchMedia("(max-width: 500px)");
@@ -54,27 +63,16 @@ const PlannetCanvas = () => {
     };
   }, []);
 
-  return (
-    <Canvas
-      frameloop='demand'
-      shadows
-      dpr={[1, 2]}
-      camera={{ position: [-4,-4, -5], near: 0.1,
-        far: 200,fov: 25 }}
-      gl={{ preserveDrawingBuffer: true }}
-    >
-      <Suspense fallback={<CanvasLoader />}>
-        <OrbitControls
-         autoRotate
-         enableZoom={false}
-         maxPolarAngle={Math.PI/2}
-         minPolarAngle={Math.PI/2}
-        />
-        <PlannetModel isMobile={isMobile} />
+  return (<Canvas ref={canvasRef}>
+     <Suspense fallback={<CanvasLoader />}> 
+       <PlannetModel isMobile={isMobile}/>
+       <OrbitControls 
+          autoRotate
+          enableZoom={false}
+          maxPolarAngle={Math.PI / 2}
+          minPolarAngle={Math.PI / 2} />
       </Suspense>
-      <Preload all />
-    </Canvas>
-  );
+  </Canvas>)
 };
 
 export default PlannetCanvas;

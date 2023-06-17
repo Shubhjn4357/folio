@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense,useEffect,useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
@@ -16,9 +16,22 @@ const Earth = () => {
 };
 
 const EarthCanvas = () => {
-  
+  const canvasRef = useRef();
+
+  useEffect(() => {
+    return () => {
+      const canvas = canvasRef.current;
+      const renderer = canvas?.getGlContexts()?.webgl?.renderer;
+
+      if (renderer) {
+        // Clean up and dispose the renderer
+        renderer.forceContextLoss();
+        renderer.dispose();
+      }
+    };
+  }, []);
   return (
-    <Canvas
+    <Canvas ref={canvasRef}
       shadows
       frameloop='demand'
       dpr={[1, 2]}
