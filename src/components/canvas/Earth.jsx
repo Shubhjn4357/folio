@@ -1,6 +1,6 @@
 import React, { Suspense,useEffect,useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
+import { OrbitControls, Preload, Stars, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
 
@@ -9,26 +9,27 @@ import CanvasLoader from "../Loader";
 const Earth = () => {
  
   const earth = useGLTF("./planet/scene.gltf");
-
+  useEffect(()=>{
+    return ()=>{
+        earth.dispose()
+    }
+  },[earth])
   return (
     <primitive object={earth.scene} scale={2.5} position-y={0} rotation-y={0} />
   );
 };
 
 const EarthCanvas = () => {
-  const canvasRef = useRef();
-
+  const canvasRef=useRef()
   useEffect(() => {
-    return () => {
-      const canvas = canvasRef.current;
-      const renderer = canvas?.getGlContexts()?.webgl?.renderer;
-
+    const cleanup = () => {
+      const renderer = canvasRef.current?.gl;
       if (renderer) {
-        // Clean up and dispose the renderer
-        renderer.forceContextLoss();
-        renderer.dispose();
+        renderer.dispose(); // Dispose the WebGL renderer
       }
     };
+
+    return cleanup; // Cleanup function will be called when the component unmounts
   }, []);
   return (
     <Canvas ref={canvasRef}
@@ -43,15 +44,14 @@ const EarthCanvas = () => {
         position: [-4, 3, 6],
       }}
     >
+      <Stars  radius={50} depth={1} speed={1} count={20000} saturation={1} fade={true}/>
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           autoRotate
           enableZoom={false}
-          maxPolarAngle={Math.PI / 2}
-          minPolarAngle={Math.PI / 2}
         />
         <Earth />
-
+        
         <Preload all />
       </Suspense>
     </Canvas>

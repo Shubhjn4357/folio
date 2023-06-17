@@ -38,19 +38,16 @@ const Ball = (props) => {
 };
 
 const BallCanvas = ({ icon }) => {
-  const canvasRef = useRef();
-
+  const canvasRef=useRef()
   useEffect(() => {
-    return () => {
-      const canvas = canvasRef.current;
-      const renderer = canvas?.getGlContexts()?.webgl?.renderer;
-
+    const cleanup = () => {
+      const renderer = canvasRef.current?.gl;
       if (renderer) {
-        // Clean up and dispose the renderer
-        renderer.forceContextLoss();
-        renderer.dispose();
+        renderer.dispose(); // Dispose the WebGL renderer
       }
     };
+
+    return cleanup; // Cleanup function will be called when the component unmounts
   }, []);
   return (
     <Canvas ref={canvasRef}

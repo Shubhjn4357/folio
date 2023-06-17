@@ -1,4 +1,4 @@
-import { EarthCanvas, BallCanvas, PlannetCanvas, StarsCanvas } from './canvas';
+import { EarthCanvas, BallCanvas, PlannetCanvas,StarsCanvas } from './canvas';
 import Hero from "./Hero";
 import Navbar from "./Navbar";
 import About from "./About";

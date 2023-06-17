@@ -33,7 +33,9 @@ const Hero = () => {
           <img className="rounded-full h-[16rem] w-[16rem] sky-gradient object-cover" src={shubh} alt='profile-photo'/>
         </div>
       </div>
-      <PlannetCanvas />
+      
+        <PlannetCanvas />
+      
       <div className='absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center z-2'>
         <a href='#about'>
           <div className='w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2'>

@@ -1,12 +1,17 @@
-import React, { Suspense, useEffect, useState ,useRef} from "react";
+import React, { Suspense, useEffect, useRef, useState} from "react";
 import { Canvas} from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import CanvasLoader from "../Loader";
 
 const PlannetModel = ({ isMobile }) => {
-  const plannet = useGLTF("/lpe/scene.gltf",true);
+  const scene = useGLTF("/lpe/scene.gltf");
+  useEffect(()=>{
+    return ()=>{
+        scene.dispose()
+    }
+  },[scene])
   return (
-    <mesh position={isMobile?[0,-4,0]:[0,-5,0]}>
+    <mesh position={[0,isMobile?-4:-5,0]}>
     <ambientLight intensity={0.01} />
     <hemisphereLight intensity={0.1} groundColor='#2a003d' />
       <spotLight
@@ -18,52 +23,54 @@ const PlannetModel = ({ isMobile }) => {
       />
       <pointLight intensity={1} />
       <primitive
-        object={plannet.scene}
-        scale={isMobile?1.5:2}
+        object={scene.scene}
+        scale={isMobile?1.3:1.9}
+        position-y={0}
+        rotation-y={0}
       />
       </mesh>
   );
 };
 
 const PlannetCanvas = () => {
-  
+  const canvasRef=useRef()
   const [isMobile, setIsMobile] = useState(false);
-  const canvasRef = useRef();
-
   useEffect(() => {
-    return () => {
-      const canvas = canvasRef.current;
-      const renderer = canvas?.getGlContexts()?.webgl?.renderer;
-
+    const cleanup = () => {
+      const renderer = canvasRef.current?.gl;
       if (renderer) {
-        // Clean up and dispose the renderer
-        renderer.forceContextLoss();
-        renderer.dispose();
+        renderer.dispose(); // Dispose the WebGL renderer
       }
     };
+
+    return cleanup; // Cleanup function will be called when the component unmounts
   }, []);
   useEffect(() => {
-    // Add a listener for changes to the screen size
-    const mediaQuery = window.matchMedia("(max-width: 500px)");
-
-    // Set the initial value of the `isMobile` state variable
-    setIsMobile(mediaQuery.matches);
-
-    // Define a callback function to handle changes to the media query
-    const handleMediaQueryChange = (event) => {
-      setIsMobile(event.matches);
+    // Update the isMobile state based on your logic
+    // This can be done using window.innerWidth or a media query library
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // Adjust the breakpoint as needed
     };
 
-    // Add the callback function as a listener for changes to the media query
-    mediaQuery.addEventListener("change", handleMediaQueryChange);
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize); // Listen for window resize events
 
-    // Remove the listener when the component is unmounted
     return () => {
-      mediaQuery.removeEventListener("change", handleMediaQueryChange);
+      window.removeEventListener("resize", handleResize); // Clean up the event listener
     };
   }, []);
 
-  return (<Canvas ref={canvasRef}>
+  return (<Canvas ref={canvasRef}
+                 shadows="soft"
+                  frameloop="demand"
+                  dpr={[1, 2]}
+                  gl={{ preserveDrawingBuffer: true }}
+                  camera={{
+                    fov: 45,
+                    near: 0.1,
+                    far: 200,
+                    position: [-4, 3, 6],
+                  }}>
      <Suspense fallback={<CanvasLoader />}> 
        <PlannetModel isMobile={isMobile}/>
        <OrbitControls 

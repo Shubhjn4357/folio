@@ -5,7 +5,11 @@ import CanvasLoader from "../Loader";
 
 const Rocket = () => {
   const rocket = useGLTF("./rocket/scene.gltf");
-
+  useEffect(()=>{
+    return ()=>{
+        rocket.dispose()
+    }
+  },[rocket])
   return (
     <mesh position={[0,1,0]}>
     <hemisphereLight intensity={0.15} groundColor='#2a003d' />
@@ -28,20 +32,20 @@ const Rocket = () => {
 };
 
 const RocketCanvas = () => {
-  const canvasRef = useRef();
-
+  const canvasRef=useRef()
   useEffect(() => {
-    return () => {
-      const canvas = canvasRef.current;
-      const renderer = canvas?.getGlContexts()?.webgl?.renderer;
-
+    const cleanup = () => {
+      const renderer = canvasRef.current?.gl;
       if (renderer) {
-        // Clean up and dispose the renderer
-        renderer.forceContextLoss();
-        renderer.dispose();
+        renderer.dispose(); // Dispose the WebGL renderer
       }
     };
+
+    return cleanup; // Cleanup function will be called when the component unmounts
   }, []);
+
+  
+
   return (
     <Canvas ref={canvasRef}
       shadows
