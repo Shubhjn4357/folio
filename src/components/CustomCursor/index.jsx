@@ -33,7 +33,7 @@ const CustomCursor = () => {
     return () => {};
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const followMouse = () => {
       positionRef.current.key = requestAnimationFrame(followMouse);
       const {
