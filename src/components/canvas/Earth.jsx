@@ -1,10 +1,10 @@
 import React, { Suspense,useEffect,useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Preload, Stars, useGLTF } from "@react-three/drei";
+import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
 
-
+//how to stop too many canvas old canvas will be lost error ?
  
 const Earth = () => {
  
@@ -44,7 +44,6 @@ const EarthCanvas = () => {
         position: [-4, 3, 6],
       }}
     >
-      <Stars  radius={50} depth={1} speed={1} count={20000} saturation={1} fade={true}/>
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           autoRotate

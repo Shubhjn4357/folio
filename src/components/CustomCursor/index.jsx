@@ -13,8 +13,9 @@ const CustomCursor = () => {
     distanceY: 0,
     key: -1,
   });
-
+  
   useEffect(() => {
+
     document.addEventListener("mousemove", (event) => {
       const { clientX, clientY } = event;
 
@@ -27,9 +28,10 @@ const CustomCursor = () => {
         mouseY - secondaryCursor.current.clientHeight / 2;
       mainCursor.current.style.transform = `translate3d(${mouseX -
         mainCursor.current.clientWidth / 2}px, ${mouseY -
-        mainCursor.current.clientHeight / 2}px, 0)`;
+        mainCursor.current.clientHeight / 2}px, 0) scale(${event.target['a']?1.5:1})`;
+      
     });
-
+    
     return () => {};
   }, []);
 
@@ -63,6 +65,7 @@ const CustomCursor = () => {
         }
       }
       secondaryCursor.current.style.transform = `translate3d(${destinationX}px, ${destinationY}px, 0)`;
+     
     };
     followMouse();
   }, []);
@@ -74,7 +77,6 @@ const CustomCursor = () => {
       <div className="secondary-cursor" ref={secondaryCursor}>
         <div className="cursor-background"></div>
       </div>
-      ;
     </div>
   );
 };
