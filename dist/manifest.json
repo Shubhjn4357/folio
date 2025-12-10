@@ -1,6 +1,6 @@
 {
   "index.css": {
-    "file": "assets/index-9254aabb.css",
+    "file": "assets/index-fc155a7b.css",
     "src": "index.css"
   },
   "index.html": {
@@ -11,8 +11,8 @@
       "assets/mobile-896ef2f5.png",
       "assets/web-0d05165f.png",
       "assets/github-3b4e1609.png",
-      "assets/menu-b5599218.svg",
-      "assets/close-54702a70.svg",
+      "assets/menu-242d80a8.svg",
+      "assets/close-ad0e0ca6.svg",
       "assets/css-79a7f026.png",
       "assets/docker-602a695a.png",
       "assets/figma-184a11e6.png",
@@ -29,9 +29,9 @@
       "assets/shubh-bd4599ff.png"
     ],
     "css": [
-      "assets/index-9254aabb.css"
+      "assets/index-fc155a7b.css"
     ],
-    "file": "assets/index-fb2ccdc6.js",
+    "file": "assets/index-6b8aa41e.js",
     "isEntry": true,
     "src": "index.html"
   },
@@ -40,7 +40,7 @@
     "src": "src/assets/backend.png"
   },
   "src/assets/close.svg": {
-    "file": "assets/close-54702a70.svg",
+    "file": "assets/close-ad0e0ca6.svg",
     "src": "src/assets/close.svg"
   },
   "src/assets/creator.png": {
@@ -56,7 +56,7 @@
     "src": "src/assets/logo.svg"
   },
   "src/assets/menu.svg": {
-    "file": "assets/menu-b5599218.svg",
+    "file": "assets/menu-242d80a8.svg",
     "src": "src/assets/menu.svg"
   },
   "src/assets/mobile.png": {

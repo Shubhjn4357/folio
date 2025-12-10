@@ -2,6 +2,7 @@ import {
 	BufferAttribute,
 	BufferGeometry,
 	Color,
+	ColorManagement,
 	FileLoader,
 	Loader,
 	LinearSRGBColorSpace,
@@ -82,13 +83,14 @@ class DRACOLoader extends Loader {
 
 	}
 
-	parse( buffer, onLoad, onError ) {
 
-		this.decodeDracoFile( buffer, onLoad, null, null, SRGBColorSpace ).catch( onError );
+	parse( buffer, onLoad, onError = ()=>{} ) {
+
+		this.decodeDracoFile( buffer, onLoad, null, null, SRGBColorSpace, onError ).catch( onError );
 
 	}
 
-	decodeDracoFile( buffer, callback, attributeIDs, attributeTypes, vertexColorSpace = LinearSRGBColorSpace ) {
+	decodeDracoFile( buffer, callback, attributeIDs, attributeTypes, vertexColorSpace = LinearSRGBColorSpace, onError = () => {} ) {
 
 		const taskConfig = {
 			attributeIDs: attributeIDs || this.defaultAttributeIDs,
@@ -97,7 +99,7 @@ class DRACOLoader extends Loader {
 			vertexColorSpace: vertexColorSpace,
 		};
 
-		return this.decodeGeometry( buffer, taskConfig ).then( callback );
+		return this.decodeGeometry( buffer, taskConfig ).then( callback ).catch( onError );
 
 	}
 
@@ -234,7 +236,8 @@ class DRACOLoader extends Loader {
 
 		for ( let i = 0, il = attribute.count; i < il; i ++ ) {
 
-			_color.fromBufferAttribute( attribute, i ).convertSRGBToLinear();
+			_color.fromBufferAttribute( attribute, i );
+			ColorManagement.toWorkingColorSpace( _color, SRGBColorSpace );
 			attribute.setXYZ( i, _color.r, _color.g, _color.b );
 
 		}

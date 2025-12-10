@@ -5,6 +5,7 @@ import {
 	BufferGeometry,
 	ClampToEdgeWrapping,
 	Color,
+	ColorManagement,
 	DirectionalLight,
 	DoubleSide,
 	FileLoader,
@@ -41,12 +42,6 @@ import {
 import { TGALoader } from '../loaders/TGALoader.js';
 
 class ColladaLoader extends Loader {
-
-	constructor( manager ) {
-
-		super( manager );
-
-	}
 
 	load( url, onLoad, onProgress, onError ) {
 
@@ -1687,9 +1682,9 @@ class ColladaLoader extends Loader {
 
 			}
 
-			material.color.convertSRGBToLinear();
-			if ( material.specular ) material.specular.convertSRGBToLinear();
-			if ( material.emissive ) material.emissive.convertSRGBToLinear();
+			ColorManagement.toWorkingColorSpace( material.color, SRGBColorSpace );
+			if ( material.specular ) ColorManagement.toWorkingColorSpace( material.specular, SRGBColorSpace );
+			if ( material.emissive ) ColorManagement.toWorkingColorSpace( material.emissive, SRGBColorSpace );
 
 			//
 
@@ -2025,7 +2020,8 @@ class ColladaLoader extends Loader {
 
 					case 'color':
 						const array = parseFloats( child.textContent );
-						data.color = new Color().fromArray( array ).convertSRGBToLinear();
+						data.color = new Color().fromArray( array );
+						ColorManagement.toWorkingColorSpace( data.color, SRGBColorSpace );
 						break;
 
 					case 'falloff_angle':
@@ -2554,8 +2550,9 @@ class ColladaLoader extends Loader {
 					tempColor.setRGB(
 						array[ startIndex + 0 ],
 						array[ startIndex + 1 ],
-						array[ startIndex + 2 ]
-					).convertSRGBToLinear();
+						array[ startIndex + 2 ],
+						SRGBColorSpace
+					);
 
 					array[ startIndex + 0 ] = tempColor.r;
 					array[ startIndex + 1 ] = tempColor.g;
@@ -3710,7 +3707,10 @@ class ColladaLoader extends Loader {
 
 		}
 
-		const fallbackMaterial = new MeshBasicMaterial( { color: 0xff00ff } );
+		const fallbackMaterial = new MeshBasicMaterial( {
+			name: Loader.DEFAULT_MATERIAL_NAME,
+			color: 0xff00ff
+		} );
 
 		function resolveMaterialBinding( keys, instanceMaterials ) {
 

@@ -4,6 +4,7 @@ import { styles } from "../styles";
 import { PlannetCanvas } from "./canvas";
 import {shubh} from '../assets/index';
 import Typist from "./Typist";
+import { Tilt } from "react-tilt";
 const Hero = () => {
   return (
     <section className={`relative w-full h-screen mx-auto`}>
@@ -19,18 +20,20 @@ const Hero = () => {
           </div>
 
           <div className='ml-4'>
-            <h1 className={`${styles.heroHeadText} text-white`}>
-              Hi, I'm&nbsp; <span className='blue-text-gradient'><Typist words={['Shubham']} delay={250}/></span>
+            <h1 className={`${styles.heroHeadText} `}>
+              Hi, I'm&nbsp; <span className='text-secondary'><Typist words={['Shubham']} delay={250}/></span>
             </h1>
             <p className={`${styles.heroSubText} mt-2 text-white-100`}>
               I develop &nbsp; <span className='font-black text-blue-600'>
-                  <Typist words={['User Interface','UI/UX','Web App','Web Pages','Decentralze App']} delay={1000} loop={true}/>
+                  <Typist words={['User Interface','UI/UX','Web App','Web Pages','FullStack App']} delay={1000} loop={true}/>
                 </span>
             </p>
           </div>
         </div>
         <div className='hidden ms-auto sm:flex'>
-          <img className="rounded-full h-[16rem] w-[16rem] sky-gradient object-cover" src={shubh} alt='profile-photo'/>
+          <Tilt className='xs:w-[250px] w-full'>
+            <img className="rounded-full h-[16rem] w-[16rem] sky-gradient object-cover" src={shubh} alt='profile-photo'/>
+          </Tilt>
         </div>
       </div>
       

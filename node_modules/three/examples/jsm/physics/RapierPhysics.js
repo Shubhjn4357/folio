@@ -1,6 +1,6 @@
 import { Clock, Vector3, Quaternion, Matrix4 } from 'three';
 
-const RAPIER_PATH = 'https://cdn.skypack.dev/@dimforge/rapier3d-compat@0.11.2';
+const RAPIER_PATH = 'https://cdn.skypack.dev/@dimforge/rapier3d-compat@0.12.0';
 
 const frameRate = 60;
 
@@ -9,7 +9,7 @@ const ZERO = new Vector3();
 
 let RAPIER = null;
 
-function getCollider( geometry ) {
+function getShape( geometry ) {
 
 	const parameters = geometry.parameters;
 
@@ -28,6 +28,26 @@ function getCollider( geometry ) {
 		const radius = parameters.radius !== undefined ? parameters.radius : 1;
 		return RAPIER.ColliderDesc.ball( radius );
 
+	} else if ( geometry.type === 'BufferGeometry' ) {
+
+		const vertices = [];
+		const vertex = new Vector3();
+		const position = geometry.getAttribute( 'position' );
+
+		for ( let i = 0; i < position.count; i ++ ) {
+
+			vertex.fromBufferAttribute( position, i );
+			vertices.push( vertex.x, vertex.y, vertex.z );
+
+		}
+
+		// if the buffer is non-indexed, generate an index buffer
+		const indices = geometry.getIndex() === null
+							? Uint32Array.from( Array( parseInt( vertices.length / 3 ) ).keys() )
+							: geometry.getIndex().array;
+
+		return RAPIER.ColliderDesc.trimesh( vertices, indices );
+
 	}
 
 	return null;
@@ -38,12 +58,12 @@ async function RapierPhysics() {
 
 	if ( RAPIER === null ) {
 
-		RAPIER = await import( RAPIER_PATH );
+		RAPIER = await import( `${RAPIER_PATH}` );
 		await RAPIER.init();
 
 	}
 
-	// Docs: https://rapier.rs/docs/api/javascript/JavaScript3D/	
+	// Docs: https://rapier.rs/docs/api/javascript/JavaScript3D/
 
 	const gravity = new Vector3( 0.0, - 9.81, 0.0 );
 	const world = new RAPIER.World( gravity );
@@ -55,9 +75,29 @@ async function RapierPhysics() {
 	const _quaternion = new Quaternion();
 	const _matrix = new Matrix4();
 
+	function addScene( scene ) {
+
+		scene.traverse( function ( child ) {
+
+			if ( child.isMesh ) {
+
+				const physics = child.userData.physics;
+
+				if ( physics ) {
+
+					addMesh( child, physics.mass, physics.restitution );
+
+				}
+
+			}
+
+		} );
+
+	}
+
 	function addMesh( mesh, mass = 0, restitution = 0 ) {
 
-		const shape = getCollider( mesh.geometry );
+		const shape = getShape( mesh.geometry );
 
 		if ( shape === null ) return;
 
@@ -189,6 +229,7 @@ async function RapierPhysics() {
 	setInterval( step, 1000 / frameRate );
 
 	return {
+		addScene: addScene,
 		addMesh: addMesh,
 		setMeshPosition: setMeshPosition,
 		setMeshVelocity: setMeshVelocity

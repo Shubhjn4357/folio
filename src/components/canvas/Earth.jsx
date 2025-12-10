@@ -1,38 +1,40 @@
-import React, { Suspense,useEffect,useRef } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
 
-//how to stop too many canvas old canvas will be lost error ?
- 
 const Earth = () => {
- 
   const earth = useGLTF("./planet/scene.gltf");
-  useEffect(()=>{
-    return ()=>{
-        earth.dispose()
-    }
-  },[earth])
+
+  useEffect(() => {
+    return () => {
+      earth.scene.traverse((object) => {
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach(material => material.dispose());
+          } else {
+            object.material.dispose();
+          }
+        }
+      });
+    };
+  }, [earth]);
+
   return (
-    <primitive object={earth.scene} scale={2.5} position-y={0} rotation-y={0} />
+    <>
+      <ambientLight intensity={0.3} />
+      <directionalLight position={[5, 3, 5]} intensity={1.5} />
+      <directionalLight position={[-5, -3, -5]} intensity={0.5} />
+      <primitive object={earth.scene} scale={2.5} position-y={0} rotation-y={0} />
+    </>
   );
 };
 
 const EarthCanvas = () => {
-  const canvasRef=useRef()
-  useEffect(() => {
-    const cleanup = () => {
-      const renderer = canvasRef.current?.gl;
-      if (renderer) {
-        renderer.dispose(); // Dispose the WebGL renderer
-      }
-    };
-
-    return cleanup; // Cleanup function will be called when the component unmounts
-  }, []);
   return (
-    <Canvas ref={canvasRef}
+    <Canvas
       shadows
       frameloop='demand'
       dpr={[1, 2]}
@@ -45,12 +47,13 @@ const EarthCanvas = () => {
       }}
     >
       <Suspense fallback={<CanvasLoader />}>
+        <ambientLight intensity={0.3} />
+      
         <OrbitControls
           autoRotate
           enableZoom={false}
         />
         <Earth />
-        
         <Preload all />
       </Suspense>
     </Canvas>

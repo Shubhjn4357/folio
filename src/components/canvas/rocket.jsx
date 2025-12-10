@@ -1,53 +1,55 @@
-import React, { Suspense ,useEffect,useRef} from "react";
+import React, { Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 import CanvasLoader from "../Loader";
 
 const Rocket = () => {
   const rocket = useGLTF("./rocket/scene.gltf");
-  useEffect(()=>{
-    return ()=>{
-        rocket.dispose()
-    }
-  },[rocket])
+
+  useEffect(() => {
+    return () => {
+      rocket.scene.traverse((object) => {
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach(material => material.dispose());
+          } else {
+            object.material.dispose();
+          }
+        }
+      });
+    };
+  }, [rocket]);
+
   return (
-    <mesh position={[0,1,0]}>
-    <hemisphereLight intensity={0.15} groundColor='#2a003d' />
-    <spotLight
-      position={[-20, 50, 10]}
-      angle={0.12}
-      penumbra={1}
-      intensity={1}
-      castShadow
-      shadow-mapSize={1024}
-    />
-    <pointLight intensity={1} />
-    <primitive object={rocket.scene} 
-               scale={1} 
-               position-y={0} 
-               rotation-y={0}
-               rotation-x={1.5} />
-    </mesh>
+    <>
+      <ambientLight intensity={0.2} />
+      <hemisphereLight intensity={0.15} groundColor='#2a003d' />
+      <directionalLight position={[10, 10, 5]} intensity={1.2} castShadow />
+      <directionalLight position={[-10, -5, -5]} intensity={0.6} />
+      <spotLight
+        position={[-20, 50, 10]}
+        angle={0.12}
+        penumbra={1}
+        intensity={1}
+        castShadow
+        shadow-mapSize={1024}
+      />
+      <pointLight intensity={1} />
+      <primitive
+        object={rocket.scene}
+        scale={1}
+        position-y={1}
+        rotation-y={0}
+        rotation-x={1.5}
+      />
+    </>
   );
 };
 
 const RocketCanvas = () => {
-  const canvasRef=useRef()
-  useEffect(() => {
-    const cleanup = () => {
-      const renderer = canvasRef.current?.gl;
-      if (renderer) {
-        renderer.dispose(); // Dispose the WebGL renderer
-      }
-    };
-
-    return cleanup; // Cleanup function will be called when the component unmounts
-  }, []);
-
-  
-
   return (
-    <Canvas ref={canvasRef}
+    <Canvas
       shadows
       frameloop='demand'
       dpr={[1, 2]}

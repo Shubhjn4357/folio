@@ -159,36 +159,52 @@ class Box3 {
 
 		object.updateWorldMatrix( false, false );
 
-		if ( object.boundingBox !== undefined ) {
+		const geometry = object.geometry;
 
-			if ( object.boundingBox === null ) {
+		if ( geometry !== undefined ) {
 
-				object.computeBoundingBox();
+			const positionAttribute = geometry.getAttribute( 'position' );
 
-			}
+			// precise AABB computation based on vertex data requires at least a position attribute.
+			// instancing isn't supported so far and uses the normal (conservative) code path.
 
-			_box.copy( object.boundingBox );
-			_box.applyMatrix4( object.matrixWorld );
+			if ( precise === true && positionAttribute !== undefined && object.isInstancedMesh !== true ) {
 
-			this.union( _box );
+				for ( let i = 0, l = positionAttribute.count; i < l; i ++ ) {
 
-		} else {
+					if ( object.isMesh === true ) {
 
-			const geometry = object.geometry;
+						object.getVertexPosition( i, _vector );
 
-			if ( geometry !== undefined ) {
+					} else {
 
-				if ( precise && geometry.attributes !== undefined && geometry.attributes.position !== undefined ) {
-
-					const position = geometry.attributes.position;
-					for ( let i = 0, l = position.count; i < l; i ++ ) {
-
-						_vector.fromBufferAttribute( position, i ).applyMatrix4( object.matrixWorld );
-						this.expandByPoint( _vector );
+						_vector.fromBufferAttribute( positionAttribute, i );
 
 					}
 
+					_vector.applyMatrix4( object.matrixWorld );
+					this.expandByPoint( _vector );
+
+				}
+
+			} else {
+
+				if ( object.boundingBox !== undefined ) {
+
+					// object-level bounding box
+
+					if ( object.boundingBox === null ) {
+
+						object.computeBoundingBox();
+
+					}
+
+					_box.copy( object.boundingBox );
+
+
 				} else {
+
+					// geometry-level bounding box
 
 					if ( geometry.boundingBox === null ) {
 
@@ -197,11 +213,12 @@ class Box3 {
 					}
 
 					_box.copy( geometry.boundingBox );
-					_box.applyMatrix4( object.matrixWorld );
-
-					this.union( _box );
 
 				}
+
+				_box.applyMatrix4( object.matrixWorld );
+
+				this.union( _box );
 
 			}
 
@@ -221,9 +238,9 @@ class Box3 {
 
 	containsPoint( point ) {
 
-		return point.x < this.min.x || point.x > this.max.x ||
-			point.y < this.min.y || point.y > this.max.y ||
-			point.z < this.min.z || point.z > this.max.z ? false : true;
+		return point.x >= this.min.x && point.x <= this.max.x &&
+			point.y >= this.min.y && point.y <= this.max.y &&
+			point.z >= this.min.z && point.z <= this.max.z;
 
 	}
 
@@ -251,9 +268,9 @@ class Box3 {
 	intersectsBox( box ) {
 
 		// using 6 splitting planes to rule out intersections.
-		return box.max.x < this.min.x || box.min.x > this.max.x ||
-			box.max.y < this.min.y || box.min.y > this.max.y ||
-			box.max.z < this.min.z || box.min.z > this.max.z ? false : true;
+		return box.max.x >= this.min.x && box.min.x <= this.max.x &&
+			box.max.y >= this.min.y && box.min.y <= this.max.y &&
+			box.max.z >= this.min.z && box.min.z <= this.max.z;
 
 	}
 

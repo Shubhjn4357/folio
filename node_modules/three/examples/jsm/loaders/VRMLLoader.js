@@ -5,6 +5,7 @@ import {
 	BufferGeometry,
 	ClampToEdgeWrapping,
 	Color,
+	ColorManagement,
 	ConeGeometry,
 	CylinderGeometry,
 	DataTexture,
@@ -126,7 +127,7 @@ class VRMLLoader extends Loader {
 			// from http://gun.teipir.gr/VRML-amgem/spec/part1/concepts.html#SyntaxBasics
 
 			const RouteIdentifier = createToken( { name: 'RouteIdentifier', pattern: /[^\x30-\x39\0-\x20\x22\x27\x23\x2b\x2c\x2d\x2e\x5b\x5d\x5c\x7b\x7d][^\0-\x20\x22\x27\x23\x2b\x2c\x2d\x2e\x5b\x5d\x5c\x7b\x7d]*[\.][^\x30-\x39\0-\x20\x22\x27\x23\x2b\x2c\x2d\x2e\x5b\x5d\x5c\x7b\x7d][^\0-\x20\x22\x27\x23\x2b\x2c\x2d\x2e\x5b\x5d\x5c\x7b\x7d]*/ } );
-			const Identifier = createToken( { name: 'Identifier', pattern: /[^\x30-\x39\0-\x20\x22\x27\x23\x2b\x2c\x2d\x2e\x5b\x5d\x5c\x7b\x7d][^\0-\x20\x22\x27\x23\x2b\x2c\x2d\x2e\x5b\x5d\x5c\x7b\x7d]*/, longer_alt: RouteIdentifier } );
+			const Identifier = createToken( { name: 'Identifier', pattern: /[^\x30-\x39\0-\x20\x22\x27\x23\x2b\x2c\x2d\x2e\x5b\x5d\x5c\x7b\x7d]([^\0-\x20\x22\x27\x23\x2b\x2c\x2e\x5b\x5d\x5c\x7b\x7d])*/, longer_alt: RouteIdentifier } );
 
 			// from http://gun.teipir.gr/VRML-amgem/spec/part1/nodesRef.html
 
@@ -800,7 +801,7 @@ class VRMLLoader extends Loader {
 						break;
 
 					case 'rotation':
-						const axis = new Vector3( fieldValues[ 0 ], fieldValues[ 1 ], fieldValues[ 2 ] );
+						const axis = new Vector3( fieldValues[ 0 ], fieldValues[ 1 ], fieldValues[ 2 ] ).normalize();
 						const angle = fieldValues[ 3 ];
 						object.quaternion.setFromAxisAngle( axis, angle );
 						break;
@@ -918,8 +919,7 @@ class VRMLLoader extends Loader {
 
 				} else {
 
-					skyMaterial.color.setRGB( skyColor[ 0 ], skyColor[ 1 ], skyColor[ 2 ] );
-					skyMaterial.color.convertSRGBToLinear();
+					skyMaterial.color.setRGB( skyColor[ 0 ], skyColor[ 1 ], skyColor[ 2 ], SRGBColorSpace );
 
 				}
 
@@ -960,7 +960,10 @@ class VRMLLoader extends Loader {
 
 			// if the appearance field is NULL or unspecified, lighting is off and the unlit object color is (0, 0, 0)
 
-			let material = new MeshBasicMaterial( { color: 0x000000 } );
+			let material = new MeshBasicMaterial( {
+				name: Loader.DEFAULT_MATERIAL_NAME,
+				color: 0x000000
+			} );
 			let geometry;
 
 			for ( let i = 0, l = fields.length; i < l; i ++ ) {
@@ -1007,7 +1010,12 @@ class VRMLLoader extends Loader {
 
 				if ( type === 'points' ) { // points
 
-					const pointsMaterial = new PointsMaterial( { color: 0xffffff } );
+					const pointsMaterial = new PointsMaterial( {
+						name: Loader.DEFAULT_MATERIAL_NAME,
+						color: 0xffffff,
+						opacity: material.opacity,
+						transparent: material.transparent
+					} );
 
 					if ( geometry.attributes.color !== undefined ) {
 
@@ -1029,7 +1037,12 @@ class VRMLLoader extends Loader {
 
 				} else if ( type === 'line' ) { // lines
 
-					const lineMaterial = new LineBasicMaterial( { color: 0xffffff } );
+					const lineMaterial = new LineBasicMaterial( {
+						name: Loader.DEFAULT_MATERIAL_NAME,
+						color: 0xffffff,
+						opacity: material.opacity,
+						transparent: material.transparent
+					} );
 
 					if ( geometry.attributes.color !== undefined ) {
 
@@ -1116,7 +1129,10 @@ class VRMLLoader extends Loader {
 
 							// if the material field is NULL or unspecified, lighting is off and the unlit object color is (0, 0, 0)
 
-							material = new MeshBasicMaterial( { color: 0x000000 } );
+							material = new MeshBasicMaterial( {
+								name: Loader.DEFAULT_MATERIAL_NAME,
+								color: 0x000000
+							} );
 
 						}
 
@@ -1224,13 +1240,11 @@ class VRMLLoader extends Loader {
 						break;
 
 					case 'diffuseColor':
-						materialData.diffuseColor = new Color( fieldValues[ 0 ], fieldValues[ 1 ], fieldValues[ 2 ] );
-						materialData.diffuseColor.convertSRGBToLinear();
+						materialData.diffuseColor = new Color().setRGB( fieldValues[ 0 ], fieldValues[ 1 ], fieldValues[ 2 ], SRGBColorSpace );
 						break;
 
 					case 'emissiveColor':
-						materialData.emissiveColor = new Color( fieldValues[ 0 ], fieldValues[ 1 ], fieldValues[ 2 ] );
-						materialData.emissiveColor.convertSRGBToLinear();
+						materialData.emissiveColor = new Color().setRGB( fieldValues[ 0 ], fieldValues[ 1 ], fieldValues[ 2 ], SRGBColorSpace );
 						break;
 
 					case 'shininess':
@@ -1238,8 +1252,7 @@ class VRMLLoader extends Loader {
 						break;
 
 					case 'specularColor':
-						materialData.specularColor = new Color( fieldValues[ 0 ], fieldValues[ 1 ], fieldValues[ 2 ] );
-						materialData.specularColor.convertSRGBToLinear();
+						materialData.specularColor = new Color().setRGB( fieldValues[ 0 ], fieldValues[ 1 ], fieldValues[ 2 ], SRGBColorSpace );
 						break;
 
 					case 'transparency':
@@ -3095,7 +3108,8 @@ class VRMLLoader extends Loader {
 			for ( let i = 0; i < attribute.count; i ++ ) {
 
 				color.fromBufferAttribute( attribute, i );
-				color.convertSRGBToLinear();
+
+				ColorManagement.toWorkingColorSpace( color, SRGBColorSpace );
 
 				attribute.setXYZ( i, color.r, color.g, color.b );
 
@@ -3200,7 +3214,9 @@ class VRMLLoader extends Loader {
 				const colorA = colors[ thresholdIndexA ];
 				const colorB = colors[ thresholdIndexB ];
 
-				color.copy( colorA ).lerp( colorB, t ).convertSRGBToLinear();
+				color.copy( colorA ).lerp( colorB, t );
+
+				ColorManagement.toWorkingColorSpace( color, SRGBColorSpace );
 
 				colorAttribute.setXYZ( index, color.r, color.g, color.b );
 

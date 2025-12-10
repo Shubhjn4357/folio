@@ -1,4 +1,4 @@
-import React, { Suspense,useEffect,useRef } from "react";
+import React, { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Decal,
@@ -15,8 +15,8 @@ const Ball = (props) => {
 
   return (
     <Float speed={1.75} rotationIntensity={1} floatIntensity={2}>
-      <ambientLight intensity={0.25} />
-      <directionalLight position={[0, 0, 0.05]} />
+      <ambientLight intensity={0.3} />
+      <directionalLight position={[0, 0, 0.05]} intensity={0.5} />
       <mesh castShadow receiveShadow scale={2.75}>
         <icosahedronGeometry args={[1, 1]} />
         <meshStandardMaterial
@@ -38,19 +38,8 @@ const Ball = (props) => {
 };
 
 const BallCanvas = ({ icon }) => {
-  const canvasRef=useRef()
-  useEffect(() => {
-    const cleanup = () => {
-      const renderer = canvasRef.current?.gl;
-      if (renderer) {
-        renderer.dispose(); // Dispose the WebGL renderer
-      }
-    };
-
-    return cleanup; // Cleanup function will be called when the component unmounts
-  }, []);
   return (
-    <Canvas ref={canvasRef}
+    <Canvas
       frameloop='demand'
       dpr={[1, 2]}
       gl={{ preserveDrawingBuffer: true }}
@@ -59,7 +48,6 @@ const BallCanvas = ({ icon }) => {
         <OrbitControls enableZoom={false} />
         <Ball imgUrl={icon} />
       </Suspense>
-
       <Preload all />
     </Canvas>
   );

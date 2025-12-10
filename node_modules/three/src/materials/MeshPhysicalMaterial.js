@@ -5,6 +5,12 @@ import * as MathUtils from '../math/MathUtils.js';
 
 class MeshPhysicalMaterial extends MeshStandardMaterial {
 
+	static get type() {
+
+		return 'MeshPhysicalMaterial';
+
+	}
+
 	constructor( parameters ) {
 
 		super();
@@ -17,8 +23,6 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 			'PHYSICAL': ''
 
 		};
-
-		this.type = 'MeshPhysicalMaterial';
 
 		this.anisotropyRotation = 0;
 		this.anisotropyMap = null;
@@ -68,6 +72,7 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 
 		this._anisotropy = 0;
 		this._clearcoat = 0;
+		this._dispersion = 0;
 		this._iridescence = 0;
 		this._sheen = 0.0;
 		this._transmission = 0;
@@ -130,6 +135,24 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 
 	}
 
+	get dispersion() {
+
+		return this._dispersion;
+
+	}
+
+	set dispersion( value ) {
+
+		if ( this._dispersion > 0 !== value > 0 ) {
+
+			this.version ++;
+
+		}
+
+		this._dispersion = value;
+
+	}
+
 	get sheen() {
 
 		return this._sheen;
@@ -188,6 +211,7 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		this.clearcoatNormalMap = source.clearcoatNormalMap;
 		this.clearcoatNormalScale.copy( source.clearcoatNormalScale );
 
+		this.dispersion = source.dispersion;
 		this.ior = source.ior;
 
 		this.iridescence = source.iridescence;
