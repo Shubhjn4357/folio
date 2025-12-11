@@ -9,10 +9,11 @@ import {
 } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
+import { useTheme } from "../../context/ThemeContext";
 
 const Ball = (props) => {
   const [decal] = useTexture([props.imgUrl]);
-
+  const {isDarkMode}= useTheme();
   return (
     <Float speed={1.75} rotationIntensity={1} floatIntensity={2}>
       <ambientLight intensity={0.3} />
@@ -20,7 +21,7 @@ const Ball = (props) => {
       <mesh castShadow receiveShadow scale={2.75}>
         <icosahedronGeometry args={[1, 1]} />
         <meshStandardMaterial
-          color='#fff8eb'
+          color={isDarkMode ? '#5B8DEE' : '#FFE4C4'}
           polygonOffset
           polygonOffsetFactor={-5}
           flatShading

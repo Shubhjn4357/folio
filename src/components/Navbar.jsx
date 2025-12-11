@@ -31,7 +31,7 @@ const Navbar = () => {
       className={`${
         styles.paddingX
       } w-full flex items-center py-5 fixed top-0 z-20 ${
-        scrolled ? "bg-primary" : "bg-transparent"
+        scrolled ? "bg-primary dark:bg-dark-primary" : "bg-transparent"
         } transition-colors duration-300`}
     >
       <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
@@ -55,8 +55,8 @@ const Navbar = () => {
             <li
               key={nav.id}
               className={`${
-                active === nav.title ? "text-white-100 dark:text-white before:w-full" : "text-secondary"
-                } hover:text-white-100 dark:hover:text-white text-[18px] nav-link font-medium cursor-pointer transition-colors duration-200`}
+                active === nav.title ? "text-text-primary dark:text-dark-text-primary before:w-full" : "text-text-secondary dark:text-dark-text-secondary"
+                } hover:text-text-primary dark:hover:text-dark-text-primary text-[18px] nav-link font-medium cursor-pointer transition-colors duration-200`}
               onClick={() => setActive(nav.title)}
             >
               <a href={`#${nav.id}`}>{nav.title}</a>
@@ -67,11 +67,11 @@ const Navbar = () => {
           <li>
             <button
               onClick={toggleTheme}
-              className='w-14 h-7 rounded-full bg-secondary relative transition-all duration-300 hover:shadow-neon'
+              className='w-14 h-7 rounded-full bg-text-secondary dark:bg-dark-surface relative transition-all duration-300 hover:shadow-soft dark:hover:shadow-dark-soft'
               aria-label='Toggle theme'
             >
               <div
-                className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white-100 dark:bg-tertiary transition-transform duration-300 ${isDarkMode ? 'translate-x-7' : 'translate-x-0'
+                className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-text-primary dark:bg-dark-accent-primary transition-transform duration-300 ${isDarkMode ? 'translate-x-7' : 'translate-x-0'
                   }`}
               >
                 <span className='absolute inset-0 flex items-center justify-center text-xs'>
@@ -86,11 +86,11 @@ const Navbar = () => {
           {/* Mobile Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className='w-12 h-6 rounded-full bg-secondary relative z-20'
+            className='w-12 h-6 rounded-full bg-text-secondary dark:bg-dark-surface relative z-20'
             aria-label='Toggle theme'
           >
             <div
-              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white-100 dark:bg-tertiary transition-transform duration-300 ${isDarkMode ? 'translate-x-6' : 'translate-x-0'
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-text-primary dark:bg-dark-accent-primary transition-transform duration-300 ${isDarkMode ? 'translate-x-6' : 'translate-x-0'
                 }`}
             >
               <span className='absolute inset-0 flex items-center justify-center text-xs'>
@@ -116,7 +116,7 @@ const Navbar = () => {
                 <li
                   key={nav.id}
                   className={`font-poppins text-center font-extrabold p-2 cursor-pointer text-[24px] nav-link ${
-                    active === nav.title ? "text-white-100 dark:text-white before:w-full" : "text-secondary"
+                    active === nav.title ? "text-text-primary dark:text-dark-text-primary before:w-full" : "text-text-secondary dark:text-dark-text-secondary"
                     } transition-colors duration-200`}
                   onClick={() => {
                     setToggle(!toggle);

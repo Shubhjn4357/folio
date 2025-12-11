@@ -21,10 +21,10 @@ const Hero = () => {
 
           <div className='ml-4'>
             <h1 className={`${styles.heroHeadText} `}>
-              Hi, I'm&nbsp; <span className='text-secondary'><Typist words={['Shubham']} delay={250}/></span>
+              Hi, I'm&nbsp; <span className='text-secondary dark:text-dark-text-secondary'><Typist words={['Shubham']} delay={250} /></span>
             </h1>
-            <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-              I develop &nbsp; <span className='font-black text-blue-600'>
+            <p className={`${styles.heroSubText} mt-2 text-text-primary dark:text-dark-text-primary`}>
+              I develop &nbsp; <span className='font-black text-accent-primary dark:text-dark-accent-primary'>
                   <Typist words={['User Interface','UI/UX','Web App','Web Pages','FullStack App']} delay={1000} loop={true}/>
                 </span>
             </p>

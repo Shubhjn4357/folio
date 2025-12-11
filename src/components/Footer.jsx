@@ -26,15 +26,15 @@ const Footer=()=>{
                 <p className='font-poppins text-[18px] text-center'>Follow Me 👇</p>
                 <div className='flex justify-around align-center'>
                     {links.map((i,k)=>{
-                    return <div key={k} className='link inset-0 flex justify-end3333333333333333'>
+                    return <div key={k} className='link inset-0 flex justify-end'>
                         <div
                         onClick={() => window.open(i.link,'_blank')}
-                        className={`${i.color} w-10 h-10 rounded-full flex justify-center items-center cursor-pointer`}
+                        className={`${i.color} size-10 rounded-full glass-effect flex justify-center items-center cursor-pointer`}
                         >
                         <img
                             src={i.icon}
                             alt='site link'
-                            className='w-1/2 h-1/2 object-contain'
+                            className='w-1/2 h-1/2 object-contain bg-black rounded-full'
                         />
                         <span className='link-name'>{i.name}</span>
                         </div>

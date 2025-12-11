@@ -70,7 +70,7 @@ const Contact = () => {
     >
       <motion.div
         variants={slideIn("left", "tween", 0.2, 1)}
-        className='flex-[0.75] bg-black-100 dark:bg-slate-900 p-8 rounded-2xl'
+        className='flex-[0.75] bg-surface dark:bg-dark-surface p-8 rounded-2xl'
       >
         <div className='flex justify-between'>
           <div>
@@ -78,8 +78,8 @@ const Contact = () => {
             <h3 className={styles.sectionHeadText}>Contact.</h3>
           </div>
           <div>
-            <a className='text-[10px] sm:text-[20px] text-white-300' href='https://drive.google.com/file/d/1bij11HuUXkNLiFN8QxMhjz_UREjkoFU_/view?usp=drive_link'>
-              <button className="flex shadow-lg active:translate-y-1 active:shadow-none shadow-red-900 bg-black hover:bg-red-900 text-white font-bold py-1 px-2 sm:py-2 sm:px-4 border-b-2 sm:border-b-4 border-red-700 active:border-b-0 rounded">
+            <a className='text-[10px] sm:text-[20px] text-white-300' href='/resume.pdf' download>
+              <button className="flex shadow-lg active:translate-y-1 active:shadow-none shadow-accent-primary dark:shadow-dark-accent-primary bg-text-primary dark:bg-dark-surface hover:bg-accent-primary dark:hover:bg-dark-accent-primary text-white font-bold py-1 px-2 sm:py-2 sm:px-4 border-b-2 sm:border-b-4 border-accent-secondary dark:border-dark-accent-secondary active:border-b-0 rounded">
               <svg className="fill-current sm:w-4 sm:h-7 w-2 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                 Resume
               </button>
@@ -101,7 +101,7 @@ const Contact = () => {
               value={form.name}
               onChange={handleChange}
               placeholder="What's your good name?"
-              className='bg-tertiary py-4 px-6 placeholder:text-secondary dark:text-white rounded-lg outline-none border-none font-medium'
+              className='bg-elevated dark:bg-dark-elevated py-4 px-6 placeholder:text-text-secondary dark:placeholder:text-dark-text-muted dark:text-dark-text-primary rounded-lg outline-none border-none font-medium'
             />
           </label>
           <label className='flex flex-col'>
@@ -113,7 +113,7 @@ const Contact = () => {
               value={form.email}
               onChange={handleChange}
               placeholder="What's your web address?"
-              className='bg-tertiary py-4 px-6 placeholder:text-secondary dark:text-white rounded-lg outline-none border-none font-medium'
+              className='bg-elevated dark:bg-dark-elevated py-4 px-6 placeholder:text-text-secondary dark:placeholder:text-dark-text-muted dark:text-dark-text-primary rounded-lg outline-none border-none font-medium'
             />
           </label>
           <label className='flex flex-col'>
@@ -125,13 +125,13 @@ const Contact = () => {
               value={form.message}
               onChange={handleChange}
               placeholder='What you want to say?'
-              className='bg-tertiary py-4 px-6 placeholder:text-secondary dark:text-white rounded-lg outline-none border-none font-medium'
+              className='bg-elevated dark:bg-dark-elevated py-4 px-6 placeholder:text-text-secondary dark:placeholder:text-dark-text-muted dark:text-dark-text-primary rounded-lg outline-none border-none font-medium'
             />
           </label>
 
           <button
             type='submit'
-            className='bg-tertiary py-3 px-8 rounded-xl outline-none w-fit dark:text-white font-bold shadow-md shadow-primary'
+            className='bg-accent-primary dark:bg-dark-accent-primary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-soft dark:shadow-dark-soft'
           >
             {loading ? "Sending..." : "Send"}
           </button>
