@@ -5,7 +5,7 @@ import Experience from "./Experience";
 import Tech from "./Tech";
 import Works from "./Works";
 import Contact from "./Contact";
-import CanvasLoader from "./Loader";
+
 import Footer from './Footer';
 import ErrorBoundary from './ErrorBoundary';
 import ParallaxSection from "./ParallaxSection";
@@ -21,7 +21,6 @@ export {
   Tech,
   Works,
   Contact,
-  CanvasLoader,
   Footer,
   ErrorBoundary,
   ParallaxSection,
