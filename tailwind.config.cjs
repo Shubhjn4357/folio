@@ -6,6 +6,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+<<<<<<< HEAD
         // Light theme colors (default)
         primary: "#FFF8E7",           // Soft cream background
         surface: "#FFE4C4",           // Bisque surface
@@ -50,6 +51,21 @@ module.exports = {
         "dark-soft": "0 4px 20px rgba(91, 141, 238, 0.2)",
         "dark-medium": "0 8px 30px rgba(91, 141, 238, 0.3)",
         "dark-strong": "0 12px 40px rgba(124, 92, 239, 0.4)",
+=======
+        primary: "var(--primary)",
+        secondary: "var(--secondary)",
+        tertiary: "var(--tertiary)",
+        "black-100": "#100d25",
+        "black-200": "#090325",
+        "white-100": "#f3f3f3",
+        "neon-blue": "var(--neon-blue)",
+        "neon-purple": "var(--neon-purple)",
+        "neon-pink": "#ff0080",
+      },
+      boxShadow: {
+        card: "0px 35px 120px -15px #211e35",
+        neon: "0 0 10px #bc13fe, 0 0 20px #bc13fe",
+>>>>>>> 9d330505 (refactorise whole app)
       },
       screens: {
         xs: "450px",
