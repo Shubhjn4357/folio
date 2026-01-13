@@ -6,7 +6,6 @@ A stunning, immersive 3D developer portfolio built with React, Three.js, and Fra
 
 ## 🚀 Features
 
-*   **Immersive 3D Graphics**: Integrated 3D models using `Three.js` and `@react-three/fiber`.
 *   **Smooth Animations**: Complex animations powered by `Framer Motion` and `GSAP`.
 *   **Modern Styling**: Responsive design built with `Tailwind CSS`.
 *   **Theme Support**: Dark and Light mode support with neon accents.
@@ -18,7 +17,6 @@ A stunning, immersive 3D developer portfolio built with React, Three.js, and Fra
 *   **Frontend**: [React](https://reactjs.org/)
 *   **Build Tool**: [Vite](https://vitejs.dev/)
 *   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-*   **3D Library**: [Three.js](https://threejs.org/) / [React Three Fiber](https://docs.pmnd.rs/react-three-fiber)
 *   **Animations**: [Framer Motion](https://www.framer.com/motion/) / [GSAP](https://greensock.com/gsap/)
 *   **Routing**: [React Router](https://reactrouter.com/)
 
@@ -83,7 +81,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **Shubham Jain**
 
-*   Website: [shubhamjain.co](https://shubhamjain.co)
+*   Website: [shubhamjain](https://shubham-jain.vercel.app)
 *   GitHub: [@Shubhjn4357](https://github.com/Shubhjn4357)
 *   LinkedIn: [Shubham Jain](https://linkedin.com/in/shubhamjain)
 
