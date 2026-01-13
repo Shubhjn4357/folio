@@ -1,5 +1,8 @@
-import React from "react";
+'use client';
 
+import React from "react";
+import Image from "next/image";
+import { useRouter } from 'next/navigation';
 import { motion } from "framer-motion";
 
 import { styles } from "../styles";
@@ -17,29 +20,33 @@ const ProjectCard = ({
   link,
   source_code_link,
 }) => {
+  const router = useRouter();
+
   return (
     <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
 
       <div
         className='glass-panel p-5 rounded-2xl sm:w-[360px] w-full shadow-card hover:shadow-neon transition-all duration-300 cursor-pointer overflow-hidden group'
-        onClick={() => window.location.href = `/project/${index}`}
+        onClick={() => router.push(`/project/${index}`)}
       >
         <div className='relative w-full h-[230px]'>
-          <img
+          <Image
             src={image}
             alt='project_image'
-            className='w-full h-full object-cover rounded-2xl'
+            fill
+            className='object-cover rounded-2xl'
           />
 
           <div className='absolute inset-0 flex justify-end m-3 card-img_hover'>
             <div
               onClick={() => window.open(source_code_link, "_blank")}
-              className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer border border-secondary'
+              className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer border border-secondary relative'
             >
-              <img
+              <Image
                 src={github}
                 alt='source code'
-                className='w-1/2 h-1/2 object-contain'
+                fill
+                className='object-contain p-2'
               />
             </div>
           </div>

@@ -1,4 +1,22 @@
 import {
+  FaHtml5,
+  FaCss3Alt,
+  FaReact,
+  FaNodeJs,
+  FaGitAlt,
+  FaFigma,
+  FaDocker,
+} from "react-icons/fa";
+import {
+  SiJavascript,
+  SiTypescript,
+  SiRedux,
+  SiTailwindcss,
+  SiMongodb,
+  SiThreedotjs,
+} from "react-icons/si";
+
+import {
   mobile,
   backend,
   creator,
@@ -6,19 +24,6 @@ import {
   tododapp,
   mtv,
   spotify,
-  javascript,
-  typescript,
-  html,
-  css,
-  reactjs,
-  redux,
-  tailwind,
-  nodejs,
-  mongodb,
-  git,
-  figma,
-  docker,
-  threejs,
   insta,
   linkdin,
   github,
@@ -61,55 +66,68 @@ const services = [
 const technologies = [
   {
     name: "HTML 5",
-    icon: html,
+    icon: FaHtml5,
+    color: "#E34F26",
   },
   {
     name: "CSS 3",
-    icon: css,
+    icon: FaCss3Alt,
+    color: "#1572B6",
   },
   {
     name: "JavaScript",
-    icon: javascript,
+    icon: SiJavascript,
+    color: "#F7DF1E",
   },
   {
     name: "TypeScript",
-    icon: typescript,
+    icon: SiTypescript,
+    color: "#3178C6",
   },
   {
     name: "React JS",
-    icon: reactjs,
+    icon: FaReact,
+    color: "#61DAFB",
   },
   {
     name: "Redux Toolkit",
-    icon: redux,
+    icon: SiRedux,
+    color: "#764ABC",
   },
   {
     name: "Tailwind CSS",
-    icon: tailwind,
+    icon: SiTailwindcss,
+    color: "#06B6D4",
   },
   {
     name: "Node JS",
-    icon: nodejs,
+    icon: FaNodeJs,
+    color: "#339933",
   },
   {
     name: "MongoDB",
-    icon: mongodb,
+    icon: SiMongodb,
+    color: "#47A248",
   },
   {
     name: "Three JS",
-    icon: threejs,
+    icon: SiThreedotjs,
+    color: "#FFFFFF",
   },
   {
     name: "git",
-    icon: git,
+    icon: FaGitAlt,
+    color: "#F05032",
   },
   {
     name: "figma",
-    icon: figma,
+    icon: FaFigma,
+    color: "#F24E1E",
   },
   {
     name: "docker",
-    icon: docker,
+    icon: FaDocker,
+    color: "#2496ED",
   },
 ];
 
@@ -254,24 +272,26 @@ const projects = [
   },
 ];
 
+import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
+
 export const socialLinks = [
   {
     name: "GitHub",
-    icon: github,
+    icon: FaGithub,
     link: "https://github.com/Shubhjn4357",
-    color: "bg-black",
+    color: "text-white",
   },
   {
     name: "LinkedIn",
-    icon: linkdin,
+    icon: FaLinkedin,
     link: "https://linkedin.com/in/shubham-jain-b46999135/",
-    color: "bg-blue-500",
+    color: "text-blue-500",
   },
   {
     name: "Instagram",
-    icon: insta,
+    icon: FaInstagram,
     link: "https://instagram.com/shubh._jn/",
-    color: "pink-text-gradient",
+    color: "text-pink-500",
   },
 ];
 

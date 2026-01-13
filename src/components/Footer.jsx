@@ -1,3 +1,5 @@
+'use client';
+
 import { styles } from '../styles';
 import { motion } from "framer-motion";
 import { socialLinks } from '../constants';
@@ -38,10 +40,8 @@ const Footer = () => {
                       onClick={() => window.open(social.link, '_blank')}
                       className="w-12 h-12 rounded-full glass-panel  flex justify-center items-center cursor-pointer hover:shadow-neon hover:border-neon-blue transition-all duration-300 group"
                   >
-                      <img 
-                          src={social.icon}
-                          alt={social.name}
-                          className={ `w-1/2 h-1/2 object-contain rounded-full  opacity-70 group-hover:opacity-100 transition-opacity ${social.color}`}
+                              <social.icon
+                                  className={`w-6 h-6 ${social.color} opacity-70 group-hover:opacity-100 transition-opacity`}
                       />
                   </div>
               </motion.div>

@@ -1,9 +1,13 @@
+'use client';
+
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
+import Image from "next/image";
 import { styles } from "../styles";
 import { navLinks } from "../constants";
 import { menu, close } from "../assets";
 import { useTheme } from "../context/ThemeContext";
+import { motion } from "framer-motion";
 
 const Navbar = () => {
   const [active, setActive] = useState("");
@@ -33,7 +37,7 @@ const Navbar = () => {
     >
       <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
         <Link
-          to="/"
+          href="/"
           className="flex items-center gap-2"
           onClick={() => {
             setActive("");
@@ -63,29 +67,7 @@ const Navbar = () => {
           {/* Theme Toggle Button */}
           <button
             onClick={(e) => {
-              // Create bubble effect
-              const bubble = document.createElement('div');
-              bubble.className = 'theme-bubble';
-              // Position at click coordinates
-              const rect = e.target.getBoundingClientRect();
-              const x = e.clientX;
-              const y = e.clientY;
-
-              bubble.style.left = `${x}px`;
-              bubble.style.top = `${y}px`;
-
-              document.body.appendChild(bubble);
-
-              // Trigger animation
-              requestAnimationFrame(() => {
-                bubble.classList.add('expand');
-              });
-
-              // Remove after animation and toggle
-              setTimeout(() => {
-                toggleTheme();
-                setTimeout(() => bubble.remove(), 500); // Fade out
-              }, 300);
+              toggleTheme();
             }}
             className="bg-tertiary p-2 rounded-full hover:bg-white/10 transition-colors"
             aria-label="Toggle Theme"
@@ -96,10 +78,12 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         <div className="sm:hidden flex flex-1 justify-end items-center">
-          <img
+          <Image
             src={toggle ? close : menu}
             alt="menu"
-            className="w-[28px] h-[28px] object-contain cursor-pointer"
+            width={28}
+            height={28}
+            className="object-contain cursor-pointer"
             onClick={() => setToggle(!toggle)}
           />
 

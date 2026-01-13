@@ -1,5 +1,7 @@
-import React from "react";
+'use client';
 
+import React from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 import { styles } from "../styles";
@@ -17,11 +19,14 @@ const ServiceCard = ({ index, title, icon }) => (
     <div
       className='glass-panel rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col hover:border-neon-blue/50 transition-colors'
     >
-      <img
-        src={icon}
-        alt='web-development'
-        className='w-16 h-16 object-contain'
-      />
+      <div className="relative w-16 h-16">
+        <Image
+          src={icon}
+          alt={title}
+          fill
+          className='object-contain'
+        />
+      </div>
 
       <h3 className='text-[var(--text-main)] text-[20px] font-bold text-center'>
         {title}
