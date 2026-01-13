@@ -1,6 +1,21 @@
 {
   "/_global-error/page": "/_global-error",
   "/_not-found/page": "/_not-found",
+  "/admin/(dashboard)/analytics/page": "/admin/analytics",
+  "/admin/(dashboard)/blogs/[id]/page": "/admin/blogs/[id]",
+  "/admin/(dashboard)/blogs/new/page": "/admin/blogs/new",
+  "/admin/(dashboard)/blogs/page": "/admin/blogs",
+  "/admin/(dashboard)/contacts/page": "/admin/contacts",
+  "/admin/(dashboard)/page": "/admin",
+  "/admin/login/page": "/admin/login",
+  "/api/admin/auth/route": "/api/admin/auth",
+  "/api/analytics/route": "/api/analytics",
+  "/api/blogs/[id]/route": "/api/blogs/[id]",
+  "/api/blogs/route": "/api/blogs",
+  "/api/contact/[id]/route": "/api/contact/[id]",
+  "/api/contact/route": "/api/contact",
+  "/blog/[slug]/page": "/blog/[slug]",
+  "/blog/page": "/blog",
   "/page": "/",
   "/project/[id]/page": "/project/[id]"
 }

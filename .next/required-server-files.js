@@ -46,7 +46,28 @@ self.__SERVER_FILES_MANIFEST={
           "search": ""
         }
       ],
-      "remotePatterns": [],
+      "remotePatterns": [
+        {
+          "protocol": "https",
+          "hostname": "raw.githubusercontent.com"
+        },
+        {
+          "protocol": "https",
+          "hostname": "github.com"
+        },
+        {
+          "protocol": "https",
+          "hostname": "api.github.com"
+        },
+        {
+          "protocol": "https",
+          "hostname": "randomuser.me"
+        },
+        {
+          "protocol": "https",
+          "hostname": "upload.wikimedia.org"
+        }
+      ],
       "qualities": [
         75
       ],
