@@ -1,8 +1,7 @@
 'use client';
 
 import { useParams, useSearchParams } from 'next/navigation';
-import { ProjectDetails } from '../../../components';
-import { Navbar, Footer, CustomCursor } from '../../../components';
+import { ProjectDetails } from '@/components';
 
 export default function ProjectPage() {
   const params = useParams();
