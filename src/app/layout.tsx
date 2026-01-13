@@ -2,9 +2,6 @@ import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 import "../styles.scss"; // global styles
 import { ThemeProvider } from "../context/ThemeContext";
-import { CustomCursor, Navbar, Footer } from "@/components";
-import ClientLoadingWrapper from "../components/ClientLoadingWrapper";
-import { HandTrackingProvider } from '@/components/HandTrackingContext';
 import { Analytics } from "@vercel/analytics/next"
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,13 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={inter.className}>
         <Analytics/>
         <ThemeProvider>
-          <ClientLoadingWrapper minDuration={1500} />
-          <CustomCursor />
-          <Navbar />
-          <HandTrackingProvider>
-            {children}
-          </HandTrackingProvider>
-          <Footer />
+          {children}
         </ThemeProvider>
       </body>
     </html>

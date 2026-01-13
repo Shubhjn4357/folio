@@ -12,7 +12,7 @@ gsap.registerPlugin(TextPlugin);
 const Hero = () => {
   const nameRef = useRef(null);
   const roleRef = useRef(null);
-  const { setShowGuide, isHandTrackingEnabled } = useHandTracking();
+  const { setShowGuide, isHandTrackingEnabled, disableHandTracking } = useHandTracking();
 
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
@@ -57,6 +57,20 @@ const Hero = () => {
             >
               <span>Let's Play</span>
               <span className="text-xl group-hover:rotate-12 transition-transform">🎮</span>
+            </button>
+          )}
+
+          {/* Show Guide / Reset Button (When Tracking is ON) */}
+          {isHandTrackingEnabled && (
+            <button
+              onClick={() => {
+                disableHandTracking();
+                setShowGuide(true);
+              }}
+              className="mt-8 py-3 px-8 bg-transparent border-2 border-neon-blue text-neon-blue font-bold rounded-full hover:bg-neon-blue hover:text-black-100 transition-all duration-300 shadow-[0_0_15px_rgba(0,243,255,0.3)] hover:shadow-[0_0_30px_rgba(0,243,255,0.6)] flex items-center gap-2 group"
+            >
+              <span>Guide / Reset</span>
+              <span className="text-xl group-hover:rotate-12 transition-transform">ℹ️</span>
             </button>
           )}
         </div>

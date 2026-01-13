@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { styles } from "../styles";
 import { SectionWrapper } from "../hoc";
@@ -52,9 +52,6 @@ const Contact: React.FC = () => {
         email: "",
         message: "",
       });
-
-      // Reset success message after 5 seconds
-      setTimeout(() => setSuccess(false), 5000);
     } catch (error) {
       console.error(error);
       alert("Something went wrong. Please try again.");
@@ -89,17 +86,33 @@ const Contact: React.FC = () => {
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className='mt-12 flex flex-col gap-8'
+          className='mt-12 flex flex-col gap-8 relative'
         >
-          {success && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-green-500/10 border border-green-500/20 text-green-400 p-4 rounded-xl text-center font-medium"
-            >
-              Thank you! Your message has been sent successfully.
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {success && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="absolute inset-0 bg-tertiary/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-2xl text-center p-6 border border-neon-green/30"
+              >
+                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+                <h4 className="text-2xl font-bold text-white mb-2">Message Sent!</h4>
+                <p className="text-secondary mb-6">Thanks for reaching out. I'll get back to you soon.</p>
+                <button
+                  type="button"
+                  onClick={() => setSuccess(false)}
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full transition-colors"
+                >
+                  Close
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <label className='flex flex-col'>
             <span className='dark:text-white text-black font-medium mb-4'>Your Name</span>
@@ -111,6 +124,7 @@ const Contact: React.FC = () => {
               onChange={handleChange}
               placeholder="What's your good name?"
               className='bg-tertiary py-4 px-6 placeholder:text-secondary dark:text-white text-black rounded-lg outline-none border-none font-medium focus:ring-2 focus:ring-neon-purple'
+              required
             />
           </label>
           <label className='flex flex-col'>
@@ -123,6 +137,7 @@ const Contact: React.FC = () => {
               onChange={handleChange}
               placeholder="What's your web address?"
               className='bg-tertiary py-4 px-6 placeholder:text-secondary dark:text-white text-black rounded-lg outline-none border-none font-medium focus:ring-2 focus:ring-neon-purple'
+              required
             />
           </label>
           <label className='flex flex-col'>
@@ -135,12 +150,13 @@ const Contact: React.FC = () => {
               onChange={handleChange}
               placeholder='What you want to say?'
               className='bg-tertiary py-4 px-6 placeholder:text-secondary dark:text-white text-black rounded-lg outline-none border-none font-medium focus:ring-2 focus:ring-neon-purple'
+              required
             />
           </label>
 
           <button
             type='submit'
-            disabled={loading || success}
+            disabled={loading}
             className='bg-tertiary py-3 px-8 rounded-xl outline-none w-fit dark:text-white text-black font-bold shadow-md shadow-primary hover:shadow-neon transition-shadow disabled:opacity-50'
           >
             {loading ? "Sending..." : "Send"}

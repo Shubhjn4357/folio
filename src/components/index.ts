@@ -11,6 +11,7 @@ import ParallaxSection from "./ParallaxSection";
 import CanvasParallax from "./CanvasParallax";
 import CustomCursor from "./CustomCursor";
 import ProjectDetails from "./ProjectDetails";
+import HandGestureGuideModal from "./HandGestureGuideModal";
 
 export {
   Hero,
@@ -25,5 +26,6 @@ export {
 
   CanvasParallax,
   CustomCursor,
-  ProjectDetails
+  ProjectDetails,
+  HandGestureGuideModal
 };

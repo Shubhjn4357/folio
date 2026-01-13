@@ -1,10 +1,13 @@
+
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
+import Webcam from 'react-webcam';
+import type { Results } from '@mediapipe/hands'; // Changed to type import
+
 import { useHandTracking } from './HandTrackingContext';
 
-// ... interface ParticleType (same as before) ...
+// --- Particle System Types ---
 interface ParticleType {
   x: number;
   y: number;
@@ -21,43 +24,44 @@ interface ParticleType {
   update: (scrollY: number, targetX: number, targetY: number, attracting: boolean) => void;
   draw: () => void;
 }
+
 const CanvasParallax: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const webcamRef = useRef<Webcam>(null); // Use react-webcam ref
+
   const { isHandTrackingEnabled } = useHandTracking();
+  const [showDebug, setShowDebug] = useState(false);
+  const [status, setStatus] = useState("Initializing...");
+  const isDev = process.env.NODE_ENV === 'development';
+
+  // Shared State for Animation Loop
+  // We use refs/vars outside state to avoid re-renders of the canvas loop
+  const handState = useRef({
+    x: -1000,
+    y: -1000,
+    isAttracting: false,
+    lastY: -1000,
+    lastTime: 0,
+  });
 
   useEffect(() => {
+    // --- Particle System Setup ---
     const canvas = canvasRef.current;
-    // Video ref might be null if tracking not enabled yet, handled in second effect or by condition
-
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    // ... rest of init ...
 
-    const video = videoRef.current;
-    let animationFrameId: number;
-    let handLandmarker: HandLandmarker | null = null;
-    let lastVideoTime = -1;
-
-    // Hand Interaction State
-    let handX = -1000;
-    let handY = -1000;
-    let lastHandY = -1000;
-    let isAttracting = false;
-
+    // Resize Handler
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-
     window.addEventListener('resize', resize);
     resize();
 
-    // --- Particle System Setup ---
+    // Particle Initialization
     const particles: ParticleType[] = [];
-    const particleCount = 150; // Increased count for better effect
+    const particleCount = 150;
 
     class Particle implements ParticleType {
       x: number = 0;
@@ -87,67 +91,56 @@ const CanvasParallax: React.FC = () => {
         this.baseY = this.y;
         this.size = Math.random() * 3 + 1;
         this.density = (Math.random() * 30) + 1;
-        this.speedX = (Math.random() - 0.5) * 2; // Faster natural movement
+        this.speedX = (Math.random() - 0.5) * 2;
         this.speedY = (Math.random() - 0.5) * 2;
         this.parallaxFactor = this.size * 0.1;
-
         const colors = ['#00f3ff', '#bc13fe', '#ff0080', '#ffffff'];
         this.color = colors[Math.floor(Math.random() * colors.length)];
         this.effectiveY = this.y;
       }
 
       update(scrollY: number, targetX: number, targetY: number, attracting: boolean) {
-        // 1. Hand Interaction Physics
         const dx = targetX - this.x;
         const dy = targetY - this.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (attracting) {
-          // Black Hole Effect (Strong Attraction)
-          if (distance < 500) { // Attraction range
+          if (distance < 500) {
             const forceDirectionX = dx / distance;
             const forceDirectionY = dy / distance;
             const force = (500 - distance) / 500;
-            const attractionStrength = 15; // Strong pull
-
+            const attractionStrength = 15;
             this.speedX += forceDirectionX * force * attractionStrength * 0.1;
             this.speedY += forceDirectionY * force * attractionStrength * 0.1;
           }
         } else {
-          // Mouse/Open Hand Repulsion/Flow (Subtle interaction)
           const mouseRadius = 150;
           if (distance < mouseRadius) {
             const forceDirectionX = dx / distance;
             const forceDirectionY = dy / distance;
             const force = (mouseRadius - distance) / mouseRadius;
             const repulsionStrength = 5;
-
-            // Push away
             this.speedX -= forceDirectionX * force * repulsionStrength;
             this.speedY -= forceDirectionY * force * repulsionStrength;
           }
         }
 
-        // 2. Natural Movement & Friction
         this.x += this.speedX;
         this.y += this.speedY;
-
-        // Friction to stabilize speed over time
         this.speedX *= 0.95;
         this.speedY *= 0.95;
 
-        // Keep moving
+        // Keep moving slightly
         if (Math.abs(this.speedX) < 0.1) this.speedX += (Math.random() - 0.5) * 0.5;
         if (Math.abs(this.speedY) < 0.1) this.speedY += (Math.random() - 0.5) * 0.5;
 
-        // 3. Parallax & Screen Wrapping
-        // Wrap physics position to keep them in "world" bounds
+        // Wrap
         if (this.x > this.canvas.width) this.x = 0;
         if (this.x < 0) this.x = this.canvas.width;
         if (this.y > this.canvas.height) this.y = 0;
         if (this.y < 0) this.y = this.canvas.height;
 
-        // Calculate visual position with parallax
+        // Parallax
         const parallaxY = -(scrollY * this.parallaxFactor);
         const effectiveY = (this.y + parallaxY) % this.canvas.height;
         this.effectiveY = effectiveY < 0 ? effectiveY + this.canvas.height : effectiveY;
@@ -169,152 +162,175 @@ const CanvasParallax: React.FC = () => {
       particles.push(new Particle(canvas, ctx));
     }
 
-    // --- MediaPipe Initialization (Conditional) ---
-    const initMediaPipe = async () => {
-      if (!isHandTrackingEnabled) return; // Don't load if disabled
-
-      try {
-        const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
-        );
-
-        handLandmarker = await HandLandmarker.createFromOptions(vision, {
-          baseOptions: {
-            modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
-            delegate: "GPU"
-          },
-          runningMode: "VIDEO",
-          numHands: 1
-        });
-
-        startWebcam();
-      } catch (error) {
-        console.error("Error initializing MediaPipe:", error);
-      }
-    };
-
-    const startWebcam = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        // NOTE: videoRef might be current in callback, but simpler to use closure if safe
-        // However, we need to make sure 'video' var is updated if ref changed, but ref object stable.
-        // We will assume video element exists if enabled.
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.addEventListener("loadeddata", () => {
-            setIsLoaded(true);
-          });
-        }
-      } catch (err) {
-        console.error("Error accessing webcam:", err);
-      }
-    };
-
-    if (isHandTrackingEnabled) {
-      initMediaPipe();
-    }
-
     // --- Animation Loop ---
+    let animationFrameId: number;
     const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear
       const scrollY = window.scrollY;
 
-      // 1. Process Hand Tracking (Only if enabled and ready)
-      // Check videoRef.current dynamically inside loop to be safe
-      const currentVideo = videoRef.current;
-
-      if (isHandTrackingEnabled && handLandmarker && currentVideo && currentVideo.currentTime !== lastVideoTime && isLoaded) {
-        lastVideoTime = currentVideo.currentTime;
-        const results = handLandmarker.detectForVideo(currentVideo, performance.now());
-
-        if (results.landmarks && results.landmarks.length > 0) {
-          const landmarks = results.landmarks[0];
-
-          // Use Index Finger Tip (8) as cursor position
-          // Coordinates are 0-1, so multiply by canvas dimensions
-          // X is mirrored for webcam, so 1 - x
-          const indexFinger = landmarks[8];
-          const thumbTip = landmarks[4];
-
-          const videoRatioX = canvas.width;
-          const videoRatioY = canvas.height;
-
-          handX = (1 - indexFinger.x) * videoRatioX;
-          handY = indexFinger.y * videoRatioY;
-
-          // Gesture Detection: Pinch (Thumb close to Index)
-          // Simple euclidean distance in normalized coords
-          const dx = indexFinger.x - thumbTip.x;
-          const dy = indexFinger.y - thumbTip.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          // Threshold for "pinch/closed hand" (experimentally around 0.1)
-          const newIsAttracting = dist < 0.1;
-
-          // Scroll Logic: Grab and Drag
-          if (newIsAttracting && isAttracting) {
-            // Only scroll if we were already attracting (holding the pinch)
-            // to avoid jumps on the initial pinch frame
-            const deltaY = lastHandY - handY;
-
-            // Apply scroll with some sensitivity factor
-            if (Math.abs(deltaY) > 2) { // Deadzone to reduce jitter
-              window.scrollBy({
-                top: deltaY * 1.5, // 1.5x speed multiplier for responsiveness
-                behavior: 'auto' // Instant scroll for direct manipulation feel
-              });
-            }
-          }
-
-          isAttracting = newIsAttracting;
-          lastHandY = handY;
-        } else {
-          // Reset if no hand found
-          handX = -1000;
-          handY = -1000;
-          isAttracting = false;
-        }
-      } else if (!isHandTrackingEnabled) {
-        // Reset hand state if disabled
-        handX = -1000;
-        handY = -1000;
-        isAttracting = false;
-      }
-
-      // 2. Draw & Update
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+      // Read current hand state
+      const { x, y, isAttracting } = handState.current;
 
       particles.forEach(p => {
-        p.update(scrollY, handX, handY, isAttracting);
+        p.update(scrollY, x, y, isAttracting);
         p.draw();
-      });
+        });
 
-      // Optional: Draw debug cursor for hand
-      if (handX > 0 && isHandTrackingEnabled) {
+      // Debug cursor (drawn by particle system loop for smoothness)
+      if (x > 0 && isHandTrackingEnabled) {
         ctx.beginPath();
-        ctx.arc(handX, handY, 15, 0, Math.PI * 2);
+        ctx.arc(x, y, 15, 0, Math.PI * 2);
         ctx.strokeStyle = isAttracting ? '#ff0080' : '#00f3ff';
         ctx.lineWidth = 3;
         ctx.stroke();
+
+        if (showDebug) {
+          ctx.fillStyle = "#00f3ff";
+          ctx.font = "16px sans-serif";
+          ctx.fillText(`Hand: ${Math.round(x)}, ${Math.round(y)} `, x + 20, y);
+          ctx.fillText(`Pinch: ${isAttracting ? "YES" : "NO"}`, x + 20, y + 20);
+        }
       }
 
       animationFrameId = requestAnimationFrame(animate);
     };
-
     animate();
 
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationFrameId);
-      // Clean up video stream if active
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => track.stop());
-      }
-      if (handLandmarker) {
-        handLandmarker.close();
+    };
+  }, [isHandTrackingEnabled, showDebug]); // Only run once for particle setup
+
+  // --- Hand Tracking Effect (MediaPipe Hands - Dynamic Import) ---
+  useEffect(() => {
+    if (!isHandTrackingEnabled) {
+      setStatus("Disabled");
+      return;
+    }
+
+    let isMounted = true;
+    let camera: any = null; // Type: Camera (using any for dynamic import)
+    let hands: any = null; // Type: Hands (using any for dynamic import)
+
+    const startTracking = async () => {
+      setStatus("Loading MediaPipe Hands...");
+
+      try {
+        // Dynamic import to avoid SSR errors
+        const { Hands } = await import('@mediapipe/hands');
+        const { Camera } = await import('@mediapipe/camera_utils');
+
+        if (!isMounted) return; // Prevent init if unmounted during import
+
+        hands = new Hands({
+          locateFile: (file) => {
+            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+          },
+        });
+
+        hands.setOptions({
+          maxNumHands: 1,
+          modelComplexity: 1,
+          minDetectionConfidence: 0.5,
+          minTrackingConfidence: 0.5,
+        });
+
+        hands.onResults((results: Results) => {
+          setStatus("Active - Tracking");
+
+          // Update Logic
+          if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+            const landmarks = results.multiHandLandmarks[0];
+            const indexFinger = landmarks[8];
+            const thumbTip = landmarks[4];
+
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+
+            // Coordinates are normalized 0-1
+            // Mirror X
+            const x = (1 - indexFinger.x) * canvas.width;
+            const y = indexFinger.y * canvas.height;
+
+            // Pinch detection
+            const dx = indexFinger.x - thumbTip.x;
+            const dy = indexFinger.y - thumbTip.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const isPinching = dist < 0.1;
+
+            // Scroll interaction logic
+            const now = Date.now();
+            const timeDelta = now - handState.current.lastTime;
+
+            // 1. Pinch to Scroll (Precise)
+            if (isPinching && handState.current.isAttracting) {
+              const deltaY = handState.current.lastY - y;
+              if (Math.abs(deltaY) > 2) {
+                window.scrollBy({ top: deltaY * 1.5, behavior: 'auto' });
+              }
+            } 
+            // 2. Flick Up to Scroll Down (Gesture)
+            else if (!isPinching && timeDelta > 0 && timeDelta < 100) {
+              const velocityY = (y - handState.current.lastY) / timeDelta; // px/ms
+              // Threshold: -1.5 means moving up relatively fast
+              if (velocityY < -1.5) {
+                window.scrollBy({ top: 400, behavior: 'smooth' });
+              }
+            }
+
+            // Update shared state
+            handState.current = {
+              x,
+              y,
+              isAttracting: isPinching,
+              lastY: y,
+              lastTime: now
+            };
+
+          } else {
+            // No hand
+            handState.current.x = -1000;
+            handState.current.y = -1000;
+            handState.current.isAttracting = false;
+          }
+        });
+
+        // Initialize Camera
+        if (webcamRef.current && webcamRef.current.video) {
+          camera = new Camera(webcamRef.current.video, {
+            onFrame: async () => {
+              if (!isMounted || !hands) return;
+              if (webcamRef.current?.video) {
+                await hands.send({ image: webcamRef.current.video });
+              }
+            },
+            width: 640,
+            height: 480
+          });
+          if (isMounted) camera.start();
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus("Error Loading Module");
       }
     };
-  }, [isHandTrackingEnabled]); // Re-run effect when tracking toggles
+
+    startTracking();
+
+    return () => {
+      isMounted = false;
+      if (hands) {
+        hands.close();
+        hands = null;
+      }
+      if (camera) {
+        camera.stop();
+        camera = null;
+      }
+    };
+  }, [isHandTrackingEnabled]); // Dependency on toggle
+
 
   return (
     <>
@@ -322,17 +338,49 @@ const CanvasParallax: React.FC = () => {
         ref={canvasRef}
         className="canvas-parallax bg-primary fixed inset-0 pointer-events-none z-0"
       />
-      {/* Hidden Video for MediaPipe */}
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 1, width: 1 }}
+
+      {/* Hidden React Webcam - Controlled by MediaPipe Camera Utils */}
+      <Webcam
+        ref={webcamRef}
+        style={{
+          position: 'fixed',
+          bottom: 20,
+          right: 20,
+          width: showDebug ? 320 : 0,
+          height: showDebug ? 240 : 0,
+          opacity: showDebug ? 1 : 0,
+          visibility: showDebug ? 'visible' : 'hidden',
+          pointerEvents: 'none',
+          zIndex: 50,
+          border: '2px solid #00f3ff',
+          borderRadius: '8px',
+        }}
+        width={640} // Internal resolution
+        height={480}
+        mirrored={false} // We handle mirror manually
+        videoConstraints={{ facingMode: "user" }}
       />
+
+      {/* Debug UI & Toggle */}
+      {isDev && isHandTrackingEnabled && (
+        <div className="fixed bottom-5 right-5 z-[51] flex flex-col items-end gap-2">
+          {showDebug && (
+            <div className="bg-black/70 text-white text-xs p-2 rounded mb-1 backdrop-blur-sm border border-white/20">
+              <p>Status: <span className={status.includes("Error") ? "text-red-400" : "text-neon-green"}>{status}</span></p>
+              <p>Mode: MediaPipe Hands (Legacy/Stable)</p>
+            </div>
+          )}
+          <button
+            onClick={() => setShowDebug(!showDebug)}
+            className="bg-black/50 hover:bg-black/80 text-white p-2 rounded-full border border-white/20 transition-all"
+            title="Toggle Hand Tracking Debug Camera"
+          >
+            {showDebug ? '📷 On' : '📷 Off'}
+          </button>
+        </div>
+      )}
     </>
   );
 };
 
 export default CanvasParallax;
-

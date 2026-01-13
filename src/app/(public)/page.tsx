@@ -4,16 +4,16 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 
 import {
-   
+
     Hero,
     About,
     ParallaxSection,
     CanvasParallax,
-   
+
     Works,
     Contact,
-   
-} from "../components";
+
+} from "@/components";
 
 export default function Home() {
     useEffect(() => {
@@ -41,7 +41,7 @@ export default function Home() {
 
     return (
         <div className="relative z-0 bg-primary font-sans text-white overflow-hidden selection:bg-neon-purple selection:text-white">
-           
+
             <main className="relative z-10">
                 <Hero />
                 <About />
@@ -52,7 +52,7 @@ export default function Home() {
                     <Contact />
                 </div>
             </main>
-           
+
         </div>
     );
 }
