@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
-export default function NewBlogPage() {
+import { Suspense } from 'react';
+
+function NewBlogForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -131,5 +133,13 @@ export default function NewBlogPage() {
         </div>
       </motion.form>
     </div>
+  );
+}
+
+export default function NewBlogPage() {
+  return (
+    <Suspense fallback={<div className="text-white">Loading...</div>}>
+      <NewBlogForm />
+    </Suspense>
   );
 }
