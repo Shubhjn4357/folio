@@ -2,7 +2,6 @@
 
 import { useParams, useSearchParams } from 'next/navigation';
 import { ProjectDetails } from '@/components';
-
 export default function ProjectPage() {
   const params = useParams();
   const searchParams = useSearchParams();

@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import "../styles.scss"; // global styles
 import { ThemeProvider } from "../context/ThemeContext";
 import { Analytics } from "@vercel/analytics/next"
+import AnalyticsTracker from "../components/AnalyticsTracker";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -14,6 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+        <AnalyticsTracker />
         <Analytics/>
         <ThemeProvider>
           {children}
