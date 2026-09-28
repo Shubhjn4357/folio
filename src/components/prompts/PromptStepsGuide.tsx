@@ -60,7 +60,7 @@ export default function PromptStepsGuide({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className={`glass-card rounded-3xl p-6 relative overflow-hidden group transition-all duration-300 border border-black/10 dark:border-white/10 ${item.border}`}
+              className={`glass-card  rounded-3xl p-6 relative overflow-hidden group transition-all duration-300 border border-black/10 dark:border-white/10 ${item.border}`}
             >
               {/* Subtle background glow gradient */}
               <div
@@ -117,7 +117,7 @@ export default function PromptStepsGuide({
 
           <Link
             href="/prompts"
-            className="flex-shrink-0 btn-wipe inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-xs sm:text-sm font-mono font-semibold bg-neon-blue/20 hover:bg-neon-blue text-white border border-neon-blue/40 transition-all duration-300 shadow-lg shadow-neon-blue/20"
+            className="flex-shrink-0 bg-black dark:bg-white text-white dark:text-black btn-wipe inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-xs sm:text-sm font-mono font-semibold bg-neon-blue/20 hover:bg-neon-blue text-white border border-neon-blue/40 transition-all duration-300 shadow-lg shadow-neon-blue/20"
           >
             <span>Explore All Prompts</span>
             <FaArrowRight className="w-3.5 h-3.5" />

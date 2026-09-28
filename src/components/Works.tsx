@@ -195,8 +195,8 @@ export const Works: React.FC = () => {
         )}
       </div>
 
-      {/* View All Repositories Action Button */}
-      <div className="mt-14 flex justify-center">
+      {/* View All Repositories & Prompt Blueprints Actions */}
+      <div className="mt-14 flex flex-wrap justify-center items-center gap-4">
         <Link
           href="/project"
           className="btn-wipe px-8 py-3.5 bg-black dark:bg-white text-white dark:text-black font-semibold text-xs tracking-wider rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
@@ -206,6 +206,14 @@ export const Works: React.FC = () => {
             Archive ↗
           </span>
           <FaArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+        </Link>
+
+        <Link
+          href="#prompts"
+          className="glass-pill px-6 py-3.5 text-xs font-mono font-medium text-neon-blue border border-neon-blue/30 rounded-full hover:bg-neon-blue/10 hover:border-neon-blue transition-all flex items-center gap-2 group"
+        >
+          <span>Explore AI Prompts Library</span>
+          <span className="mono-label text-[10px] text-neon-blue/80">↓</span>
         </Link>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getResumeSettings } from '@/lib/settings';
+import { getResumeSettings, formatGoogleDriveUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,16 +9,28 @@ export async function GET(request: NextRequest) {
     const downloadParam = request.nextUrl.searchParams.get('download');
 
     // If download flag is requested, redirect to the direct file URL
-    if (downloadParam && resumeData.resumeUrl) {
-      if (resumeData.resumeUrl.startsWith('http://') || resumeData.resumeUrl.startsWith('https://')) {
-        return NextResponse.redirect(resumeData.resumeUrl);
+    if (downloadParam) {
+      if (resumeData.resumeUrl) {
+        const downloadUrl = formatGoogleDriveUrl(resumeData.resumeUrl, 'download');
+        if (downloadUrl.startsWith('http://') || downloadUrl.startsWith('https://')) {
+          return NextResponse.redirect(downloadUrl, 307);
+        }
+        return NextResponse.redirect(new URL(downloadUrl, request.url), 307);
       }
-      return NextResponse.redirect(new URL(resumeData.resumeUrl, request.url));
+      return NextResponse.json(
+        { error: 'Resume link has not been configured yet.' },
+        { status: 404 }
+      );
     }
+
+    const downloadUrl = resumeData.resumeUrl
+      ? formatGoogleDriveUrl(resumeData.resumeUrl, 'download')
+      : null;
 
     return NextResponse.json({
       success: true,
       url: resumeData.resumeUrl || null,
+      downloadUrl,
       filename: resumeData.resumeFilename || 'resume.pdf',
       updatedAt: resumeData.updatedAt || null,
     });

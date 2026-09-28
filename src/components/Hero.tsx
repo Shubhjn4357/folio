@@ -3,8 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaArrowRight, FaGithub, FaLinkedin } from "react-icons/fa6";
+import { FaArrowDown, FaArrowRight, FaGithub, FaLinkedin, FaTerminal } from "react-icons/fa6";
 import { socialLinks } from "../constants";
+import { FaArrowCircleDown } from "react-icons/fa";
 
 export const Hero = () => {
   return (
@@ -68,6 +69,15 @@ export const Hero = () => {
             <span className="text-xs opacity-60">↗</span>
           </Link>
 
+          <Link
+            href="#prompts"
+            className="glass-pill px-5 py-3.5 text-xs font-mono font-medium text-neon-blue border border-neon-blue/30 rounded-full hover:bg-neon-blue/10 hover:border-neon-blue transition-all flex items-center gap-2 group"
+          >
+            <FaTerminal className="w-3 h-3 text-neon-blue" />
+            <span>AI Prompts</span>
+            <span className="mono-label text-[10px] text-neon-blue/80">6 Blueprints ↓</span>
+          </Link>
+
           {/* Social icons pill */}
           <div className="flex items-center gap-2 pl-2">
             <a
@@ -103,10 +113,10 @@ export const Hero = () => {
             <div>
               <span className="mono-label text-[10px] text-secondary">01 / Frontend Core</span>
               <h3 className="font-display font-semibold text-lg text-[var(--text-main)] mt-2 mb-1 group-hover:text-neon-blue transition-colors">
-                Next.js & React Architecture
+                Clean Architecture
               </h3>
               <p className="text-secondary text-xs leading-relaxed">
-                App Router, SSR, Turbopack, responsive layouts and sub-second load times engineered for high conversions.
+                App Router, SSR, responsive layouts and sub-second load times engineered for high conversions.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-[11px] font-mono text-secondary">
@@ -140,7 +150,7 @@ export const Hero = () => {
                 Serverless & Database APIs
               </h3>
               <p className="text-secondary text-xs leading-relaxed">
-                Neon Postgres, Drizzle ORM, secure authentication, real-time sync, and scalable cloud deployments.
+                Postgres, Drizzle ORM, secure authentication, real-time sync, and scalable cloud deployments.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-[11px] font-mono text-secondary">
@@ -156,10 +166,10 @@ export const Hero = () => {
       <div className="mt-14 w-full flex justify-center items-center">
         <a
           href="#about"
-          className="glass-pill px-4 py-2 rounded-full flex items-center gap-2 text-secondary hover:text-[var(--text-main)] transition-colors group"
+          className="glass-pill px-4 py-2 rounded-full flex items-center justify-center gap-2 text-secondary hover:text-[var(--text-main)] transition-colors group"
         >
           <span className="mono-label text-[10px]">Scroll Down</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-neon-purple animate-bounce" />
+          <FaArrowDown className="size-3 text-neon-purple animate-bounce" />
         </a>
       </div>
     </section>

@@ -153,7 +153,10 @@ export const Navbar = () => {
         {/* Desktop Tab Pills */}
         <div className="flex items-center gap-1 relative bg-black/5 dark:bg-white/5 p-1 rounded-full">
           {navLinks.map((nav) => {
-            const isSelected = activeTab === nav.id || (nav.id === 'blog' && pathname?.startsWith('/blog'));
+            const isSelected =
+              activeTab === nav.id ||
+              (nav.id === 'blog' && pathname?.startsWith('/blog')) ||
+              (nav.id === 'prompts' && pathname?.startsWith('/prompts'));
             return (
               <Link
                 key={nav.id}
@@ -230,7 +233,10 @@ export const Navbar = () => {
                 className="py-6 flex flex-col gap-3 sm:gap-5 my-auto"
               >
                 {navLinks.map((nav, index) => {
-                  const isCurrent = activeTab === nav.id;
+                  const isCurrent =
+                    activeTab === nav.id ||
+                    (nav.id === 'blog' && pathname?.startsWith('/blog')) ||
+                    (nav.id === 'prompts' && pathname?.startsWith('/prompts'));
                   return (
                     <div key={nav.id} className="overflow-hidden">
                       <motion.div

@@ -12,6 +12,28 @@ interface SettingsData {
 
 const SETTINGS_FILE = path.join(process.cwd(), 'data', 'settings.json');
 
+/**
+ * Convert any Google Drive sharing or view URL into a direct download URL
+ */
+export function formatGoogleDriveUrl(url: string, mode: 'download' | 'view' = 'download'): string {
+  if (!url || typeof url !== 'string') return '';
+  const clean = url.trim();
+  if (clean.includes('drive.google.com')) {
+    // Pattern 1: /file/d/FILE_ID/
+    const match1 = clean.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    // Pattern 2: id=FILE_ID
+    const match2 = clean.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    const fileId = (match1 && match1[1]) || (match2 && match2[1]);
+    if (fileId) {
+      if (mode === 'download') {
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+      }
+      return `https://drive.google.com/file/d/${fileId}/view`;
+    }
+  }
+  return clean;
+}
+
 // Helper to ensure data directory exists
 function ensureDataDir() {
   const dir = path.dirname(SETTINGS_FILE);

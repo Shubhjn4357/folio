@@ -3,14 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { SectionWrapper } from '@/hoc';
 import { styles } from '@/styles';
 import { PromptProject, INITIAL_PROMPT_PROJECTS } from '@/types/prompts';
 import PromptStepsGuide from './PromptStepsGuide';
 import PromptProjectCard from './PromptProjectCard';
 import { FaTerminal, FaArrowRight, FaWandMagicSparkles } from 'react-icons/fa6';
 
-function PromptsSectionInner() {
+export default function PromptsSection() {
   const [projects, setProjects] = useState<PromptProject[]>(INITIAL_PROMPT_PROJECTS);
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +34,9 @@ function PromptsSectionInner() {
   }, []);
 
   return (
-    <div className="space-y-12">
+    <section id="prompts" className={`${styles.padding} max-w-7xl mx-auto relative z-0`}>
+      <span className="hash-span" id="prompts-nav">&nbsp;</span>
+      <div className="space-y-12">
       {/* Section Heading */}
       <div className="text-center sm:text-left space-y-3">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-pill border border-neon-blue/30 text-xs font-mono text-neon-blue">
@@ -51,9 +52,6 @@ function PromptsSectionInner() {
           Production-grade UI prompts and structural specs built to paste directly into Cursor, Claude, or your favorite AI agent to generate real, responsive interfaces.
         </p>
       </div>
-
-      {/* 3 Steps Guide (01, 02, 03) */}
-      <PromptStepsGuide showLibraryBanner={false} />
 
       {/* Showcase Grid (4-6 Projects) */}
       <div className="space-y-6">
@@ -103,15 +101,13 @@ function PromptsSectionInner() {
 
         <Link
           href="/prompts"
-          className="flex-shrink-0 btn-wipe inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-xs sm:text-sm font-mono font-semibold bg-neon-blue/20 hover:bg-neon-blue text-white border border-neon-blue/40 transition-all duration-300 shadow-lg shadow-neon-blue/20"
+          className="flex-shrink-0  bg-black dark:bg-white text-white dark:text-black btn-wipe inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-xs sm:text-sm font-mono font-semibold bg-neon-blue/20 hover:bg-neon-blue text-white border border-neon-blue/40 transition-all duration-300 shadow-lg shadow-neon-blue/20"
         >
           <span>Explore All Prompts</span>
           <FaArrowRight className="w-3.5 h-3.5" />
         </Link>
       </motion.div>
-    </div>
+      </div>
+    </section>
   );
 }
-
-const PromptsSection = SectionWrapper(PromptsSectionInner, 'prompts');
-export default PromptsSection;

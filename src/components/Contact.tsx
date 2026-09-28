@@ -15,7 +15,8 @@ export const Contact: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [resumeUrl, setResumeUrl] = useState<string>('/api/resume?download=true');
+  const [resumeUrl, setResumeUrl] = useState<string>('');
+  const [downloadUrl, setDownloadUrl] = useState<string>('');
   const [resumeFilename, setResumeFilename] = useState<string>('resume.pdf');
 
   useEffect(() => {
@@ -24,8 +25,11 @@ export const Contact: React.FC = () => {
       try {
         const res = await fetch('/api/resume');
         const json = await res.json();
-        if (isMounted && json.url) {
-          setResumeUrl(json.url);
+        if (isMounted) {
+          if (json.url) {
+            setResumeUrl(json.url);
+            setDownloadUrl(json.downloadUrl || json.url);
+          }
           if (json.filename) {
             setResumeFilename(json.filename);
           }
@@ -111,18 +115,31 @@ export const Contact: React.FC = () => {
               </a>
 
               <a
-                href={resumeUrl}
-                target={resumeUrl.startsWith('http') ? '_blank' : undefined}
-                rel={resumeUrl.startsWith('http') ? 'noreferrer' : undefined}
-                download={!resumeUrl.startsWith('http')}
-                className="glass-pill px-4 py-3 rounded-2xl flex items-center justify-between text-sm font-mono text-secondary hover:text-[var(--text-main)] transition-colors group"
+                href={downloadUrl || resumeUrl || '#'}
+                onClick={(e) => {
+                  const target = downloadUrl || resumeUrl;
+                  if (!target) {
+                    e.preventDefault();
+                    alert('Resume has not been configured yet. You can upload or link it in Admin > Resume / CV.');
+                  }
+                }}
+                target={(downloadUrl || resumeUrl).startsWith('http') ? '_blank' : undefined}
+                rel={(downloadUrl || resumeUrl).startsWith('http') ? 'noopener noreferrer' : undefined}
+                download={(downloadUrl || resumeUrl).startsWith('http') ? undefined : resumeFilename}
+                className="glass-pill px-4 py-3 rounded-2xl flex items-center justify-between text-sm font-mono text-secondary hover:text-[var(--text-main)] transition-colors group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <FaFileArrowDown className="text-neon-blue w-4 h-4" />
                   <span>Download Curriculum Vitae</span>
                 </div>
                 <span className="opacity-40 group-hover:opacity-100 transition-opacity">
-                  {resumeUrl.endsWith('.pdf') ? 'PDF' : resumeUrl.startsWith('http') ? 'LINK ↗' : 'DOC'}
+                  {resumeUrl.endsWith('.pdf')
+                    ? 'PDF'
+                    : resumeUrl.includes('drive.google')
+                    ? 'DRIVE ↗'
+                    : resumeUrl.startsWith('http')
+                    ? 'LINK ↗'
+                    : 'DOWNLOAD'}
                 </span>
               </a>
             </div>
