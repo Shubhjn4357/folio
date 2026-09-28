@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 
 interface HandTrackingContextType {
   isHandTrackingEnabled: boolean;
@@ -10,32 +10,18 @@ interface HandTrackingContextType {
   setShowGuide: (show: boolean) => void;
 }
 
-const HandTrackingContext = createContext<HandTrackingContextType | undefined>(undefined);
+const HandTrackingContext = createContext<HandTrackingContextType>({
+  isHandTrackingEnabled: false,
+  enableHandTracking: () => {},
+  disableHandTracking: () => {},
+  showGuide: false,
+  setShowGuide: () => {},
+});
 
 export function HandTrackingProvider({ children }: { children: React.ReactNode }) {
-  const [isHandTrackingEnabled, setIsHandTrackingEnabled] = useState(false);
-  const [showGuide, setShowGuide] = useState(true);
-
-  const enableHandTracking = () => {
-    setIsHandTrackingEnabled(true);
-    setShowGuide(false);
-  };
-
-  const disableHandTracking = () => {
-    setIsHandTrackingEnabled(false);
-  };
-
-  return (
-    <HandTrackingContext.Provider value={{ isHandTrackingEnabled, enableHandTracking, disableHandTracking, showGuide, setShowGuide }}>
-      {children}
-    </HandTrackingContext.Provider>
-  );
+  return <>{children}</>;
 }
 
 export function useHandTracking() {
-  const context = useContext(HandTrackingContext);
-  if (context === undefined) {
-    throw new Error('useHandTracking must be used within a HandTrackingProvider');
-  }
-  return context;
+  return useContext(HandTrackingContext);
 }

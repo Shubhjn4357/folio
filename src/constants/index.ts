@@ -63,7 +63,7 @@ const services: Service[] = [
     icon: web,
   },
   {
-    title: "React Native Developer",
+    title: "React Native / Jetpack Compose",
     icon: mobile,
   },
   {

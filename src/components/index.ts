@@ -4,14 +4,12 @@ import About from "./About";
 import Tech from "./Tech";
 import Works from "./Works";
 import Contact from "./Contact";
-
-import Footer from './Footer';
-import ErrorBoundary from './ErrorBoundary';
+import Footer from "./Footer";
+import ErrorBoundary from "./ErrorBoundary";
 import ParallaxSection from "./ParallaxSection";
-import CanvasParallax from "./CanvasParallax";
+import ShaderBackground, { CanvasParallax } from "./ShaderBackground";
 import CustomCursor from "./CustomCursor";
 import ProjectDetails from "./ProjectDetails";
-import HandGestureGuideModal from "./HandGestureGuideModal";
 
 export {
   Hero,
@@ -23,9 +21,8 @@ export {
   Footer,
   ErrorBoundary,
   ParallaxSection,
-
+  ShaderBackground,
   CanvasParallax,
   CustomCursor,
   ProjectDetails,
-  HandGestureGuideModal
 };

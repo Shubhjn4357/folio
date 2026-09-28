@@ -3,68 +3,111 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-
-import { styles } from "../styles";
 import { services } from "../constants";
 import { SectionWrapper } from "../hoc";
-import { fadeIn, textVariant } from "../utils/motion";
-import { Service } from "../constants";
 
-interface ServiceCardProps extends Service {
-  index: number;
-}
+const JOURNEY_STEPS = [
+  {
+    step: "01",
+    title: "Discovery & Architecture",
+    description: "Aligning on core objectives, performance budgets, and technical requirements before writing code.",
+  },
+  {
+    step: "02",
+    title: "Design & Fluid Prototyping",
+    description: "Iterating on tactile interfaces, design tokens, responsive layouts, and motion guidelines.",
+  },
+  {
+    step: "03",
+    title: "Production Build & Shaders",
+    description: "Next.js App Router, type-safe APIs, custom WebGL shaders, and smooth micro-interactions.",
+  },
+  {
+    step: "04",
+    title: "Tuning, SEO & Scale",
+    description: "Core Web Vitals optimization, Lighthouse audits, automated CI/CD, and resilient hosting.",
+  },
+];
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
-  <motion.div
-    variants={fadeIn("right", "spring", index * 0.5, 0.75)}
-    className='xs:w-[250px] w-full p-[1px] rounded-[20px] shadow-card transition-all duration-300'
-    animate={{ y: [0, -10, 0] }}
-    transition={{ duration: 3 + index, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }}
-  >
-    <div
-      className='glass-panel rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col hover:border-neon-blue/50 transition-colors'
-    >
-      <div className="relative w-16 h-16">
-        <Image
-          src={icon}
-          alt={title}
-          fill
-          className='object-contain'
-        />
+export const About = () => {
+  return (
+    <div className="w-full">
+      {/* Intro Header */}
+      <div className="max-w-4xl">
+        <span className="mono-label text-neon-blue">About the Engineer</span>
+        <h2 className="font-display font-semibold text-3xl sm:text-5xl text-[var(--text-main)] mt-2">
+          A development partner you can count on.
+        </h2>
+        <p className="mt-4 text-secondary text-base sm:text-lg leading-relaxed">
+          I bridge the gap between creative visual design and rock-solid systems engineering. With deep experience across TypeScript, React/Next.js, WebGL shaders, and cloud infrastructure, I help teams build immersive web applications that feel alive and load instantly.
+        </p>
       </div>
 
-      <h3 className='text-[var(--text-main)] text-[20px] font-bold text-center'>
-        {title}
-      </h3>
-    </div>
-  </motion.div>
-);
-
-const About = () => {
-  return (
-    <>
-      <motion.div variants={textVariant(0)}>
-        <p className={styles.sectionSubText}>Introduction</p>
-        <h2 className={styles.sectionHeadText}>Overview.</h2>
-      </motion.div>
-
-      <motion.p
-        variants={fadeIn("", "", 0.1, 1)}
-        className='mt-4 text-[var(--secondary)] text-[17px] max-w-3xl leading-[30px]'
-      >
-        I'm a skilled software developer with experience in TypeScript and
-        JavaScript, and expertise in frameworks like React, Node.js, and
-        Three.js. I'm a quick learner and collaborate closely with clients to
-        create efficient, scalable, and user-friendly solutions that solve
-        real-world problems. Let's work together to bring your ideas to life!
-      </motion.p>
-
-      <div className='mt-20 flex flex-wrap justify-center gap-10'>
+      {/* Services Floating Glassmorphism Grid */}
+      <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {services.map((service, index) => (
-          <ServiceCard key={service.title} index={index} {...service} />
+          <motion.div
+            key={service.title}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            className="glass-card rounded-2xl p-6 flex flex-col justify-between group"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <span className="mono-label text-secondary text-[11px]">0{index + 1}</span>
+                <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/5 p-2.5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Image
+                    src={service.icon}
+                    alt={service.title}
+                    width={28}
+                    height={28}
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+              <h3 className="font-display font-semibold text-lg text-[var(--text-main)] group-hover:text-neon-purple transition-colors">
+                {service.title}
+              </h3>
+            </div>
+            
+            <p className="mt-4 text-secondary text-xs leading-relaxed pt-3 border-t border-black/5 dark:border-white/5">
+              Refined craft, accessibility, and high performance across every screen size.
+            </p>
+          </motion.div>
         ))}
       </div>
-    </>
+
+      {/* How I Work - Journey Strip (inspired by thinkingods.com) */}
+      <div className="mt-20">
+        <div className="mb-8">
+          <span className="mono-label text-neon-pink">Workflow & Process</span>
+          <h3 className="font-display font-semibold text-2xl sm:text-3xl text-[var(--text-main)] mt-1">
+            How a project moves from concept to launch.
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {JOURNEY_STEPS.map((item, idx) => (
+            <div
+              key={item.step}
+              className="glass-card p-5 rounded-2xl flex flex-col justify-between"
+            >
+              <div>
+                <span className="mono-label text-neon-blue text-xs font-bold">{item.step}</span>
+                <h4 className="font-display font-semibold text-base text-[var(--text-main)] mt-2 mb-2">
+                  {item.title}
+                </h4>
+                <p className="text-secondary text-xs leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
