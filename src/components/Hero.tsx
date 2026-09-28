@@ -18,7 +18,6 @@ export const Hero = () => {
           transition={{ duration: 0.6 }}
           className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full glass-pill text-xs mb-8"
         >
-          <span className="beacon-dot" />
           <p className="mono-label text-secondary text-[11px]">
             <span>Creative Engineer</span>
             <span className="mx-2 opacity-30">·</span>

@@ -4,157 +4,115 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LoadingScreenProps {
-  minDuration?: number; // Minimum time to show loading screen
+  minDuration?: number;
 }
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ minDuration = 1500 }) => {
+export const LoadingScreen: React.FC<LoadingScreenProps> = ({ minDuration = 1200 }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [isExiting, setIsExiting] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Ensure minimum display time for smooth animation
-    const timer = setTimeout(() => {
-      setIsExiting(true);
-      // Give time for exit animation before unmounting
-      setTimeout(() => setIsLoading(false), 800);
-    }, minDuration);
+    // Smooth progress counter from 0 to 100
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(Math.round((elapsed / minDuration) * 100), 100);
+      setProgress(pct);
 
-    return () => clearTimeout(timer);
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 300);
+      }
+    }, 25);
+
+    return () => clearInterval(interval);
   }, [minDuration]);
 
-  if (!isLoading) return null;
+  if (isLoading) return null;
 
   return (
     <AnimatePresence>
       {isLoading && (
-        <div className="fixed inset-0 z-[9999] pointer-events-auto">
-          {/* Top Panel */}
-          <motion.div
-            className="absolute top-0 left-0 right-0 h-1/2 bg-primary flex items-end justify-center pb-20"
-            initial={{ y: 0 }}
-            animate={{ y: isExiting ? '-100%' : 0 }}
-            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-          >
-            <motion.div
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: isExiting ? 0 : 1, y: isExiting ? -20 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="text-center"
-            >
-              <h1 className="text-2xl font-bold gradient-text">Shubham Jain</h1>
-            </motion.div>
-          </motion.div>
-
-          {/* Bottom Panel */}
-          <motion.div
-            className="absolute bottom-0 left-0 right-0 h-1/2 bg-primary flex items-start justify-center pt-20"
-            initial={{ y: 0 }}
-            animate={{ y: isExiting ? '100%' : 0 }}
-            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-          >
-            <motion.div
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: isExiting ? 0 : 1, y: isExiting ? 20 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="text-center"
-            >
-              <p className="text-secondary text-sm">Good things take Time....</p>
-            </motion.div>
-          </motion.div>
-
-          {/* Center Loader */}
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center z-10"
-            initial={{ opacity: 1, scale: 1 }}
-            animate={{
-              opacity: isExiting ? 0 : 1,
-              scale: isExiting ? 0.8 : 1
-            }}
-            transition={{ duration: 0.4 }}
-          >
-            {/* Circular Loader Container */}
-            <div className="relative w-24 h-24">
-              {/* Glow effect */}
-              <div className="absolute inset-0 rounded-full bg-neon-purple/20 blur-xl animate-pulse" />
-
-              {/* Outer ring */}
-              <motion.div
-                className="absolute inset-0 rounded-full"
-                style={{
-                  border: '3px solid transparent',
-                  borderTopColor: '#00f3ff',
-                  borderRightColor: '#bc13fe',
-                  boxShadow: '0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(188, 19, 254, 0.1)',
-                }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-              />
-
-              {/* Middle ring */}
-              <motion.div
-                className="absolute rounded-full"
-                style={{
-                  top: '8px',
-                  left: '8px',
-                  right: '8px',
-                  bottom: '8px',
-                  border: '2px solid transparent',
-                  borderBottomColor: '#bc13fe',
-                  borderLeftColor: '#00f3ff',
-                  boxShadow: '0 0 15px rgba(188, 19, 254, 0.3)',
-                }}
-                animate={{ rotate: -360 }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-              />
-
-              {/* Inner ring */}
-              <motion.div
-                className="absolute rounded-full"
-                style={{
-                  top: '16px',
-                  left: '16px',
-                  right: '16px',
-                  bottom: '16px',
-                  border: '2px solid transparent',
-                  borderTopColor: '#ff0080',
-                  borderRightColor: '#00f3ff',
-                }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-              />
-
-              {/* Center pulsing dot */}
-              <motion.div
-                className="absolute inset-0 flex items-center justify-center"
-                animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <div
-                  className="w-4 h-4 rounded-full"
-                  style={{
-                    background: 'linear-gradient(135deg, #00f3ff, #bc13fe, #ff0080)',
-                    boxShadow: '0 0 20px rgba(188, 19, 254, 0.6), 0 0 40px rgba(0, 243, 255, 0.4)',
-                  }}
-                />
-              </motion.div>
+        <motion.div
+          key="preloader"
+          initial={{ opacity: 1 }}
+          exit={{
+            y: '-100%',
+            opacity: 0.9,
+            transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] }
+          }}
+          className="fixed inset-0 z-[9999] pointer-events-auto bg-[var(--primary)] text-[var(--text-main)] flex flex-col justify-between p-6 sm:p-12 select-none overflow-hidden"
+        >
+          {/* Top Brand Pill Header */}
+          <div className="w-full flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-black dark:bg-white text-white dark:text-black font-display font-bold text-xs flex items-center justify-center">
+                SJ
+              </div>
+              <span className="font-display font-semibold text-sm tracking-tight">
+                Shubham <span className="opacity-40 font-normal">/ Dev</span>
+              </span>
             </div>
-          </motion.div>
 
-          {/* Decorative horizontal line */}
-          <motion.div
-            className="absolute top-1/2 left-0 right-0 h-px"
-            style={{
-              background: 'linear-gradient(to right, transparent, rgba(188, 19, 254, 0.4), transparent)',
-            }}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: isExiting ? 0 : 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          />
-        </div>
+            <div className="glass-pill px-3 py-1 rounded-full flex items-center gap-2">
+              
+              <span className="mono-label text-[10px] text-secondary">Loading...</span>
+            </div>
+          </div>
+
+          {/* Center Counter & Monogram */}
+          <div className="my-auto flex flex-col items-center justify-center text-center">
+            {/* Center Monogram Badge with Glow */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="relative w-20 h-20 mb-8 flex items-center justify-center"
+            >
+              <div className="absolute inset-0 rounded-3xl bg-neon-purple/20 blur-xl animate-pulse" />
+              <div className="glass-card w-full h-full rounded-3xl flex items-center justify-center border border-black/10 dark:border-white/10 shadow-xl">
+                <span className="font-display font-bold text-2xl gradient-text">SJ</span>
+              </div>
+            </motion.div>
+
+            {/* Large Numeric Percentage */}
+            <div className="font-mono text-5xl sm:text-7xl font-semibold tracking-tighter mb-4 text-[var(--text-main)]">
+              {progress < 10 ? `0${progress}` : progress}
+              <span className="text-xl sm:text-2xl font-light text-secondary ml-1">%</span>
+            </div>
+
+            {/* Status Line */}
+            <p className="mono-label text-xs text-secondary tracking-widest uppercase">
+              {progress < 30
+                ? 'Initializing experience...'
+                : progress < 70
+                ? 'Compiling visual shaders...'
+                : progress < 100
+                ? 'Readying layout...'
+                : 'Welcome'}
+            </p>
+
+            {/* Progress Bar Line Pill */}
+            <div className="w-48 sm:w-64 h-1 bg-black/10 dark:bg-white/10 rounded-full mt-6 overflow-hidden relative">
+              <motion.div
+                className="h-full rounded-full bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink"
+                style={{ width: `${progress}%` }}
+                transition={{ ease: 'easeOut' }}
+              />
+            </div>
+          </div>
+
+          {/* Bottom Metas */}
+          <div className="w-full flex justify-between items-center text-xs font-mono text-secondary">
+            <span>Thankyou For Your Patience</span>
+            <span>© {new Date().getFullYear()}</span>
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );
 };
 
 export default LoadingScreen;
-

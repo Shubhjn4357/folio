@@ -50,7 +50,7 @@ export const Contact: React.FC = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full" id="contact">
       <div className="glass-card rounded-3xl p-6 sm:p-12 border border-black/10 dark:border-white/10 relative overflow-hidden">
         {/* Glow ambient background */}
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-neon-purple/15 rounded-full blur-3xl pointer-events-none" />
@@ -68,9 +68,9 @@ export const Contact: React.FC = () => {
               </p>
 
               {/* Status Pill */}
-              <div className="mt-6 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 w-fit">
-                <span className="beacon-dot" />
-                <span className="mono-label text-[10px]">Replies in &lt; 24h</span>
+              <div className="mt-6 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-500/10 border border-slate-500/20 text-slate-600 dark:text-slate-400 w-fit">
+
+                <span className="mono-label text-[10px]">I'll reply soon.</span>
               </div>
             </div>
 

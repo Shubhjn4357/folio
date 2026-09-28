@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -16,6 +16,13 @@ import {
   Cell,
   Legend
 } from 'recharts';
+import {
+  FaEye,
+  FaUsers,
+  FaArrowTrendDown,
+  FaCompass,
+  FaMobileScreen,
+} from 'react-icons/fa6';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +48,7 @@ interface AnalyticsData {
   }>;
 }
 
-const COLORS = ['#00f3ff', '#bc13fe', '#ff0080', '#ffffff', '#8884d8'];
+const COLORS = ['#00f3ff', '#bc13fe', '#fc4778', '#10b981', '#6366f1'];
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -73,94 +80,130 @@ export default function AnalyticsPage() {
   }
 
   if (!data) {
-    return <p className="text-secondary">Failed to load analytics</p>;
+    return <p className="text-secondary text-sm">Failed to load analytics data.</p>;
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-black/5 dark:border-white/5">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Analytics</h1>
-          <p className="text-secondary">Traffic & Engagement Overview</p>
+          <span className="mono-label text-neon-blue">Traffic & Insights</span>
+          <h1 className="font-display font-semibold text-3xl sm:text-4xl text-[var(--text-main)] mt-1">
+            Telemetry Analytics
+          </h1>
+          <p className="text-secondary text-xs sm:text-sm mt-1">
+            Visitor tracking, session depth, and regional traffic breakdown.
+          </p>
         </div>
+
         <select
           value={days}
           onChange={(e) => setDays(parseInt(e.target.value))}
-          className="px-4 py-2 bg-tertiary border border-white/10 rounded-lg text-white"
+          className="glass-pill px-4 py-2 rounded-full text-xs font-mono text-[var(--text-main)] outline-none cursor-pointer"
         >
-          <option value={7}>Last 7 days</option>
-          <option value={30}>Last 30 days</option>
-          <option value={90}>Last 90 days</option>
+          <option value={7} className="bg-slate-900 text-white">Last 7 days</option>
+          <option value={30} className="bg-slate-900 text-white">Last 30 days</option>
+          <option value={90} className="bg-slate-900 text-white">Last 90 days</option>
         </select>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
-          icon="👁️"
+          icon={FaEye}
           value={data.totalViews}
           label="Total Page Views"
-          subLabel={`Last ${days} days`}
+          subLabel={`Past ${days} days`}
+          accent="text-neon-blue"
         />
         <StatCard
-          icon="👥"
+          icon={FaUsers}
           value={data.uniqueVisitors}
           label="Unique Visitors"
-          subLabel="Distinct Sessions"
+          subLabel="Discrete sessions"
+          accent="text-neon-purple"
         />
         <StatCard
-          icon="📉"
+          icon={FaArrowTrendDown}
           value={`${data.bounceRate}%`}
           label="Bounce Rate"
-          subLabel="Single Page Sessions"
-          color="text-neon-pink"
+          subLabel="Single page visits"
+          accent="text-neon-pink"
         />
         <StatCard
-          icon="🧭"
+          icon={FaCompass}
           value={data.avgPagesPerSession}
-          label="Avg. Session Depth"
-          subLabel="Pages per visit"
-          color="text-neon-blue"
+          label="Session Depth"
+          subLabel="Avg pages per visit"
+          accent="text-emerald-500"
         />
         <StatCard
-          icon="📱"
+          icon={FaMobileScreen}
           value={data.devices[0]?.name || 'Desktop'}
-          label="Top Device"
-          subLabel="Most popular platform"
+          label="Top Platform"
+          subLabel="Dominant device"
+          accent="text-amber-400"
         />
       </div>
 
       {/* Main Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Visitors Over Time */}
-        <div className="bg-tertiary rounded-2xl p-6 border border-white/10">
-          <h2 className="text-lg font-bold text-white mb-6">Traffic Trend</h2>
+        <div className="lg:col-span-8 glass-card rounded-3xl p-6 sm:p-8">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-black/5 dark:border-white/5">
+            <div>
+              <h2 className="font-display font-semibold text-lg text-[var(--text-main)]">Traffic Velocity</h2>
+              <p className="text-secondary text-xs">Daily visitor hits over time</p>
+            </div>
+            <span className="mono-label text-[10px] text-neon-blue">Live Series</span>
+          </div>
+
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data.visitorsByDay}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis dataKey="date" stroke="#888" tick={{ fontSize: 12 }} />
-                <YAxis stroke="#888" tick={{ fontSize: 12 }} />
-                <Tooltip contentStyle={{ backgroundColor: '#100d25', border: '1px solid #333' }} />
-                <Line type="monotone" dataKey="count" stroke="#bc13fe" strokeWidth={3} dot={{ r: 4, fill: '#bc13fe' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(150,150,150,0.1)" />
+                <XAxis dataKey="date" stroke="currentColor" className="text-secondary text-[11px] font-mono" />
+                <YAxis stroke="currentColor" className="text-secondary text-[11px] font-mono" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(10, 14, 30, 0.95)',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderRadius: '16px',
+                    color: '#fff',
+                    fontFamily: 'monospace',
+                    fontSize: '12px',
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#bc13fe"
+                  strokeWidth={2.5}
+                  dot={{ r: 3, fill: '#bc13fe' }}
+                  activeDot={{ r: 5 }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Device Breakdown */}
-        <div className="bg-tertiary rounded-2xl p-6 border border-white/10">
-          <h2 className="text-lg font-bold text-white mb-6">Device Breakdown</h2>
-          <div className="h-72">
+        <div className="lg:col-span-4 glass-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+          <div className="mb-4 pb-4 border-b border-black/5 dark:border-white/5">
+            <h2 className="font-display font-semibold text-lg text-[var(--text-main)]">Device Shares</h2>
+            <p className="text-secondary text-xs">Platforms accessing the site</p>
+          </div>
+
+          <div className="h-64 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data.devices}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
+                  innerRadius={55}
+                  outerRadius={85}
                   paddingAngle={5}
                   dataKey="value"
                 >
@@ -168,50 +211,76 @@ export default function AnalyticsPage() {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#100d25', border: '1px solid #333' }} />
-                <Legend />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(10, 14, 30, 0.95)',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderRadius: '12px',
+                    color: '#fff',
+                    fontFamily: 'monospace',
+                  }}
+                />
+                <Legend formatter={(value) => <span className="text-xs font-mono text-secondary">{value}</span>} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
       </div>
 
-      {/* Secondary Charts Row */}
+      {/* Secondary Row: Top Pages & Countries */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Pages */}
-        <div className="bg-tertiary rounded-2xl p-6 border border-white/10">
-          <h2 className="text-lg font-bold text-white mb-6">Top Pages</h2>
+        <div className="glass-card rounded-3xl p-6 sm:p-8">
+          <div className="mb-6 pb-4 border-b border-black/5 dark:border-white/5">
+            <h2 className="font-display font-semibold text-lg text-[var(--text-main)]">Most Visited Routes</h2>
+            <p className="text-secondary text-xs">Total hit count per URI path</p>
+          </div>
+
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.visitorsByPage} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis type="number" stroke="#888" tick={{ fontSize: 12 }} />
-                <YAxis type="category" dataKey="page" width={100} stroke="#888" tick={{ fontSize: 12 }} />
-                <Tooltip contentStyle={{ backgroundColor: '#100d25', border: '1px solid #333' }} />
-                <Bar dataKey="count" fill="#00f3ff" radius={[0, 4, 4, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(150,150,150,0.1)" />
+                <XAxis type="number" stroke="currentColor" className="text-secondary text-[11px] font-mono" />
+                <YAxis type="category" dataKey="page" width={110} stroke="currentColor" className="text-secondary text-[11px] font-mono" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(10, 14, 30, 0.95)',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderRadius: '12px',
+                    color: '#fff',
+                    fontFamily: 'monospace',
+                  }}
+                />
+                <Bar dataKey="count" fill="#00f3ff" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Top Countries */}
-        <div className="bg-tertiary rounded-2xl p-6 border border-white/10">
-          <h2 className="text-lg font-bold text-white mb-6">Top Countries</h2>
+        <div className="glass-card rounded-3xl p-6 sm:p-8">
+          <div className="mb-6 pb-4 border-b border-black/5 dark:border-white/5">
+            <h2 className="font-display font-semibold text-lg text-[var(--text-main)]">Geographic Origins</h2>
+            <p className="text-secondary text-xs">Visitor volume by detected nation</p>
+          </div>
+
           <div className="space-y-4">
-            {data.countries.map((country, idx) => (
-              <div key={idx} className="flex items-center justify-between">
+            {data.countries.slice(0, 5).map((country, idx) => (
+              <div key={idx} className="flex items-center justify-between text-xs font-mono">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{idx + 1}</span>
-                  <span className="text-white font-medium">{country.name === 'Unknown' ? 'Unknown Location' : country.name}</span>
+                  <span className="mono-label text-neon-blue">0{idx + 1}</span>
+                  <span className="font-medium text-[var(--text-main)]">
+                    {country.name === 'Unknown' ? 'Unknown Origin' : country.name}
+                  </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-32 h-2 bg-black-100 rounded-full overflow-hidden">
+                  <div className="w-28 sm:w-40 h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-neon-purple"
-                      style={{ width: `${(country.value / data.totalViews) * 100}%` }}
+                      className="h-full bg-gradient-to-r from-neon-blue to-neon-purple rounded-full"
+                      style={{ width: `${Math.min(100, (country.value / Math.max(1, data.totalViews)) * 100)}%` }}
                     />
                   </div>
-                  <span className="text-secondary w-12 text-right">{country.value}</span>
+                  <span className="text-secondary w-10 text-right">{country.value}</span>
                 </div>
               </div>
             ))}
@@ -219,33 +288,40 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Recent Visitors Table */}
-      <div className="bg-tertiary rounded-2xl p-6 border border-white/10 overflow-hidden">
-        <h2 className="text-lg font-bold text-white mb-6">Recent Sessions</h2>
+      {/* Recent Sessions Table */}
+      <div className="glass-card rounded-3xl p-6 sm:p-8 overflow-hidden">
+        <div className="mb-6 pb-4 border-b border-black/5 dark:border-white/5">
+          <h2 className="font-display font-semibold text-lg text-[var(--text-main)]">Recent Access Logs</h2>
+          <p className="text-secondary text-xs">Raw telemetry sessions from live visitors</p>
+        </div>
+
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse text-xs font-mono">
             <thead>
-              <tr className="border-b border-white/10 text-secondary text-sm">
-                <th className="py-3 font-medium">Location</th>
-                <th className="py-3 font-medium">Page</th>
-                <th className="py-3 font-medium">Device / OS</th>
-                <th className="py-3 font-medium">Browser</th>
-                <th className="py-3 font-medium">Time</th>
+              <tr className="border-b border-black/5 dark:border-white/5 text-secondary">
+                <th className="py-3 px-2 font-medium">Location</th>
+                <th className="py-3 px-2 font-medium">Route</th>
+                <th className="py-3 px-2 font-medium">Device / OS</th>
+                <th className="py-3 px-2 font-medium">Browser</th>
+                <th className="py-3 px-2 font-medium">Timestamp</th>
               </tr>
             </thead>
             <tbody>
-              {data.recentVisitors.map((visitor) => (
-                <tr key={visitor.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                  <td className="py-3 text-white">
+              {data.recentVisitors.slice(0, 10).map((visitor) => (
+                <tr
+                  key={visitor.id}
+                  className="border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                >
+                  <td className="py-3 px-2 text-[var(--text-main)] font-medium">
                     {visitor.city && visitor.city !== 'Unknown' ? `${visitor.city}, ` : ''}
                     {visitor.country || 'Unknown'}
                   </td>
-                  <td className="py-3 text-neon-blue">{visitor.page}</td>
-                  <td className="py-3 text-secondary">
-                    {visitor.deviceType} <span className="text-xs opacity-50">• {visitor.os}</span>
+                  <td className="py-3 px-2 text-neon-blue">{visitor.page}</td>
+                  <td className="py-3 px-2 text-secondary">
+                    {visitor.deviceType} <span className="opacity-50">• {visitor.os}</span>
                   </td>
-                  <td className="py-3 text-secondary">{visitor.browser}</td>
-                  <td className="py-3 text-secondary text-sm">
+                  <td className="py-3 px-2 text-secondary">{visitor.browser}</td>
+                  <td className="py-3 px-2 text-secondary">
                     {new Date(visitor.createdAt).toLocaleString()}
                   </td>
                 </tr>
@@ -258,15 +334,21 @@ export default function AnalyticsPage() {
   );
 }
 
-function StatCard({ icon, value, label, subLabel, color = "text-white" }: any) {
+function StatCard({ icon: Icon, value, label, subLabel, accent }: any) {
   return (
-    <div className="bg-tertiary p-6 rounded-2xl border border-white/10 hover:border-neon-purple/30 transition-all group">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">{icon}</span>
+    <div className="glass-card p-5 rounded-3xl flex flex-col justify-between group">
+      <div className="flex items-center justify-between mb-3">
+        <div className="w-9 h-9 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center">
+          <Icon className={`w-4 h-4 ${accent}`} />
+        </div>
       </div>
-      <p className={`text-3xl font-bold ${color} mb-1`}>{value}</p>
-      <p className="text-white font-medium">{label}</p>
-      <p className="text-secondary text-xs mt-1">{subLabel}</p>
+      <div>
+        <p className="font-mono text-2xl sm:text-3xl font-bold text-[var(--text-main)] mb-0.5">
+          {value}
+        </p>
+        <p className="text-[var(--text-main)] text-xs font-medium truncate">{label}</p>
+        <p className="text-secondary text-[10px] font-mono mt-0.5">{subLabel}</p>
+      </div>
     </div>
   );
 }

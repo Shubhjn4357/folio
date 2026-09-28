@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-
-import { Suspense } from 'react';
+import { FaArrowLeft } from 'react-icons/fa6';
 
 function NewBlogForm() {
   const router = useRouter();
@@ -40,95 +40,121 @@ function NewBlogForm() {
   };
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">New Blog Post</h1>
-        <p className="text-secondary">Create a new blog article</p>
+    <div className="max-w-4xl space-y-8">
+      {/* Top Header */}
+      <div className="flex items-center justify-between pb-6 border-b border-black/5 dark:border-white/5">
+        <div>
+          <span className="mono-label text-neon-blue">Editor</span>
+          <h1 className="font-display font-semibold text-3xl sm:text-4xl text-[var(--text-main)] mt-1">
+            New Article
+          </h1>
+          <p className="text-secondary text-xs sm:text-sm mt-1">
+            Draft and publish technical essays and case studies.
+          </p>
+        </div>
+
+        <Link
+          href="/admin/blogs"
+          className="glass-pill px-4 py-2 rounded-full inline-flex items-center gap-2 text-xs font-mono text-secondary hover:text-[var(--text-main)] transition-colors"
+        >
+          <FaArrowLeft className="w-3 h-3" />
+          <span>Back to Articles</span>
+        </Link>
       </div>
 
       <motion.form
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         onSubmit={handleSubmit}
-        className="max-w-4xl space-y-6"
+        className="glass-card rounded-3xl p-6 sm:p-8 space-y-6"
       >
         {/* Title */}
         <div>
-          <label className="block text-white font-medium mb-2">Title *</label>
+          <label className="mono-label text-[11px] text-secondary mb-2 block">
+            Article Title *
+          </label>
           <input
             type="text"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full px-4 py-3 bg-tertiary border border-white/10 rounded-lg text-white focus:outline-none focus:border-neon-purple"
-            placeholder="Enter blog title"
+            placeholder="e.g. Architecting Real-time WebGL Shaders in Next.js"
             required
-          />
-        </div>
-
-        {/* Cover Image */}
-        <div>
-          <label className="block text-white font-medium mb-2">Cover Image URL</label>
-          <input
-            type="url"
-            value={formData.coverImage}
-            onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-            className="w-full px-4 py-3 bg-tertiary border border-white/10 rounded-lg text-white focus:outline-none focus:border-neon-purple"
-            placeholder="https://..."
+            className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-medium text-[var(--text-main)] placeholder:text-secondary/50 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple transition-all"
           />
         </div>
 
         {/* Excerpt */}
         <div>
-          <label className="block text-white font-medium mb-2">Excerpt</label>
-          <textarea
+          <label className="mono-label text-[11px] text-secondary mb-2 block">
+            Brief Summary / Excerpt
+          </label>
+          <input
+            type="text"
             value={formData.excerpt}
             onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-            className="w-full px-4 py-3 bg-tertiary border border-white/10 rounded-lg text-white focus:outline-none focus:border-neon-purple resize-none"
-            placeholder="Brief summary of the article..."
-            rows={2}
+            placeholder="A short description summarizing the topic for search and cards..."
+            className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-medium text-[var(--text-main)] placeholder:text-secondary/50 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple transition-all"
+          />
+        </div>
+
+        {/* Cover Image */}
+        <div>
+          <label className="mono-label text-[11px] text-secondary mb-2 block">
+            Cover Image URL
+          </label>
+          <input
+            type="url"
+            value={formData.coverImage}
+            onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+            placeholder="https://images.unsplash.com/..."
+            className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-medium text-[var(--text-main)] placeholder:text-secondary/50 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple transition-all"
           />
         </div>
 
         {/* Content */}
         <div>
-          <label className="block text-white font-medium mb-2">Content * (Markdown supported)</label>
+          <label className="mono-label text-[11px] text-secondary mb-2 block">
+            Article Content (Markdown Supported) *
+          </label>
           <textarea
             value={formData.content}
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            className="w-full px-4 py-3 bg-tertiary border border-white/10 rounded-lg text-white focus:outline-none focus:border-neon-purple resize-none font-mono text-sm"
-            placeholder="Write your blog content here..."
-            rows={15}
+            rows={14}
+            placeholder="Write your article markdown here. Support headers (#, ##), code fences (```), and paragraphs."
             required
+            className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono text-[var(--text-main)] placeholder:text-secondary/50 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple transition-all resize-y"
           />
         </div>
 
         {/* Publish Toggle */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
           <input
             type="checkbox"
             id="isPublished"
             checked={formData.isPublished}
             onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-            className="w-5 h-5 rounded border-white/10 bg-tertiary text-neon-purple focus:ring-neon-purple"
+            className="w-4 h-4 rounded text-neon-purple focus:ring-neon-purple bg-transparent border-black/20 dark:border-white/20"
           />
-          <label htmlFor="isPublished" className="text-white">Publish immediately</label>
+          <label htmlFor="isPublished" className="text-xs font-mono text-[var(--text-main)] cursor-pointer">
+            Publish immediately (live on site)
+          </label>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-4 pt-4">
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-black/5 dark:border-white/5">
+          <Link
+            href="/admin/blogs"
+            className="glass-pill px-5 py-2.5 rounded-full text-xs font-mono text-secondary hover:text-[var(--text-main)] transition-colors"
+          >
+            Cancel
+          </Link>
+
           <button
             type="submit"
             disabled={loading}
-            className="px-8 py-3 bg-gradient-to-r from-neon-purple to-neon-blue text-white font-bold rounded-lg hover:shadow-neon transition-all disabled:opacity-50"
+            className="btn-wipe px-6 py-2.5 bg-black dark:bg-white text-white dark:text-black font-semibold text-xs rounded-full shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer"
           >
-            {loading ? 'Creating...' : 'Create Post'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="px-8 py-3 bg-tertiary text-secondary rounded-lg hover:bg-white/10 transition-colors"
-          >
-            Cancel
+            {loading ? 'Saving...' : 'Save & Publish →'}
           </button>
         </div>
       </motion.form>
@@ -138,7 +164,7 @@ function NewBlogForm() {
 
 export default function NewBlogPage() {
   return (
-    <Suspense fallback={<div className="text-white">Loading...</div>}>
+    <Suspense fallback={<div className="text-xs font-mono text-secondary">Loading editor...</div>}>
       <NewBlogForm />
     </Suspense>
   );

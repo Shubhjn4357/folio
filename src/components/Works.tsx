@@ -130,7 +130,7 @@ export const Works: React.FC = () => {
   }, [projects, activeFilter]);
 
   return (
-    <div className="w-full">
+    <div className="w-full" id="work">
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>

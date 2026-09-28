@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Blog } from '@/lib/db/schema';
+import { FaPlus, FaPen, FaTrash, FaGlobe, FaFileLines } from 'react-icons/fa6';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,92 +63,128 @@ export default function BlogsPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
+    <div className="space-y-8 max-w-7xl mx-auto">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-black/5 dark:border-white/5">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Blog Posts</h1>
-          <p className="text-secondary">Manage your blog content</p>
+          <span className="mono-label text-neon-purple">Publications</span>
+          <h1 className="font-display font-semibold text-3xl sm:text-4xl text-[var(--text-main)] mt-1">
+            Blog Articles
+          </h1>
+          <p className="text-secondary text-xs sm:text-sm mt-1">
+            Create, edit, publish, and manage written editorial pieces.
+          </p>
         </div>
+
         <Link
           href="/admin/blogs/new"
-          className="px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-blue text-white font-bold rounded-lg hover:shadow-neon transition-all"
+          className="btn-wipe px-5 py-2.5 bg-black dark:bg-white text-white dark:text-black font-semibold text-xs rounded-full flex items-center gap-2"
         >
-          + New Post
+          <FaPlus className="w-3 h-3" />
+          <span>Write New Article</span>
         </Link>
       </div>
 
       {blogs.length === 0 ? (
-        <div className="bg-tertiary rounded-2xl p-12 text-center">
-          <p className="text-6xl mb-4">📝</p>
-          <p className="text-secondary mb-6">No blog posts yet. Create your first one!</p>
+        <div className="glass-card rounded-3xl p-12 text-center max-w-md mx-auto">
+          <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center mx-auto mb-4 text-neon-blue">
+            <FaFileLines className="w-6 h-6" />
+          </div>
+          <h3 className="font-display font-semibold text-lg text-[var(--text-main)] mb-1">No Articles Yet</h3>
+          <p className="text-secondary text-xs mb-6">
+            Share engineering thoughts, technical case studies, and tutorials.
+          </p>
           <Link
             href="/admin/blogs/new"
-            className="inline-block px-6 py-3 bg-neon-purple/20 text-neon-purple rounded-lg hover:bg-neon-purple/30 transition-colors"
+            className="glass-pill px-5 py-2 rounded-full text-xs font-mono font-semibold"
           >
-            Create Post
+            Create First Post &rarr;
           </Link>
         </div>
       ) : (
         <div className="space-y-4">
-          {blogs.map((blog, index) => (
-            <motion.div
-              key={blog.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="bg-tertiary rounded-xl p-6 border border-white/10"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
-                    <h3 className="font-bold text-white text-lg">{blog.title}</h3>
-                    <span className={`px-2 py-1 text-xs rounded-full ${blog.isPublished
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'bg-yellow-500/20 text-yellow-400'
-                      }`}>
-                      {blog.isPublished ? 'Published' : 'Draft'}
-                    </span>
+          <AnimatePresence mode="popLayout">
+            {blogs.map((blog, index) => (
+              <motion.div
+                key={blog.id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3, delay: index * 0.04 }}
+                className="glass-card rounded-3xl p-6"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
+                      <h3 className="font-display font-semibold text-lg text-[var(--text-main)]">
+                        {blog.title}
+                      </h3>
+                      <span
+                        className={`px-2.5 py-0.5 text-[10px] font-mono rounded-full font-semibold ${
+                          blog.isPublished
+                            ? 'bg-emerald-500/15 text-emerald-500'
+                            : 'bg-amber-500/15 text-amber-500'
+                        }`}
+                      >
+                        {blog.isPublished ? '● Published' : '○ Draft'}
+                      </span>
+                    </div>
+                    <p className="text-xs font-mono text-secondary">
+                      /blog/{blog.slug}
+                    </p>
                   </div>
-                  <p className="text-secondary text-sm">/blog/{blog.slug}</p>
+
+                  <p className="text-xs font-mono text-secondary shrink-0">
+                    {new Date(blog.createdAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </p>
                 </div>
-                <p className="text-secondary text-sm">
-                  {new Date(blog.createdAt).toLocaleDateString()}
-                </p>
-              </div>
 
-              {blog.excerpt && (
-                <p className="text-secondary mb-4 line-clamp-2">{blog.excerpt}</p>
-              )}
+                {blog.excerpt && (
+                  <p className="text-secondary text-xs sm:text-sm line-clamp-2 leading-relaxed mb-6">
+                    {blog.excerpt}
+                  </p>
+                )}
 
-              <div className="flex gap-3">
-                <Link
-                  href={`/admin/blogs/${blog.id}`}
-                  className="px-4 py-2 bg-white/5 hover:bg-white/10 text-secondary text-sm rounded-lg transition-colors"
-                >
-                  Edit
-                </Link>
-                <Link
-                  href={`/blog/${blog.slug}`}
-                  target="_blank"
-                  className="px-4 py-2 bg-neon-blue/20 hover:bg-neon-blue/30 text-neon-blue text-sm rounded-lg transition-colors"
-                >
-                  View
-                </Link>
-                <button
-                  onClick={() => togglePublish(blog.id, blog.isPublished ?? false)}
-                  className="px-4 py-2 bg-neon-purple/20 hover:bg-neon-purple/30 text-neon-purple text-sm rounded-lg transition-colors"
-                >
-                  {blog.isPublished ? 'Unpublish' : 'Publish'}
-                </button>
-                <button
-                  onClick={() => handleDelete(blog.id)}
-                  className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm rounded-lg transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </motion.div>
-          ))}
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-black/5 dark:border-white/5">
+                  <Link
+                    href={`/admin/blogs/${blog.id}`}
+                    className="glass-pill px-3.5 py-1.5 rounded-full text-xs font-mono text-secondary hover:text-[var(--text-main)] transition-colors flex items-center gap-2"
+                  >
+                    <FaPen className="w-3 h-3 text-neon-blue" />
+                    <span>Edit</span>
+                  </Link>
+
+                  <Link
+                    href={`/blog/${blog.slug}`}
+                    target="_blank"
+                    className="glass-pill px-3.5 py-1.5 rounded-full text-xs font-mono text-secondary hover:text-[var(--text-main)] transition-colors flex items-center gap-2"
+                  >
+                    <FaGlobe className="w-3 h-3" />
+                    <span>Live Preview</span>
+                  </Link>
+
+                  <button
+                    onClick={() => togglePublish(blog.id, blog.isPublished ?? false)}
+                    className="glass-pill px-3.5 py-1.5 rounded-full text-xs font-mono text-neon-purple hover:bg-neon-purple/10 transition-colors"
+                  >
+                    {blog.isPublished ? 'Convert to Draft' : 'Publish to Live'}
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(blog.id)}
+                    className="glass-pill px-3.5 py-1.5 rounded-full text-xs font-mono text-red-500 hover:bg-red-500/10 transition-colors flex items-center gap-2 ml-auto"
+                  >
+                    <FaTrash className="w-3 h-3" />
+                    <span>Delete</span>
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
     </div>

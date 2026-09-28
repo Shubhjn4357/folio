@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../context/ThemeContext";
-import { FaMoon, FaSun, FaBars, FaXmark } from "react-icons/fa6";
-import { navLinks } from "../constants";
+import { FaMoon, FaSun, FaBars, FaXmark, FaArrowRight } from "react-icons/fa6";
+import { navLinks, socialLinks } from "../constants";
 
 export const Navbar = () => {
   const pathname = usePathname();
@@ -37,14 +37,26 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Lock body scroll when full-screen mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   return (
-    <header className="fixed top-4 sm:top-6 inset-x-0 mx-auto z-50 flex justify-center px-4 pointer-events-none">
+    <header className="fixed top-4 sm:top-6 inset-x-0 mx-auto z-50 flex justify-between px-6 pointer-events-none">
       {/* Floating Glassmorphism Pill Dock */}
       <motion.nav
         initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`pointer-events-auto glass-pill px-3 py-2 sm:px-4 sm:py-2.5 rounded-full flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300 ${
+        className={`w-full sm:w-auto pointer-events-auto mx-auto sm:mx-8 glass-pill px-3 py-2 sm:px-4 sm:py-2.5 rounded-full flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300 ${
           isScrolled ? "scale-[0.98] shadow-2xl backdrop-blur-2xl" : "shadow-lg"
         }`}
       >
@@ -60,19 +72,53 @@ export const Navbar = () => {
           <div className="w-8 h-8 rounded-full bg-black dark:bg-white text-white dark:text-black font-display font-bold text-xs flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
             SJ
           </div>
-          <span className="font-display font-semibold text-sm tracking-tight hidden lg:inline">
-            Shubham <span className="opacity-40 font-normal">/ Studio</span>
+          <span className="font-display font-semibold text-sm tracking-tight xs:inline sm:hidden lg:inline">
+            Shubham <span className="opacity-40 font-normal">/ Dev</span>
           </span>
         </Link>
 
-        {/* Live Availability Status Pill */}
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">
-          <span className="beacon-dot" />
-          <span className="mono-label text-[10px]">Open to work</span>
-        </div>
+        {/* Action Controls */}
+        <div className="flex items-center gap-1.5 pl-1">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-secondary hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+            aria-label="Toggle Dark Mode"
+          >
+            {isDarkMode ? <FaSun className="w-3.5 h-3.5 text-amber-400" /> : <FaMoon className="w-3.5 h-3.5" />}
+          </button>
 
+          {/* Contact Pill Button */}
+          <Link
+            href="/#contact"
+            onClick={() => setActiveTab("contact")}
+            className="btn-wipe px-3.5 py-1.5 bg-black dark:bg-white text-white dark:text-black font-semibold text-xs tracking-wider rounded-full hover:scale-[1.02] transition-transform active:scale-[0.98] hidden sm:inline-flex"
+          >
+            Talk
+          </Link>
+
+          {/* Mobile Menu Toggle Button */}
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="sm:hidden w-8 h-8 rounded-full flex items-center justify-center text-secondary hover:text-black dark:hover:text-white cursor-pointer"
+            aria-label="Open Navigation Menu"
+          >
+            <FaBars className="w-4 h-4" />
+          </button>
+        </div>
+      </motion.nav>
+
+      {/* Desktop Navigation Dock */}
+      <motion.nav 
+        initial={{ y: -30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className={`pointer-events-auto glass-effect mx-8 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full hidden sm:flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300 ${
+          isScrolled ? "scale-[0.98] shadow-2xl backdrop-blur-2xl" : "shadow-lg"
+        }`}
+      >
         {/* Desktop Tab Pills */}
-        <div className="hidden sm:flex items-center gap-1 relative bg-black/5 dark:bg-white/5 p-1 rounded-full">
+        <div className="flex items-center gap-1 relative bg-black/5 dark:bg-white/5 p-1 rounded-full">
           {navLinks.map((nav) => {
             const isSelected = activeTab === nav.id || (nav.id === 'blog' && pathname?.startsWith('/blog'));
             return (
@@ -98,81 +144,124 @@ export const Navbar = () => {
             );
           })}
         </div>
-
-        {/* Action Controls */}
-        <div className="flex items-center gap-1.5 pl-1">
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-secondary hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-            aria-label="Toggle Dark Mode"
-          >
-            {isDarkMode ? <FaSun className="w-3.5 h-3.5 text-amber-400" /> : <FaMoon className="w-3.5 h-3.5" />}
-          </button>
-
-          {/* Contact Pill Button */}
-          <Link
-            href="/#contact"
-            onClick={() => setActiveTab("contact")}
-            className="btn-wipe px-3.5 py-1.5 bg-black dark:bg-white text-white dark:text-black font-semibold text-xs tracking-wider rounded-full hover:scale-[1.02] transition-transform active:scale-[0.98] hidden sm:inline-flex"
-          >
-            Talk
-          </Link>
-
-          {/* Mobile Menu Toggle Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="sm:hidden w-8 h-8 rounded-full flex items-center justify-center text-secondary hover:text-black dark:hover:text-white"
-            aria-label="Open Navigation Menu"
-          >
-            {mobileMenuOpen ? <FaXmark className="w-4 h-4" /> : <FaBars className="w-4 h-4" />}
-          </button>
-        </div>
       </motion.nav>
 
-      {/* Mobile Drawer Pill Menu */}
+      {/* Full-Screen Mobile Menu with Animated Big Words Reveal */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="pointer-events-auto absolute top-16 inset-x-4 mx-auto max-w-sm glass-pill p-4 rounded-3xl sm:hidden shadow-2xl flex flex-col gap-2 border border-black/10 dark:border-white/10"
+            initial={{ opacity: 0, clipPath: "circle(0% at 90% 5%)" }}
+            animate={{ opacity: 1, clipPath: "circle(150% at 90% 5%)" }}
+            exit={{ opacity: 0, clipPath: "circle(0% at 90% 5%)" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 w-screen h-screen z-[100] pointer-events-auto bg-[#0a0e27]/98 dark:bg-[#060914]/98 backdrop-blur-3xl text-white flex flex-col justify-between p-6 sm:p-10 select-none overflow-y-auto"
           >
-            <div className="flex items-center justify-between px-2 py-1 mb-1">
-              <span className="mono-label text-[10px] text-secondary">Navigation</span>
-              <div className="flex items-center gap-1.5 text-emerald-500">
-                <span className="beacon-dot" />
-                <span className="mono-label text-[10px]">Available</span>
+            {/* Top Bar inside Fullscreen Menu */}
+            <div className="w-full flex items-center justify-between pb-6 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-white text-black font-display font-bold text-xs flex items-center justify-center">
+                  SJ
+                </div>
+                <div>
+                  <p className="font-display font-semibold text-sm">Shubham Jain</p>
+                  <p className="mono-label text-[10px] text-white/50">Creative Engineer</p>
+                </div>
               </div>
+
+              {/* Close Button Pill */}
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="glass-pill px-4 py-2 rounded-full flex items-center gap-2 text-xs font-mono text-white/80 hover:text-white hover:bg-white/15 transition-all cursor-pointer border border-white/20 active:scale-95"
+                aria-label="Close Navigation"
+              >
+                <span>Close</span>
+                <FaXmark className="w-3.5 h-3.5" />
+              </button>
             </div>
 
-            {navLinks.map((nav) => (
-              <Link
-                key={nav.id}
-                href={nav.link || `#${nav.id}`}
-                onClick={() => {
-                  setActiveTab(nav.id);
-                  setMobileMenuOpen(false);
-                }}
-                className={`px-4 py-2.5 rounded-2xl text-sm font-medium transition-colors ${
-                  activeTab === nav.id
-                    ? "bg-black/10 dark:bg-white/10 text-black dark:text-white font-semibold"
-                    : "text-secondary hover:bg-black/5 dark:hover:bg-white/5"
-                }`}
-              >
-                {nav.title}
-              </Link>
-            ))}
-
-            <Link
-              href="/#contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="mt-2 text-center py-2.5 rounded-2xl bg-black dark:bg-white text-white dark:text-black font-semibold text-xs tracking-wider uppercase"
+            {/* Middle Section: Oversized Big Words with Animated Reveal & Hover */}
+            <motion.div
+              initial="hidden"
+              animate="show"
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.08,
+                    delayChildren: 0.15,
+                  },
+                },
+              }}
+              className="my-auto py-8 flex flex-col gap-3 sm:gap-5"
             >
-              Start a Conversation &rarr;
-            </Link>
+              {navLinks.map((nav, index) => {
+                const isCurrent = activeTab === nav.id;
+                return (
+                  <div key={nav.id} className="overflow-hidden">
+                    <motion.div
+                      variants={{
+                        hidden: { y: "120%", opacity: 0 },
+                        show: {
+                          y: 0,
+                          opacity: 1,
+                          transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+                        },
+                      }}
+                    >
+                      <Link
+                        href={nav.link || `#${nav.id}`}
+                        onClick={() => {
+                          setActiveTab(nav.id);
+                          setMobileMenuOpen(false);
+                        }}
+                        className="group flex items-baseline gap-4 sm:gap-6 py-2 transition-all duration-300"
+                      >
+                        {/* Number Index */}
+                        <span className="font-mono text-xs sm:text-sm text-white/40 group-hover:text-neon-blue transition-colors">
+                          0{index + 1}
+                        </span>
+
+                        {/* Big Word Display with Hover Reveal Effect */}
+                        <span className="font-display font-medium text-4xl xs:text-5xl sm:text-6xl md:text-7xl tracking-[-0.04em] text-white/90 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-neon-blue group-hover:via-neon-purple group-hover:to-neon-pink group-hover:translate-x-3 sm:group-hover:translate-x-5 transition-all duration-300 inline-flex items-center gap-3">
+                          {nav.title}
+                          <FaArrowRight className="w-6 h-6 sm:w-8 sm:h-8 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-neon-blue hidden xs:inline" />
+                        </span>
+
+                        {isCurrent && (
+                          <span className="w-2 h-2 rounded-full bg-neon-purple mb-2 animate-pulse" />
+                        )}
+                      </Link>
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </motion.div>
+
+            {/* Bottom Footer Section of Fullscreen Menu */}
+            <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs font-mono">
+              <Link
+            href="#contact"
+            className="glass-pill px-6 py-3.5 text-xs font-semibold text-[var(--text-main)] rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-2"
+          >
+            <span>Start a Conversation</span>
+            <span className="text-xs opacity-60">↗</span>
+          </Link>
+
+              <div className="flex flex-wrap items-center gap-4 text-white/60">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    {social.name} ↗
+                  </a>
+                ))}
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

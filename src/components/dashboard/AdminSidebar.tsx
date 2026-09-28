@@ -1,15 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  FaChartPie,
+  FaEnvelope,
+  FaFileLines,
+  FaChartLine,
+  FaArrowRightFromBracket,
+  FaGlobe,
+  FaBars,
+  FaXmark,
+} from 'react-icons/fa6';
 
 const navItems = [
-  { name: 'Dashboard', href: '/admin', icon: '📊' },
-  { name: 'Contacts', href: '/admin/contacts', icon: '📬' },
-  { name: 'Blogs', href: '/admin/blogs', icon: '📝' },
-  { name: 'Analytics', href: '/admin/analytics', icon: '📈' },
+  { name: 'Dashboard', href: '/admin', icon: FaChartPie },
+  { name: 'Contacts', href: '/admin/contacts', icon: FaEnvelope },
+  { name: 'Blogs', href: '/admin/blogs', icon: FaFileLines },
+  { name: 'Analytics', href: '/admin/analytics', icon: FaChartLine },
 ];
 
 export default function AdminSidebar() {
@@ -23,8 +33,9 @@ export default function AdminSidebar() {
     router.refresh();
   };
 
-  const NavLink = ({ item, isMobile = false }: { item: typeof navItems[0], isMobile?: boolean }) => {
-    const isActive = pathname === item.href ||
+  const NavLink = ({ item, isMobile = false }: { item: typeof navItems[0]; isMobile?: boolean }) => {
+    const isActive =
+      pathname === item.href ||
       (item.href !== '/admin' && pathname.startsWith(item.href));
 
     return (
@@ -33,35 +44,35 @@ export default function AdminSidebar() {
         onClick={() => isMobile && setIsOpen(false)}
         className="block"
       >
-        <motion.div
-          whileHover={{ x: 4 }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-              ? 'bg-neon-purple/20 text-white border border-neon-purple/30'
-              : 'text-secondary hover:bg-white/5 hover:text-white'
-            }`}
+        <div
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs font-mono transition-all ${
+            isActive
+              ? 'glass-pill font-semibold text-[var(--text-main)] border border-black/10 dark:border-white/15 shadow-sm'
+              : 'text-secondary hover:text-[var(--text-main)] hover:bg-black/5 dark:hover:bg-white/5'
+          }`}
         >
-          <span className="text-xl">{item.icon}</span>
-          <span className="font-medium">{item.name}</span>
-        </motion.div>
+          <item.icon className={`w-4 h-4 ${isActive ? 'text-neon-purple' : 'opacity-70'}`} />
+          <span>{item.name}</span>
+        </div>
       </Link>
     );
   };
 
   return (
     <>
-      {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-primary border-b border-white/10 flex items-center justify-between px-4 z-50">
-        <Link href="/admin" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-neon-purple to-neon-blue flex items-center justify-center text-white font-bold text-sm">
-            S
+      {/* Mobile Top Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 glass-pill border-b border-black/5 dark:border-white/5 flex items-center justify-between px-5 z-50">
+        <Link href="/admin" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-full bg-black dark:bg-white text-white dark:text-black font-display font-bold text-xs flex items-center justify-center">
+            SJ
           </div>
-          <span className="font-bold text-white">Admin</span>
+          <span className="font-display font-semibold text-sm">Admin Studio</span>
         </Link>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 text-white hover:bg-white/5 rounded-lg"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-secondary hover:text-[var(--text-main)]"
         >
-          <span className="text-2xl">{isOpen ? '✕' : '☰'}</span>
+          {isOpen ? <FaXmark className="w-4 h-4" /> : <FaBars className="w-4 h-4" />}
         </button>
       </div>
 
@@ -74,26 +85,26 @@ export default function AdminSidebar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
             />
             <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 20 }}
-              className="fixed left-0 top-0 h-full w-64 bg-tertiary border-r border-white/10 z-50 md:hidden flex flex-col pt-16"
+              transition={{ type: 'spring', damping: 25 }}
+              className="fixed left-0 top-0 h-full w-64 glass-card border-r border-black/10 dark:border-white/10 z-50 md:hidden flex flex-col pt-20 p-4"
             >
-              <nav className="flex-1 p-4 space-y-2">
+              <nav className="flex-1 space-y-1.5">
                 {navItems.map((item) => (
                   <NavLink key={item.href} item={item} isMobile />
                 ))}
               </nav>
 
-              <div className="p-4 border-t border-white/10 space-y-2">
+              <div className="pt-4 border-t border-black/5 dark:border-white/5 space-y-1.5">
                 <Link href="/" target="_blank" onClick={() => setIsOpen(false)}>
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-white/5 hover:text-white transition-colors">
-                    <span className="text-xl">🌐</span>
-                    <span className="font-medium">View Site</span>
+                  <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs font-mono text-secondary hover:text-[var(--text-main)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                    <FaGlobe className="w-4 h-4" />
+                    <span>Live Portfolio ↗</span>
                   </div>
                 </Link>
                 <button
@@ -101,10 +112,10 @@ export default function AdminSidebar() {
                     handleLogout();
                     setIsOpen(false);
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs font-mono text-red-500 hover:bg-red-500/10 transition-colors"
                 >
-                  <span className="text-xl">🚪</span>
-                  <span className="font-medium">Logout</span>
+                  <FaArrowRightFromBracket className="w-4 h-4" />
+                  <span>Logout</span>
                 </button>
               </div>
             </motion.aside>
@@ -112,40 +123,48 @@ export default function AdminSidebar() {
         )}
       </AnimatePresence>
 
-      {/* Desktop Sidebar (unchanged visually, but refactored structure) */}
-      <aside className="hidden md:flex fixed left-0 top-0 h-screen w-64 bg-tertiary border-r border-white/10 flex-col z-40">
-        <div className="p-6 border-b border-white/10">
-          <Link href="/admin" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-neon-purple to-neon-blue flex items-center justify-center text-white font-bold">
-              S
-            </div>
-            <div>
-              <h2 className="font-bold text-white">Admin Panel</h2>
-              <p className="text-xs text-secondary">Dashboard</p>
-            </div>
-          </Link>
+      {/* Desktop Persistent Sidebar */}
+      <aside className="hidden md:flex fixed left-0 top-0 h-screen w-64 glass-card rounded-none border-r border-black/5 dark:border-white/10 flex-col justify-between p-5 z-40">
+        <div>
+          {/* Brand Header */}
+          <div className="pb-6 mb-6 border-b border-black/5 dark:border-white/5">
+            <Link href="/admin" className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-2xl bg-black dark:bg-white text-white dark:text-black font-display font-bold text-xs flex items-center justify-center shadow-md">
+                SJ
+              </div>
+              <div>
+                <h2 className="font-display font-semibold text-sm text-[var(--text-main)]">Admin Studio</h2>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="beacon-dot" />
+                  <span className="mono-label text-[9px] text-secondary">Console</span>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="space-y-1">
+            {navItems.map((item) => (
+              <NavLink key={item.href} item={item} />
+            ))}
+          </nav>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2">
-          {navItems.map((item) => (
-            <NavLink key={item.href} item={item} />
-          ))}
-        </nav>
-
-        <div className="p-4 border-t border-white/10 space-y-2">
+        {/* Footer Actions */}
+        <div className="pt-4 border-t border-black/5 dark:border-white/5 space-y-1.5">
           <Link href="/" target="_blank">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-white/5 hover:text-white transition-colors">
-              <span className="text-xl">🌐</span>
-              <span className="font-medium">View Site</span>
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs font-mono text-secondary hover:text-[var(--text-main)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+              <FaGlobe className="w-4 h-4" />
+              <span>Live Portfolio ↗</span>
             </div>
           </Link>
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs font-mono text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
           >
-            <span className="text-xl">🚪</span>
-            <span className="font-medium">Logout</span>
+            <FaArrowRightFromBracket className="w-4 h-4" />
+            <span>Logout</span>
           </button>
         </div>
       </aside>

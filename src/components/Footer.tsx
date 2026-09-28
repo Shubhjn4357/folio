@@ -74,7 +74,6 @@ export const Footer = () => {
             <span>© {new Date().getFullYear()} Shubham Jain</span>
             <span className="opacity-30">·</span>
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span>India {localTime ? `· ${localTime}` : ''}</span>
             </span>
           </div>

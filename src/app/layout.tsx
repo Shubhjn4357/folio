@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import { ReactNode, Suspense } from "react";
-import "../styles.scss"; // global styles
+import "../index.css"; // global styles
 import { ThemeProvider } from "../context/ThemeContext";
 import { Analytics } from "@vercel/analytics/next"
 import AnalyticsTracker from "../components/AnalyticsTracker";
