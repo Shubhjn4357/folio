@@ -8,6 +8,7 @@ import {
   Tech,
   ParallaxSection,
   Works,
+  PromptsSection,
   Contact,
 } from "@/components";
 
@@ -43,6 +44,7 @@ export default function Home() {
       <Tech />
       <ParallaxSection />
       <Works />
+      <PromptsSection />
       <div className="relative z-0">
         <Contact />
       </div>

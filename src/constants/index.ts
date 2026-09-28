@@ -44,6 +44,11 @@ export const navLinks = [
     link: "/#work",
   },
   {
+    id: "prompts",
+    title: "Prompts",
+    link: "/#prompts",
+  },
+  {
     id: "contact",
     title: "Contact",
     link: "/#contact",

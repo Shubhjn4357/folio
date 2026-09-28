@@ -14,6 +14,7 @@ import {
   FaBars,
   FaXmark,
   FaFileArrowDown,
+  FaTerminal,
 } from 'react-icons/fa6';
 
 const navItems = [
@@ -21,6 +22,7 @@ const navItems = [
   { name: 'Contacts', href: '/admin/contacts', icon: FaEnvelope },
   { name: 'Blogs', href: '/admin/blogs', icon: FaFileLines },
   { name: 'Analytics', href: '/admin/analytics', icon: FaChartLine },
+  { name: 'Prompt Projects', href: '/admin/prompts', icon: FaTerminal },
   { name: 'Resume / CV', href: '/admin/resume', icon: FaFileArrowDown },
 ];
 

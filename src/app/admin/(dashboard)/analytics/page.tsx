@@ -22,7 +22,9 @@ import {
   FaArrowTrendDown,
   FaCompass,
   FaMobileScreen,
+  FaCalendarDays,
 } from 'react-icons/fa6';
+import { CustomSelect, SelectOption } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +51,12 @@ interface AnalyticsData {
 }
 
 const COLORS = ['#00f3ff', '#bc13fe', '#fc4778', '#10b981', '#6366f1'];
+
+const DAY_OPTIONS: SelectOption<number>[] = [
+  { value: 7, label: 'Last 7 days' },
+  { value: 30, label: 'Last 30 days' },
+  { value: 90, label: 'Last 90 days' },
+];
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -97,15 +105,12 @@ export default function AnalyticsPage() {
           </p>
         </div>
 
-        <select
+        <CustomSelect
           value={days}
-          onChange={(e) => setDays(parseInt(e.target.value))}
-          className="glass-pill px-4 py-2 rounded-full text-xs font-mono text-[var(--text-main)] outline-none cursor-pointer"
-        >
-          <option value={7} className="bg-slate-900 text-white">Last 7 days</option>
-          <option value={30} className="bg-slate-900 text-white">Last 30 days</option>
-          <option value={90} className="bg-slate-900 text-white">Last 90 days</option>
-        </select>
+          onChange={(newDays) => setDays(newDays)}
+          options={DAY_OPTIONS}
+          icon={<FaCalendarDays className="w-3.5 h-3.5 text-neon-blue" />}
+        />
       </div>
 
       {/* KPI Cards */}

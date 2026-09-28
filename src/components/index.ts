@@ -10,6 +10,7 @@ import ParallaxSection from "./ParallaxSection";
 import ShaderBackground, { CanvasParallax } from "./ShaderBackground";
 import CustomCursor from "./CustomCursor";
 import ProjectDetails from "./ProjectDetails";
+import PromptsSection from "./prompts/PromptsSection";
 
 export {
   Hero,
@@ -17,6 +18,7 @@ export {
   About,
   Tech,
   Works,
+  PromptsSection,
   Contact,
   Footer,
   ErrorBoundary,

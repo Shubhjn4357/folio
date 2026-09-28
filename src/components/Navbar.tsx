@@ -33,7 +33,7 @@ export const Navbar = () => {
           setIsScrolled(window.scrollY > 30);
 
           // Scroll spy for sections
-          const sections = ['about', 'project', 'contact'];
+          const sections = ['about', 'project', 'prompts', 'contact'];
           for (const section of sections) {
             const el = document.getElementById(section);
             if (el) {
