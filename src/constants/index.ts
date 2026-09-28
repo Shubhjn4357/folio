@@ -1,3 +1,4 @@
+import type { IconType } from "react-icons";
 import {
   FaHtml5,
   FaCss3Alt,
@@ -8,26 +9,28 @@ import {
   FaDocker,
 } from "react-icons/fa";
 import {
+  FaLaptopCode,
+  FaMobileScreenButton,
+  FaServer,
+  FaPenNib,
+} from "react-icons/fa6";
+import {
   SiJavascript,
   SiTypescript,
   SiRedux,
   SiTailwindcss,
   SiMongodb,
   SiThreedotjs,
+  SiNextdotjs,
+  SiExpo,
+  SiHono,
+  SiPostgresql,
+  SiJetpackcompose,
 } from "react-icons/si";
-
 import {
-  mobile,
-  backend,
-  creator,
-  web,
-  tododapp,
-  mtv,
-  spotify,
-  insta,
-  linkdin,
-  github,
-} from "../assets";
+  TbBrandReactNative,
+  TbSql,
+} from "react-icons/tb";
 
 export const navLinks = [
   {
@@ -54,35 +57,125 @@ export const navLinks = [
 
 export interface Service {
   title: string;
-  icon: any; // Image asset
+  icon: IconType;
 }
 
 const services: Service[] = [
   {
     title: "Web Developer",
-    icon: web,
+    icon: FaLaptopCode,
   },
   {
     title: "React Native / Jetpack Compose",
-    icon: mobile,
+    icon: FaMobileScreenButton,
   },
   {
     title: "Backend Developer",
-    icon: backend,
+    icon: FaServer,
   },
   {
     title: "Content Creator",
-    icon: creator,
+    icon: FaPenNib,
   },
 ];
 
 export interface Technology {
   name: string;
-  icon: any; // React Icon component
+  icon: IconType;
   color: string;
 }
 
 const technologies: Technology[] = [
+  {
+    name: "Next.js",
+    icon: SiNextdotjs,
+    color: "#0070F3",
+  },
+  {
+    name: "React JS",
+    icon: FaReact,
+    color: "#61DAFB",
+  },
+  {
+    name: "React Native",
+    icon: TbBrandReactNative,
+    color: "#61DAFB",
+  },
+  {
+    name: "Expo",
+    icon: SiExpo,
+    color: "#5A32FB",
+  },
+  {
+    name: "Jetpack Compose",
+    icon: SiJetpackcompose,
+    color: "#4285F4",
+  },
+  {
+    name: "TypeScript",
+    icon: SiTypescript,
+    color: "#3178C6",
+  },
+  {
+    name: "JavaScript",
+    icon: SiJavascript,
+    color: "#F7DF1E",
+  },
+  {
+    name: "Node JS",
+    icon: FaNodeJs,
+    color: "#339933",
+  },
+  {
+    name: "Hono",
+    icon: SiHono,
+    color: "#E36002",
+  },
+  {
+    name: "PostgreSQL",
+    icon: SiPostgresql,
+    color: "#4169E1",
+  },
+  {
+    name: "SQL",
+    icon: TbSql,
+    color: "#00758F",
+  },
+  {
+    name: "MongoDB",
+    icon: SiMongodb,
+    color: "#47A248",
+  },
+  {
+    name: "Tailwind CSS",
+    icon: SiTailwindcss,
+    color: "#06B6D4",
+  },
+  {
+    name: "Redux Toolkit",
+    icon: SiRedux,
+    color: "#764ABC",
+  },
+  {
+    name: "Three JS",
+    icon: SiThreedotjs,
+    color: "#7A7ADB",
+  },
+  {
+    name: "Docker",
+    icon: FaDocker,
+    color: "#2496ED",
+  },
+  {
+    name: "Git",
+    icon: FaGitAlt,
+    color: "#F05032",
+  },
+  {
+    name: "Figma",
+    icon: FaFigma,
+    color: "#F24E1E",
+  },
   {
     name: "HTML 5",
     icon: FaHtml5,
@@ -92,61 +185,6 @@ const technologies: Technology[] = [
     name: "CSS 3",
     icon: FaCss3Alt,
     color: "#1572B6",
-  },
-  {
-    name: "JavaScript",
-    icon: SiJavascript,
-    color: "#F7DF1E",
-  },
-  {
-    name: "TypeScript",
-    icon: SiTypescript,
-    color: "#3178C6",
-  },
-  {
-    name: "React JS",
-    icon: FaReact,
-    color: "#61DAFB",
-  },
-  {
-    name: "Redux Toolkit",
-    icon: SiRedux,
-    color: "#764ABC",
-  },
-  {
-    name: "Tailwind CSS",
-    icon: SiTailwindcss,
-    color: "#06B6D4",
-  },
-  {
-    name: "Node JS",
-    icon: FaNodeJs,
-    color: "#339933",
-  },
-  {
-    name: "MongoDB",
-    icon: SiMongodb,
-    color: "#47A248",
-  },
-  {
-    name: "Three JS",
-    icon: SiThreedotjs,
-    color: "#FFFFFF",
-  },
-  {
-    name: "git",
-    icon: FaGitAlt,
-    color: "#F05032",
-  },
-  {
-    name: "figma",
-    icon: FaFigma,
-    color: "#F24E1E",
-  },
-  {
-    name: "docker",
-    icon: FaDocker,
-    color: "#2496ED",
   },
 ];
 
@@ -263,65 +301,6 @@ export interface Project {
   link?: string;
 }
 
-const projects: Project[] = [
-  {
-    name: "Todo DApp",
-    description:
-      "A decentralized todo application built on the blockchain, allowing users to create tasks that are permanently stored and verifiable.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "solidity",
-        color: "green-text-gradient",
-      },
-      {
-        name: "tailwind",
-        color: "pink-text-gradient",
-      },
-    ],
-    image: tododapp,
-    link: 'https://todo-d-app-iota.vercel.app/',
-    source_code_link: "https://github.com/Shubhjn4357/TodoDApp",
-  },
-  {
-    name: "Portfolio V1",
-    description:
-      "My first portfolio website designed to showcase my web development skills and projects, featuring responsive design and key information.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "css",
-        color: "pink-text-gradient",
-      },
-    ],
-    image: mtv,
-    source_code_link: "https://github.com/",
-  },
-  {
-    name: "Mobile App",
-    description:
-      "A cross-platform mobile application that demonstrates efficiency and clean UI/UX principles for modern smartphones.",
-    tags: [
-      {
-        name: "react-native",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "firebase",
-        color: "green-text-gradient",
-      },
-    ],
-    image: spotify,
-    source_code_link: "https://github.com/",
-  },
-];
-
 import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
 
 export const socialLinks = [
@@ -345,4 +324,4 @@ export const socialLinks = [
   },
 ];
 
-export { services, technologies, experiences, testimonials, projects };
+export { services, technologies, experiences, testimonials };

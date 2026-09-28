@@ -1,8 +1,5 @@
 import logo from "./logo.svg";
-import backend from "./backend.png";
-import creator from "./creator.png";
-import mobile from "./mobile.png";
-import web from "./web.png";
+
 import github from "./github.png";
 import menu from "./menu.svg";
 import close from "./close.svg";
@@ -21,16 +18,10 @@ import typescript from "./tech/typescript.png";
 import threejs from "./tech/threejs.png";
 import insta from './insta.png';
 import linkdin from './linkdin.png';
-import mtv from "./mtv.png";
-import tododapp from "./tododapp.png";
-import spotify from "./spotify.png";
 import shubh from './shubh.png';
 export {
   logo,
-  backend,
-  creator,
-  mobile,
-  web,
+ 
   github,
   insta,
   linkdin,
@@ -49,8 +40,5 @@ export {
   tailwind,
   typescript,
   threejs,
-  mtv,
-  tododapp,
-  spotify,
   shubh
 };

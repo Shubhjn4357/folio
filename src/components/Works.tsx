@@ -2,14 +2,14 @@
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from "framer-motion";
-import { github } from "../assets";
 import { SectionWrapper } from "../hoc";
-import { projects as staticProjects, Tag } from "../constants";
+import { Tag } from "../constants";
 import { useGitHubRepos } from "../hooks/useGitHubRepos";
 import { ProjectCardSkeleton } from "./ui/Skeleton";
-import { FaArrowUpRightFromSquare, FaGithub } from "react-icons/fa6";
+import { FaArrowUpRightFromSquare, FaGithub, FaArrowRight } from "react-icons/fa6";
 
 const GITHUB_USERNAME = "Shubhjn4357";
 
@@ -72,7 +72,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 window.open(source_code_link, "_blank");
               }}
               aria-label="View Source Code"
-              className="w-9 h-9 rounded-full glass-pill flex items-center justify-center text-white bg-black/60 hover:bg-black/90 transition-colors shadow-md"
+              className="w-9 h-9 rounded-full glass-pill flex items-center justify-center text-[var(--text-main)] hover:text-neon-blue bg-white/80 dark:bg-black/60 hover:scale-110 transition-all shadow-md border border-black/10 dark:border-white/15"
             >
               <FaGithub className="w-4 h-4" />
             </button>
@@ -115,7 +115,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 };
 
 export const Works: React.FC = () => {
-  const { projects, loading } = useGitHubRepos(GITHUB_USERNAME, 6, staticProjects);
+  const { projects, loading } = useGitHubRepos(GITHUB_USERNAME, 6);
   const [activeFilter, setActiveFilter] = useState("all");
 
   const filteredProjects = useMemo(() => {
@@ -124,7 +124,6 @@ export const Works: React.FC = () => {
       const tagNames = p.tags.map((t) => t.name.toLowerCase());
       if (activeFilter === "web") return tagNames.some((t) => t.includes("react") || t.includes("next") || t.includes("web") || t.includes("tailwind"));
       if (activeFilter === "mobile") return tagNames.some((t) => t.includes("native") || t.includes("mobile") || t.includes("android") || t.includes("ios"));
-      if (activeFilter === "blockchain") return tagNames.some((t) => t.includes("solidity") || t.includes("dapp") || t.includes("blockchain") || t.includes("web3"));
       return true;
     });
   }, [projects, activeFilter]);
@@ -194,6 +193,20 @@ export const Works: React.FC = () => {
             ))}
           </AnimatePresence>
         )}
+      </div>
+
+      {/* View All Repositories Action Button */}
+      <div className="mt-14 flex justify-center">
+        <Link
+          href="/project"
+          className="btn-wipe px-8 py-3.5 bg-black dark:bg-white text-white dark:text-black font-semibold text-xs tracking-wider rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
+        >
+          <span>View All Repositories</span>
+          <span className="mono-label text-[10px] px-2.5 py-0.5 rounded-full bg-white/20 dark:bg-black/20">
+            Archive ↗
+          </span>
+          <FaArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+        </Link>
       </div>
     </div>
   );

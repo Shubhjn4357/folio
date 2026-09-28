@@ -1,7 +1,6 @@
 'use client';
 
 import React from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { services } from "../constants";
 import { SectionWrapper } from "../hoc";
@@ -19,8 +18,8 @@ const JOURNEY_STEPS = [
   },
   {
     step: "03",
-    title: "Production Build & Shaders",
-    description: "Next.js App Router, type-safe APIs, custom WebGL shaders, and smooth micro-interactions.",
+    title: "Production Build",
+    description: "Type-safe, efficient, and smooth micro-interactions.",
   },
   {
     step: "04",
@@ -58,13 +57,7 @@ export const About = () => {
               <div className="flex items-center justify-between mb-6">
                 <span className="mono-label text-secondary text-[11px]">0{index + 1}</span>
                 <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/5 p-2.5 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Image
-                    src={service.icon}
-                    alt={service.title}
-                    width={28}
-                    height={28}
-                    className="object-contain"
-                  />
+                  <service.icon className="w-6 h-6 text-neon-blue group-hover:text-neon-purple transition-colors" />
                 </div>
               </div>
               <h3 className="font-display font-semibold text-lg text-[var(--text-main)] group-hover:text-neon-purple transition-colors">

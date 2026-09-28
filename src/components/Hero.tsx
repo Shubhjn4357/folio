@@ -13,9 +13,9 @@ export const Hero = () => {
         
         {/* Monospace Credibility Pill from thinkingods */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full glass-pill text-xs mb-8"
         >
           <p className="mono-label text-secondary text-[11px]">
@@ -29,9 +29,9 @@ export const Hero = () => {
 
         {/* Oversized Modern Display Headline */}
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
+          transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-4xl"
         >
           <h1 className="font-display font-medium text-4xl sm:text-6xl md:text-7xl lg:text-[5.2rem] leading-[0.98] tracking-[-0.04em] text-[var(--text-main)] mb-6">
@@ -47,9 +47,9 @@ export const Hero = () => {
 
         {/* Interactive Action Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.25 }}
+          transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-wrap items-center gap-4 mb-16"
         >
           <Link
@@ -93,9 +93,9 @@ export const Hero = () => {
 
         {/* Minimal Interactive Floating Glassmorphism Cards Showcase */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.35 }}
+          transition={{ duration: 0.45, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="w-full grid grid-cols-1 md:grid-cols-3 gap-4"
         >
           {/* Card 1 */}

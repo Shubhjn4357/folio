@@ -4,8 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { projects, Tag } from "../constants";
-import { github } from "../assets";
+import { Tag } from "../constants";
 import { useProjectDetails } from "../hooks/useProjectDetails";
 import { ProjectDetailsSkeleton } from "./ui/Skeleton";
 import { FaArrowLeft, FaGithub, FaGlobe } from "react-icons/fa6";
@@ -15,11 +14,8 @@ interface ProjectDetailsProps {
   repoUrl?: string;
 }
 
-export const ProjectDetails: React.FC<ProjectDetailsProps> = ({ id, repoUrl }) => {
-  const projectIndex = typeof id === 'string' ? parseInt(id, 10) : id;
-  const staticProject = projects[projectIndex] || null;
-
-  const { project, loading } = useProjectDetails(repoUrl, staticProject);
+export const ProjectDetails: React.FC<ProjectDetailsProps> = ({ repoUrl }) => {
+  const { project, loading } = useProjectDetails(repoUrl);
 
   if (loading) {
     return <ProjectDetailsSkeleton />;

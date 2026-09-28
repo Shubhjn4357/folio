@@ -30,8 +30,6 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ minDuration = 1200
     return () => clearInterval(interval);
   }, [minDuration]);
 
-  if (isLoading) return null;
-
   return (
     <AnimatePresence>
       {isLoading && (
@@ -40,8 +38,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ minDuration = 1200
           initial={{ opacity: 1 }}
           exit={{
             y: '-100%',
-            opacity: 0.9,
-            transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] }
+            opacity: 0.95,
+            transition: { duration: 0.45, ease: [0.76, 0, 0.24, 1] }
           }}
           className="fixed inset-0 z-[9999] pointer-events-auto bg-[var(--primary)] text-[var(--text-main)] flex flex-col justify-between p-6 sm:p-12 select-none overflow-hidden"
         >

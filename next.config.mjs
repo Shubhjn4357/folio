@@ -16,6 +16,22 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'opengraph.githubassets.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'user-images.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'camo.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'githubassets.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'randomuser.me',
       },
       {

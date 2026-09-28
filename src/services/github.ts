@@ -21,8 +21,15 @@ export interface GitHubRepo {
   html_url: string;
   topics: string[];
   default_branch: string;
+  stargazers_count?: number;
+  forks_count?: number;
+  language?: string | null;
+  homepage?: string | null;
+  updated_at?: string;
+  pushed_at?: string;
   owner: {
     login: string;
+    avatar_url?: string;
   };
 }
 
@@ -38,16 +45,22 @@ export interface RepoDetails {
 /**
  * Fetch public repositories for a GitHub user
  */
-export async function fetchUserRepos(username: string, limit: number = 12): Promise<GitHubRepo[]> {
-  const response = await fetch(
-    `${GITHUB_API_BASE}/users/${username}/repos?sort=updated&per_page=${limit}`
-  );
-  
-  if (!response.ok) {
-    throw new Error(`Failed to fetch repos: ${response.status}`);
+export async function fetchUserRepos(username: string, limit: number = 30): Promise<GitHubRepo[]> {
+  try {
+    const response = await fetch(
+      `${GITHUB_API_BASE}/users/${username}/repos?sort=updated&per_page=${limit}`,
+      { next: { revalidate: 3600 } }
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch repos: ${response.status}`);
+    }
+    
+    return response.json();
+  } catch (err) {
+    console.error("fetchUserRepos error:", err);
+    return [];
   }
-  
-  return response.json();
 }
 
 /**
@@ -73,39 +86,76 @@ export async function fetchRepoDetails(owner: string, repo: string): Promise<Rep
 }
 
 /**
- * Fetch and parse README to find the first image
+ * Fetch and parse README to find a genuine project screenshot or cover image,
+ * with resilient branch fallback and GitHub OpenGraph preview card.
  */
 export async function fetchReadmeImage(
   owner: string, 
   repo: string, 
   branch: string = 'main'
-): Promise<string | null> {
-  try {
-    const response = await fetch(
-      `${RAW_GITHUB_BASE}/${owner}/${repo}/${branch}/README.md`
-    );
-    
-    if (!response.ok) return null;
-    
-    const readmeText = await response.text();
-    
-    // Find markdown image: ![]()
-    const mdImageMatch = readmeText.match(/!\[.*?\]\((.*?)\)/);
-    // Find HTML image: <img src="..." />
-    const htmlImageMatch = readmeText.match(/<img[^>]+src=["'](.*?)["']/);
-    
-    let imageUrl = mdImageMatch?.[1] || htmlImageMatch?.[1] || null;
-    
-    if (imageUrl && !imageUrl.startsWith('http')) {
-      // Convert relative path to absolute
-      const cleanPath = imageUrl.replace(/^(\.\/|\/)/, '');
-      imageUrl = `${RAW_GITHUB_BASE}/${owner}/${repo}/${branch}/${cleanPath}`;
+): Promise<string> {
+  const openGraphFallback = `https://opengraph.githubassets.com/1/${owner}/${repo}`;
+  const branchesToTry = Array.from(new Set([branch, 'main', 'master', 'dev', 'gh-pages'])).filter(Boolean);
+
+  let readmeText: string | null = null;
+  let usedBranch = branch || 'main';
+
+  for (const b of branchesToTry) {
+    for (const fileName of ['README.md', 'readme.md', 'README.markdown']) {
+      try {
+        const response = await fetch(`${RAW_GITHUB_BASE}/${owner}/${repo}/${b}/${fileName}`);
+        if (response.ok) {
+          readmeText = await response.text();
+          usedBranch = b;
+          break;
+        }
+      } catch {
+        // continue trying
+      }
     }
-    
-    return imageUrl;
-  } catch {
-    return null;
+    if (readmeText) break;
   }
+
+  if (!readmeText) {
+    return openGraphFallback;
+  }
+
+  try {
+    // Match both markdown images ![alt](url) and HTML <img src="url" />
+    const imageRegex = /!\[[^\]]*\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)|<img[^>]+src=["']([^"']+)["']/gi;
+    const candidates: string[] = [];
+    let match: RegExpExecArray | null;
+
+    while ((match = imageRegex.exec(readmeText)) !== null) {
+      const rawUrl = match[1] || match[2];
+      if (!rawUrl) continue;
+
+      // Filter out badge/shield SVGs and stats counters
+      if (/shields\.io|badgen\.net|badge|travis-ci|circleci|codecov|hitcounter|visitor|komarev|github-readme-stats|actions\/workflows/i.test(rawUrl)) {
+        continue;
+      }
+
+      let fullUrl = rawUrl.trim();
+      if (!fullUrl.startsWith('http')) {
+        const cleanPath = fullUrl.replace(/^(\.\/|\/)/, '');
+        fullUrl = `${RAW_GITHUB_BASE}/${owner}/${repo}/${usedBranch}/${cleanPath}`;
+      } else if (fullUrl.includes('github.com') && fullUrl.includes('/blob/')) {
+        fullUrl = fullUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+      }
+
+      candidates.push(fullUrl);
+    }
+
+    if (candidates.length > 0) {
+      // Prioritize preview, screenshot, banner, cover, mockup images
+      const preview = candidates.find(c => /preview|screenshot|banner|demo|cover|mockup|ui|assets/i.test(c)) || candidates[0];
+      return preview;
+    }
+  } catch {
+    // fallback
+  }
+
+  return openGraphFallback;
 }
 
 /**
@@ -129,16 +179,19 @@ export function parseGitHubUrl(url: string): { owner: string; repo: string } | n
  * Convert GitHub repo to Project format with parallel fetching
  */
 export async function repoToProject(repo: GitHubRepo): Promise<Project> {
-  // Fetch image in parallel with processing
   const imagePromise = fetchReadmeImage(repo.owner.login, repo.name, repo.default_branch);
   
-  // Map topics to tags with colors
-  const tags: Tag[] = repo.topics.slice(0, 4).map((topic, i) => ({
+  // Combine topics and primary language into tags
+  const rawTags = [...(repo.topics || [])];
+  if (repo.language && !rawTags.map(t => t.toLowerCase()).includes(repo.language.toLowerCase())) {
+    rawTags.unshift(repo.language);
+  }
+
+  const tags: Tag[] = rawTags.slice(0, 4).map((topic, i) => ({
     name: topic,
     color: TAG_COLORS[i % TAG_COLORS.length]
   }));
   
-  // Add default tag if no topics
   if (tags.length === 0) {
     tags.push({ name: 'code', color: 'blue-text-gradient' });
   }
@@ -147,30 +200,39 @@ export async function repoToProject(repo: GitHubRepo): Promise<Project> {
   
   return {
     name: repo.name.replace(/-/g, ' ').replace(/_/g, ' '),
-    description: repo.description || 'A project from my GitHub portfolio.',
+    description: repo.description || 'Open-source project on GitHub engineered with modern design principles.',
     tags,
-    image: image || '/placeholder-project.svg',
+    image: image || `https://opengraph.githubassets.com/1/${repo.owner.login}/${repo.name}`,
     source_code_link: repo.html_url
   };
 }
 
 /**
- * Fetch multiple repos and convert to projects with Promise.all optimization
+ * Fetch top repos and convert to projects with Promise.all
  */
 export async function fetchProjectsFromGitHub(
   username: string, 
   limit: number = 6
 ): Promise<Project[]> {
-  const repos = await fetchUserRepos(username, limit * 2);
+  const repos = await fetchUserRepos(username, Math.max(limit * 2, 20));
   
-  // Filter out config repos and those without descriptions
   const validRepos = repos
-    .filter(repo => !repo.name.includes('.github') && repo.description)
+    .filter(repo => !repo.name.includes('.github'))
     .slice(0, limit);
   
-  // Convert all repos to projects in parallel
   const projects = await Promise.all(validRepos.map(repoToProject));
-  
+  return projects;
+}
+
+/**
+ * Fetch ALL repos for user to display on /project archive page
+ */
+export async function fetchAllProjectsFromGitHub(
+  username: string
+): Promise<Project[]> {
+  const repos = await fetchUserRepos(username, 100);
+  const validRepos = repos.filter(repo => !repo.name.includes('.github'));
+  const projects = await Promise.all(validRepos.map(repoToProject));
   return projects;
 }
 
@@ -183,13 +245,11 @@ export async function fetchProjectFromGitHubUrl(githubUrl: string): Promise<Proj
   
   const { owner, repo } = parsed;
   
-  // Fetch repo details and image in parallel
   const [details, image] = await Promise.all([
     fetchRepoDetails(owner, repo),
     fetchReadmeImage(owner, repo)
   ]);
   
-  // Map topics to tags
   const tags: Tag[] = details.topics.slice(0, 6).map((topic, i) => ({
     name: topic,
     color: TAG_COLORS[i % TAG_COLORS.length]
@@ -203,7 +263,7 @@ export async function fetchProjectFromGitHubUrl(githubUrl: string): Promise<Proj
     name: details.name.replace(/-/g, ' ').replace(/_/g, ' '),
     description: details.description || 'A project from my GitHub portfolio.',
     tags,
-    image: image || '/placeholder-project.svg',
+    image: image || `https://opengraph.githubassets.com/1/${owner}/${repo}`,
     source_code_link: details.htmlUrl
   };
 }
