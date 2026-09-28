@@ -13,6 +13,7 @@ import {
   FaGlobe,
   FaBars,
   FaXmark,
+  FaFileArrowDown,
 } from 'react-icons/fa6';
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
   { name: 'Contacts', href: '/admin/contacts', icon: FaEnvelope },
   { name: 'Blogs', href: '/admin/blogs', icon: FaFileLines },
   { name: 'Analytics', href: '/admin/analytics', icon: FaChartLine },
+  { name: 'Resume / CV', href: '/admin/resume', icon: FaFileArrowDown },
 ];
 
 export default function AdminSidebar() {

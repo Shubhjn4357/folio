@@ -13,7 +13,17 @@ export const Navbar = () => {
   const [activeTab, setActiveTab] = useState<string>("about");
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -58,11 +68,20 @@ export const Navbar = () => {
 
   return (
     <header className="fixed top-4 sm:top-6 inset-x-0 mx-auto z-50 flex justify-between px-4 sm:px-16 pointer-events-none">
-      {/* Floating Glassmorphism Pill Dock */}
+      {/* Floating Glassmorphism Pill Dock (Brand & First Name) */}
       <motion.nav
-        initial={{ y: -12, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ y: -24, x: isMobile ? 0 : -70, opacity: 0 }}
+        animate={{
+          y: [-24, 0, 0],
+          x: isMobile ? [0, 0, 0] : [-70, -70, 0],
+          opacity: [0, 1, 1],
+        }}
+        transition={{
+          duration: 0.8,
+          delay: 0.15,
+          times: [0, 0.45, 1],
+          ease: [0.16, 1, 0.3, 1],
+        }}
         className={`w-full sm:w-auto pointer-events-auto mx-auto sm:mx-8 glass-pill px-3 py-2 sm:px-4 sm:py-2.5 rounded-full flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300 ${isScrolled ? "scale-[0.98] shadow-2xl backdrop-blur-2xl" : "shadow-lg"
           }`}
       >
@@ -114,11 +133,20 @@ export const Navbar = () => {
         </div>
       </motion.nav>
 
-      {/* Desktop Navigation Dock */}
+      {/* Desktop Navigation Dock (Nav Links) */}
       <motion.nav
-        initial={{ y: -12, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ y: -24, x: 70, opacity: 0 }}
+        animate={{
+          y: [-24, 0, 0],
+          x: [70, 70, 0],
+          opacity: [0, 1, 1],
+        }}
+        transition={{
+          duration: 0.8,
+          delay: 0,
+          times: [0, 0.45, 1],
+          ease: [0.16, 1, 0.3, 1],
+        }}
         className={`pointer-events-auto glass-effect mx-8 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full hidden sm:flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300 ${isScrolled ? "scale-[0.98] shadow-2xl backdrop-blur-2xl" : "shadow-lg"
           }`}
       >

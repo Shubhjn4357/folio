@@ -8,6 +8,7 @@ import {
   FaEye,
   FaArrowRight,
   FaPlus,
+  FaFileArrowDown,
 } from 'react-icons/fa6';
 
 export const dynamic = 'force-dynamic';
@@ -78,6 +79,14 @@ export default async function AdminDashboard() {
       accent: 'text-emerald-500',
       badge: 'Telemetry',
     },
+    {
+      label: 'Resume / CV',
+      value: 'Live',
+      icon: FaFileArrowDown,
+      href: '/admin/resume',
+      accent: 'text-neon-pink',
+      badge: 'Profile',
+    },
   ];
 
   return (
@@ -106,7 +115,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Stats Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {statCards.map((card) => (
           <Link key={card.label} href={card.href} className="group">
             <div className="glass-card p-6 rounded-3xl h-full flex flex-col justify-between group-hover:border-neon-purple/40 transition-all">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionWrapper } from "../hoc";
 import { FaEnvelope, FaFileArrowDown, FaCheck } from "react-icons/fa6";
@@ -15,6 +15,30 @@ export const Contact: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [resumeUrl, setResumeUrl] = useState<string>('/api/resume?download=true');
+  const [resumeFilename, setResumeFilename] = useState<string>('resume.pdf');
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadResume() {
+      try {
+        const res = await fetch('/api/resume');
+        const json = await res.json();
+        if (isMounted && json.url) {
+          setResumeUrl(json.url);
+          if (json.filename) {
+            setResumeFilename(json.filename);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load dynamic resume info:', err);
+      }
+    }
+    loadResume();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -69,7 +93,6 @@ export const Contact: React.FC = () => {
 
               {/* Status Pill */}
               <div className="mt-6 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-500/10 border border-slate-500/20 text-slate-600 dark:text-slate-400 w-fit">
-
                 <span className="mono-label text-[10px]">I'll reply soon.</span>
               </div>
             </div>
@@ -88,15 +111,19 @@ export const Contact: React.FC = () => {
               </a>
 
               <a
-                href="/resume.pdf"
-                download
+                href={resumeUrl}
+                target={resumeUrl.startsWith('http') ? '_blank' : undefined}
+                rel={resumeUrl.startsWith('http') ? 'noreferrer' : undefined}
+                download={!resumeUrl.startsWith('http')}
                 className="glass-pill px-4 py-3 rounded-2xl flex items-center justify-between text-sm font-mono text-secondary hover:text-[var(--text-main)] transition-colors group"
               >
                 <div className="flex items-center gap-3">
                   <FaFileArrowDown className="text-neon-blue w-4 h-4" />
                   <span>Download Curriculum Vitae</span>
                 </div>
-                <span className="opacity-40 group-hover:opacity-100 transition-opacity">PDF</span>
+                <span className="opacity-40 group-hover:opacity-100 transition-opacity">
+                  {resumeUrl.endsWith('.pdf') ? 'PDF' : resumeUrl.startsWith('http') ? 'LINK ↗' : 'DOC'}
+                </span>
               </a>
             </div>
           </div>
