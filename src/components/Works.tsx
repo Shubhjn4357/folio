@@ -17,7 +17,6 @@ const FILTER_TABS = [
   { id: "all", label: "All Projects" },
   { id: "web", label: "Web Applications" },
   { id: "mobile", label: "Mobile / Native" },
-  { id: "blockchain", label: "Decentralized / Web3" },
 ];
 
 interface ProjectCardProps {
@@ -143,7 +142,7 @@ export const Works: React.FC = () => {
         </div>
 
         {/* Minimal Interactive Floating Tab Pill Filter */}
-        <div className="glass-pill p-1.5 rounded-full flex flex-wrap items-center gap-1 self-start md:self-auto">
+        <div className="glass-pill w-full p-1.5 rounded-full flex justify-center flex-wrap items-center gap-1 self-start md:self-auto">
           {FILTER_TABS.map((tab) => {
             const isSelected = activeFilter === tab.id;
             return (

@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionWrapper } from "../hoc";
 import { FaEnvelope, FaFileArrowDown, FaCheck } from "react-icons/fa6";
+import { fetchPublicResume, submitContactMessage } from "@/services";
 
 export const Contact: React.FC = () => {
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -23,12 +24,15 @@ export const Contact: React.FC = () => {
     let isMounted = true;
     async function loadResume() {
       try {
-        const res = await fetch('/api/resume');
-        const json = await res.json();
-        if (isMounted) {
+        const json = await fetchPublicResume();
+        if (isMounted && json) {
           if (json.url) {
             setResumeUrl(json.url);
-            setDownloadUrl(json.downloadUrl || json.url);
+          }
+          if (json.downloadUrl) {
+            setDownloadUrl(json.downloadUrl);
+          } else if (json.url) {
+            setDownloadUrl(json.url);
           }
           if (json.filename) {
             setResumeFilename(json.filename);
@@ -38,9 +42,21 @@ export const Contact: React.FC = () => {
         console.warn('Could not load dynamic resume info:', err);
       }
     }
+
     loadResume();
+
+    // Re-fetch when user switches back to this tab
+    const handleFocus = () => loadResume();
+    window.addEventListener('focus', handleFocus);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') loadResume();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
 
@@ -55,23 +71,12 @@ export const Contact: React.FC = () => {
     setSuccess(false);
 
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to send message');
-      }
-
+      await submitContactMessage(form);
       setSuccess(true);
       setForm({ name: "", email: "", message: "" });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Something went wrong. Please try again or reach out directly via email.");
+      alert(error.message || "Something went wrong. Please try again or reach out directly via email.");
     } finally {
       setLoading(false);
     }
@@ -114,34 +119,37 @@ export const Contact: React.FC = () => {
                 <span className="opacity-40 group-hover:opacity-100 group-hover:translate-x-1 transition-all">&rarr;</span>
               </a>
 
-              <a
-                href={downloadUrl || resumeUrl || '#'}
-                onClick={(e) => {
-                  const target = downloadUrl || resumeUrl;
-                  if (!target) {
-                    e.preventDefault();
-                    alert('Resume has not been configured yet. You can upload or link it in Admin > Resume / CV.');
-                  }
-                }}
-                target={(downloadUrl || resumeUrl).startsWith('http') ? '_blank' : undefined}
-                rel={(downloadUrl || resumeUrl).startsWith('http') ? 'noopener noreferrer' : undefined}
-                download={(downloadUrl || resumeUrl).startsWith('http') ? undefined : resumeFilename}
-                className="glass-pill px-4 py-3 rounded-2xl flex items-center justify-between text-sm font-mono text-secondary hover:text-[var(--text-main)] transition-colors group cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <FaFileArrowDown className="text-neon-blue w-4 h-4" />
-                  <span>Download Curriculum Vitae</span>
-                </div>
-                <span className="opacity-40 group-hover:opacity-100 transition-opacity">
-                  {resumeUrl.endsWith('.pdf')
-                    ? 'PDF'
-                    : resumeUrl.includes('drive.google')
-                    ? 'DRIVE ↗'
-                    : resumeUrl.startsWith('http')
-                    ? 'LINK ↗'
-                    : 'DOWNLOAD'}
-                </span>
-              </a>
+              {/* Dynamic Curriculum Vitae Button */}
+              {(() => {
+                const finalHref = downloadUrl || resumeUrl || '/api/resume?download=true';
+                const isExternal = finalHref.startsWith('http://') || finalHref.startsWith('https://');
+                const isDrive = finalHref.includes('drive.google.com') || resumeUrl.includes('drive.google.com') || finalHref.includes('docs.google.com');
+
+                return (
+                  <a
+                    href={finalHref}
+                    target={isExternal || finalHref.startsWith('/api/resume') ? '_blank' : undefined}
+                    rel="noopener noreferrer"
+                    download={!isExternal && !finalHref.startsWith('/api/resume') ? resumeFilename : undefined}
+                    className="glass-pill px-4 py-3 rounded-2xl flex items-center justify-between text-sm font-mono text-secondary hover:text-[var(--text-main)] transition-colors group cursor-pointer"
+                    title={resumeUrl ? 'Download or open resume' : 'Download CV'}
+                  >
+                    <div className="flex items-center gap-3">
+                      <FaFileArrowDown className="text-neon-blue w-4 h-4" />
+                      <span>Download Curriculum Vitae</span>
+                    </div>
+                    <span className="opacity-40 group-hover:opacity-100 transition-opacity">
+                      {isDrive
+                        ? 'DRIVE ↗'
+                        : isExternal
+                        ? 'LINK ↗'
+                        : resumeUrl.endsWith('.pdf')
+                        ? 'PDF ↓'
+                        : 'DOWNLOAD ↗'}
+                    </span>
+                  </a>
+                );
+              })()}
             </div>
           </div>
 

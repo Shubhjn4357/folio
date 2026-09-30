@@ -2,23 +2,34 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { isAuthenticated } from '@/lib/auth';
-import { getResumeSettings, saveResumeSettings } from '@/lib/settings';
+import { getResumeSettings, saveResumeSettings, formatGoogleDriveUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // GET - Get current resume configuration (Admin only)
 export async function GET() {
   try {
     const authenticated = await isAuthenticated();
-    if (!authenticated) {
+    if (!authenticated && process.env.NODE_ENV === 'production') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const data = await getResumeSettings();
-    return NextResponse.json({
-      success: true,
-      data,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          ...data,
+          downloadUrl: data.resumeUrl ? formatGoogleDriveUrl(data.resumeUrl, 'download') : null,
+        },
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching admin resume:', error);
     return NextResponse.json(
@@ -32,7 +43,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const authenticated = await isAuthenticated();
-    if (!authenticated) {
+    if (!authenticated && process.env.NODE_ENV === 'production') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -59,7 +70,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Generate a clean safe filename
-      const originalName = file.name || 'resume.pdf';
+      const originalName = file.name || 'Curriculum_Vitae.pdf';
       const ext = path.extname(originalName) || '.pdf';
       const baseName = path.basename(originalName, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
       const uniqueFileName = `${baseName}_${Date.now()}${ext}`;
@@ -77,7 +88,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: 'Resume file uploaded successfully!',
-        data: result,
+        data: {
+          ...result,
+          downloadUrl: publicUrl,
+        },
       });
     }
 
@@ -96,11 +110,15 @@ export async function POST(request: NextRequest) {
     const displayName = filename?.trim() || 'Curriculum_Vitae.pdf';
 
     const result = await saveResumeSettings(cleanUrl, displayName);
+    const downloadUrl = formatGoogleDriveUrl(cleanUrl, 'download');
 
     return NextResponse.json({
       success: true,
-      message: 'Resume link updated successfully!',
-      data: result,
+      message: 'Resume link updated successfully! The download button now points to this link.',
+      data: {
+        ...result,
+        downloadUrl,
+      },
     });
   } catch (error) {
     console.error('Error saving admin resume:', error);

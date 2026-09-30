@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Blog } from '@/lib/db/schema';
 import { FaPlus, FaPen, FaTrash, FaGlobe, FaFileLines } from 'react-icons/fa6';
+import { AdminTableSkeleton } from '@/components/ui/Skeleton';
+import { fetchBlogs as getBlogsList, deleteBlog, togglePublishBlog } from '@/services';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,9 +20,8 @@ export default function BlogsPage() {
 
   const fetchBlogs = async () => {
     try {
-      const res = await fetch('/api/blogs?all=true');
-      const data = await res.json();
-      setBlogs(data.blogs || []);
+      const data = await getBlogsList(true);
+      setBlogs(data);
     } catch (error) {
       console.error('Error fetching blogs:', error);
     } finally {
@@ -32,7 +33,7 @@ export default function BlogsPage() {
     if (!confirm('Are you sure you want to delete this blog post?')) return;
 
     try {
-      await fetch(`/api/blogs/${id}`, { method: 'DELETE' });
+      await deleteBlog(id);
       setBlogs(blogs.filter(b => b.id !== id));
     } catch (error) {
       console.error('Error deleting blog:', error);
@@ -41,25 +42,15 @@ export default function BlogsPage() {
 
   const togglePublish = async (id: number, isPublished: boolean) => {
     try {
-      await fetch(`/api/blogs/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isPublished: !isPublished }),
-      });
-      setBlogs(blogs.map(b =>
-        b.id === id ? { ...b, isPublished: !isPublished } : b
-      ));
+      const updated = await togglePublishBlog(id, isPublished);
+      setBlogs(blogs.map(b => (b.id === id ? updated : b)));
     } catch (error) {
       console.error('Error updating blog:', error);
     }
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-neon-purple border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <AdminTableSkeleton rows={5} />;
   }
 
   return (

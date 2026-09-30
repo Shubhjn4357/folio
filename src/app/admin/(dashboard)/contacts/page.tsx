@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Contact } from '@/lib/db/schema';
 import { FaTrash, FaEnvelope, FaCheck, FaReply } from 'react-icons/fa6';
+import { AdminTableSkeleton } from '@/components/ui/Skeleton';
+import { fetchContacts as getContactsList, deleteContact, toggleReadContact } from '@/services';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,9 +19,8 @@ export default function ContactsPage() {
 
   const fetchContacts = async () => {
     try {
-      const res = await fetch('/api/contact');
-      const data = await res.json();
-      setContacts(data.contacts || []);
+      const data = await getContactsList();
+      setContacts(data);
     } catch (error) {
       console.error('Error fetching contacts:', error);
     } finally {
@@ -31,7 +32,7 @@ export default function ContactsPage() {
     if (!confirm('Are you sure you want to delete this message?')) return;
 
     try {
-      await fetch(`/api/contact/${id}`, { method: 'DELETE' });
+      await deleteContact(id);
       setContacts(contacts.filter(c => c.id !== id));
     } catch (error) {
       console.error('Error deleting contact:', error);
@@ -40,11 +41,7 @@ export default function ContactsPage() {
 
   const toggleRead = async (id: number, isRead: boolean) => {
     try {
-      await fetch(`/api/contact/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isRead: !isRead }),
-      });
+      await toggleReadContact(id, isRead);
       setContacts(contacts.map(c =>
         c.id === id ? { ...c, isRead: !isRead } : c
       ));
@@ -54,11 +51,7 @@ export default function ContactsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-neon-purple border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <AdminTableSkeleton />;
   }
 
   return (

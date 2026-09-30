@@ -4,9 +4,9 @@ import { db, isDbConfigured } from '@/lib/db';
 import { settings } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
-import { PromptItem, PromptProject, INITIAL_PROMPT_PROJECTS } from '@/types/prompts';
+import { PromptItem, PromptProject } from '@/types/prompts';
 export type { PromptItem, PromptProject };
-export { INITIAL_PROMPT_PROJECTS };
+export const INITIAL_PROMPT_PROJECTS: PromptProject[] = [];
 
 const PROMPTS_FILE = path.join(process.cwd(), 'data', 'prompt-projects.json');
 

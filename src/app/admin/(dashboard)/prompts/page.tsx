@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PromptProject, PromptItem } from '@/types/prompts';
 import { MarkdownRenderer, CustomSelect } from '@/components/ui';
+import { PromptCardSkeleton } from '@/components/ui/Skeleton';
 import {
   FaTerminal,
   FaPlus,
@@ -20,19 +21,19 @@ import {
   FaCode,
   FaMagnifyingGlass,
   FaWandMagicSparkles,
+  FaArrowsRotate,
+  FaCircleExclamation,
+  FaSpinner,
 } from 'react-icons/fa6';
-
-interface GitHubRepoItem {
-  id: number;
-  name: string;
-  displayName: string;
-  description: string;
-  html_url: string;
-  topics: string[];
-  homepage: string;
-  default_branch: string;
-  stargazers_count: number;
-}
+import {
+  fetchAdminPromptProjects,
+  savePromptProject,
+  deletePromptProject,
+  uploadProjectImage,
+  fetchGitHubReposForAdmin,
+  fetchRepoPreviewImage,
+  GitHubRepoItem,
+} from '@/services';
 
 export default function AdminPromptsPage() {
   const [projects, setProjects] = useState<PromptProject[]>([]);
@@ -45,6 +46,10 @@ export default function AdminPromptsPage() {
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [repoSearch, setRepoSearch] = useState('');
   const [isRepoDropdownOpen, setIsRepoDropdownOpen] = useState(false);
+  const [repoError, setRepoError] = useState<string | null>(null);
+  const [githubUser, setGithubUser] = useState('Shubhjn4357');
+  const [isEditingUser, setIsEditingUser] = useState(false);
+  const [customUserInput, setCustomUserInput] = useState('Shubhjn4357');
 
   // Form State
   const [title, setTitle] = useState('');
@@ -80,13 +85,8 @@ export default function AdminPromptsPage() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/prompt-projects');
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          setProjects(json.data);
-        }
-      }
+      const data = await fetchAdminPromptProjects();
+      setProjects(data);
     } catch (err) {
       console.error('Error fetching admin prompt projects:', err);
     } finally {
@@ -94,18 +94,19 @@ export default function AdminPromptsPage() {
     }
   };
 
-  const fetchGitHubRepos = async () => {
+  const fetchGitHubRepos = async (customUser?: string) => {
+    const targetUser = (customUser !== undefined ? customUser : githubUser).trim() || 'Shubhjn4357';
     try {
       setLoadingRepos(true);
-      const res = await fetch('/api/admin/github-repos');
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          setGitRepos(json.data);
-        }
+      setRepoError(null);
+      const data = await fetchGitHubReposForAdmin(targetUser);
+      setGitRepos(data);
+      if (data.length === 0) {
+        setRepoError(`No public repositories found for @${targetUser}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching GitHub repos:', err);
+      setRepoError(err?.message || 'Network error fetching repositories');
     } finally {
       setLoadingRepos(false);
     }
@@ -128,12 +129,9 @@ export default function AdminPromptsPage() {
 
     // Try fetching preview README image for this repo
     try {
-      const res = await fetch(`/api/admin/github-repos?repo=${repo.name}&branch=${repo.default_branch}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.image) {
-          setImage(json.image);
-        }
+      const preview = await fetchRepoPreviewImage(repo.name, repo.default_branch, githubUser);
+      if (preview) {
+        setImage(preview);
       }
     } catch {
       // fallback
@@ -147,23 +145,11 @@ export default function AdminPromptsPage() {
 
     try {
       setUploadingImage(true);
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const res = await fetch('/api/admin/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const json = await res.json();
-      if (res.ok && json.url) {
-        setImage(json.url);
-        setMessage({ text: 'Image uploaded successfully!', type: 'success' });
-      } else {
-        setMessage({ text: json.error || 'Failed to upload image', type: 'error' });
-      }
-    } catch (err) {
-      setMessage({ text: 'Error uploading image file', type: 'error' });
+      const url = await uploadProjectImage(file);
+      setImage(url);
+      setMessage({ text: 'Image uploaded successfully!', type: 'success' });
+    } catch (err: any) {
+      setMessage({ text: err.message || 'Error uploading image file', type: 'error' });
     } finally {
       setUploadingImage(false);
     }
@@ -269,25 +255,27 @@ export default function AdminPromptsPage() {
         isFeatured,
       };
 
-      const res = await fetch('/api/admin/prompt-projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      await savePromptProject({
+        id: editingId || undefined,
+        title,
+        slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        description,
+        repoUrl,
+        liveUrl: liveUrl || undefined,
+        tags: tagsArray,
+        image: image || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
+        prompts,
+        isFeatured,
       });
 
-      const json = await res.json();
-      if (res.ok) {
-        setMessage({
-          text: editingId ? 'Prompt project updated successfully!' : 'Prompt project created successfully!',
-          type: 'success',
-        });
-        handleResetForm();
-        fetchProjects();
-      } else {
-        setMessage({ text: json.error || 'Failed to save project', type: 'error' });
-      }
-    } catch (err) {
-      setMessage({ text: 'Error saving prompt project', type: 'error' });
+      setMessage({
+        text: editingId ? 'Prompt project updated successfully!' : 'Prompt project created successfully!',
+        type: 'success',
+      });
+      handleResetForm();
+      fetchProjects();
+    } catch (err: any) {
+      setMessage({ text: err.message || 'Error saving prompt project', type: 'error' });
     } finally {
       setSubmitting(false);
     }
@@ -298,17 +286,11 @@ export default function AdminPromptsPage() {
     if (!confirm('Are you sure you want to delete this prompt project?')) return;
 
     try {
-      const res = await fetch(`/api/admin/prompt-projects?id=${id}`, {
-        method: 'DELETE',
-      });
-      if (res.ok) {
-        setMessage({ text: 'Prompt project deleted successfully', type: 'success' });
-        fetchProjects();
-      } else {
-        setMessage({ text: 'Failed to delete project', type: 'error' });
-      }
-    } catch {
-      setMessage({ text: 'Error deleting project', type: 'error' });
+      await deletePromptProject(id);
+      setMessage({ text: 'Prompt project deleted successfully', type: 'success' });
+      fetchProjects();
+    } catch (err: any) {
+      setMessage({ text: err.message || 'Failed to delete project', type: 'error' });
     }
   };
 
@@ -401,72 +383,211 @@ export default function AdminPromptsPage() {
                     <span className="font-mono text-xs font-semibold text-[var(--text-main)]">
                       Select Project from GitHub Repos
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => fetchGitHubRepos(githubUser)}
+                      disabled={loadingRepos}
+                      title="Refresh repositories from GitHub"
+                      className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 text-secondary hover:text-neon-blue transition-colors cursor-pointer"
+                    >
+                      <FaArrowsRotate className={`w-3 h-3 ${loadingRepos ? 'animate-spin text-neon-blue' : ''}`} />
+                    </button>
                   </div>
-                  <span className="text-[11px] font-mono text-secondary">
-                    Auto-populates title, slug, description, tags, repo URL & cover image
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-mono text-secondary">User:</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingUser(!isEditingUser)}
+                      className="px-2 py-0.5 rounded-full text-[11px] font-mono glass-pill text-neon-blue hover:text-white transition-colors"
+                      title="Click to change GitHub user"
+                    >
+                      @{githubUser}
+                    </button>
+                    <span className="text-[11px] font-mono text-secondary">
+                      ({loadingRepos ? 'fetching...' : `${gitRepos.length} repos`})
+                    </span>
+                  </div>
                 </div>
+
+                {/* Change username inline if toggled */}
+                {isEditingUser && (
+                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-black/10 dark:bg-black/30 border border-black/10 dark:border-white/10">
+                    <span className="text-xs font-mono text-secondary">https://github.com/</span>
+                    <input
+                      type="text"
+                      value={customUserInput}
+                      onChange={(e) => setCustomUserInput(e.target.value)}
+                      placeholder="GitHub username"
+                      className="flex-1 bg-transparent text-xs font-mono text-[var(--text-main)] outline-none border-b border-black/20 dark:border-white/20 focus:border-neon-blue py-0.5"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const trimmed = customUserInput.trim();
+                        if (trimmed) {
+                          setGithubUser(trimmed);
+                          setIsEditingUser(false);
+                          fetchGitHubRepos(trimmed);
+                        }
+                      }}
+                      className="px-3 py-1 rounded-lg text-xs font-mono bg-neon-blue text-slate-950 font-semibold hover:bg-neon-blue/80 transition-colors cursor-pointer"
+                    >
+                      Load
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingUser(false)}
+                      className="p-1 text-secondary hover:text-[var(--text-main)] cursor-pointer"
+                    >
+                      <FaXmark className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
 
                 {/* Dropdown Button */}
                 <div className="relative">
                   <button
                     type="button"
-                    onClick={() => setIsRepoDropdownOpen((prev) => !prev)}
-                    className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl glass-pill text-xs font-mono text-[var(--text-main)] border border-black/10 dark:border-white/10 hover:border-neon-blue/40 transition-all text-left"
+                    onClick={() => {
+                      setIsRepoDropdownOpen((prev) => {
+                        const next = !prev;
+                        if (next && gitRepos.length === 0 && !loadingRepos) {
+                          fetchGitHubRepos();
+                        }
+                        return next;
+                      });
+                    }}
+                    className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl glass-pill text-xs font-mono text-[var(--text-main)] border border-black/10 dark:border-white/10 hover:border-neon-blue/40 transition-all text-left cursor-pointer"
                   >
-                    <span>
-                      {loadingRepos
-                        ? 'Fetching repositories from GitHub...'
-                        : 'Choose a repository to import...'}
+                    <span className="flex items-center gap-2">
+                      {loadingRepos ? (
+                        <>
+                          <FaArrowsRotate className="w-3 h-3 animate-spin text-neon-blue" />
+                          <span>Fetching repositories from GitHub (@{githubUser})...</span>
+                        </>
+                      ) : gitRepos.length > 0 ? (
+                        <span>Choose a repository to import ({gitRepos.length} available)...</span>
+                      ) : (
+                        <span>Click to load repositories from @{githubUser}...</span>
+                      )}
                     </span>
-                    <span className="text-secondary text-[11px]">{gitRepos.length} repos available</span>
+                    <span className="text-secondary text-[11px]">
+                      {loadingRepos ? 'Loading...' : `${gitRepos.length} repos available`}
+                    </span>
                   </button>
 
                   {/* Dropdown Menu */}
                   {isRepoDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-2 z-50 glass-panel rounded-2xl p-3 shadow-2xl border border-black/10 dark:border-white/10 backdrop-blur-2xl max-h-72 overflow-y-auto space-y-2">
-                      <div className="relative">
-                        <FaMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-secondary" />
-                        <input
-                          type="text"
-                          placeholder="Search your repos..."
-                          value={repoSearch}
-                          onChange={(e) => setRepoSearch(e.target.value)}
-                          className="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs font-mono bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/10 text-[var(--text-main)] placeholder-secondary outline-none"
-                        />
+                    <div className="absolute top-full left-0 right-0 mt-2 z-50 glass-panel rounded-2xl p-3 shadow-2xl border border-black/10 dark:border-white/10 backdrop-blur-2xl max-h-80 overflow-y-auto space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <FaMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-secondary" />
+                          <input
+                            type="text"
+                            placeholder="Search your repos by name or description..."
+                            value={repoSearch}
+                            onChange={(e) => setRepoSearch(e.target.value)}
+                            className="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs font-mono bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/10 text-[var(--text-main)] placeholder-secondary outline-none focus:border-neon-blue/40"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => fetchGitHubRepos()}
+                          disabled={loadingRepos}
+                          className="px-2.5 py-1.5 rounded-lg glass-pill text-[11px] font-mono text-neon-blue hover:text-white flex items-center gap-1.5 cursor-pointer"
+                          title="Refresh repository list"
+                        >
+                          <FaArrowsRotate className={`w-3 h-3 ${loadingRepos ? 'animate-spin' : ''}`} />
+                          <span className="hidden sm:inline">Refresh</span>
+                        </button>
                       </div>
 
-                      <div className="divide-y divide-black/5 dark:divide-white/5 pt-1">
-                        {filteredGitRepos.length === 0 ? (
-                          <p className="text-secondary text-xs p-3 text-center">No repositories matched.</p>
-                        ) : (
-                          filteredGitRepos.map((repo) => (
-                            <button
-                              key={repo.id}
-                              type="button"
-                              onClick={() => handleSelectRepo(repo)}
-                              className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-between gap-3 group"
-                            >
-                              <div className="min-w-0">
-                                <div className="font-mono text-xs font-semibold text-[var(--text-main)] group-hover:text-neon-blue transition-colors truncate">
-                                  {repo.name}
-                                </div>
-                                {repo.description && (
-                                  <div className="text-[11px] text-secondary truncate max-w-md">
-                                    {repo.description}
+                      {repoError && (
+                        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-2 text-xs font-mono text-amber-400">
+                          <div className="flex items-center gap-2">
+                            <FaCircleExclamation className="w-3.5 h-3.5 flex-shrink-0" />
+                            <span>{repoError}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => fetchGitHubRepos()}
+                            className="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[10px] cursor-pointer"
+                          >
+                            Retry
+                          </button>
+                        </div>
+                      )}
+
+                      {loadingRepos ? (
+                        <div className="p-6 text-center space-y-2">
+                          <FaArrowsRotate className="w-5 h-5 text-neon-blue animate-spin mx-auto" />
+                          <p className="text-secondary text-xs font-mono">Loading repositories from GitHub for @{githubUser}...</p>
+                        </div>
+                      ) : (
+                        <div className="divide-y divide-black/5 dark:divide-white/5 pt-1">
+                          {filteredGitRepos.length === 0 ? (
+                            <div className="p-4 text-center space-y-2">
+                              <p className="text-secondary text-xs font-mono">
+                                {repoSearch ? `No repositories matched "${repoSearch}".` : 'No repositories loaded.'}
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setRepoSearch('');
+                                  fetchGitHubRepos();
+                                }}
+                                className="px-3 py-1 rounded-lg text-xs font-mono glass-pill text-neon-blue hover:text-white cursor-pointer"
+                              >
+                                Clear Search & Reload
+                              </button>
+                            </div>
+                          ) : (
+                            filteredGitRepos.map((repo) => (
+                              <button
+                                key={repo.id}
+                                type="button"
+                                onClick={() => handleSelectRepo(repo)}
+                                className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-between gap-3 group cursor-pointer"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-mono text-xs font-semibold text-[var(--text-main)] group-hover:text-neon-blue transition-colors truncate">
+                                      {repo.name}
+                                    </span>
+                                    {repo.language && (
+                                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-black/10 dark:bg-white/10 text-secondary">
+                                        {repo.language}
+                                      </span>
+                                    )}
                                   </div>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-2 flex-shrink-0 text-[10px] font-mono text-secondary">
-                                {repo.stargazers_count > 0 && (
-                                  <span>★ {repo.stargazers_count}</span>
-                                )}
-                                <span className="glass-pill px-2 py-0.5 rounded-full">Select</span>
-                              </div>
-                            </button>
-                          ))
-                        )}
-                      </div>
+                                  {repo.description && (
+                                    <div className="text-[11px] text-secondary truncate max-w-lg mt-0.5">
+                                      {repo.description}
+                                    </div>
+                                  )}
+                                  {repo.topics && repo.topics.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {repo.topics.slice(0, 4).map((topic, idx) => (
+                                        <span key={idx} className="text-[9px] font-mono text-neon-blue/80">
+                                          #{topic}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0 text-[10px] font-mono text-secondary">
+                                  {repo.stargazers_count > 0 && (
+                                    <span>★ {repo.stargazers_count}</span>
+                                  )}
+                                  <span className="glass-pill px-2.5 py-1 rounded-full group-hover:border-neon-blue/40 group-hover:text-neon-blue transition-colors">
+                                    Import
+                                  </span>
+                                </div>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -724,8 +845,10 @@ export default function AdminPromptsPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center h-48">
-            <div className="w-8 h-8 border-2 border-neon-blue border-t-transparent rounded-full animate-spin" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <PromptCardSkeleton key={i} />
+            ))}
           </div>
         ) : projects.length === 0 ? (
           <div className="p-12 text-center glass-card rounded-3xl border border-dashed border-black/10 dark:border-white/10">

@@ -1,15 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { PromptProject, INITIAL_PROMPT_PROJECTS } from '@/types/prompts';
-import PromptStepsGuide from '@/components/prompts/PromptStepsGuide';
 import PromptProjectCard from '@/components/prompts/PromptProjectCard';
-import { FaTerminal, FaMagnifyingGlass, FaArrowLeft, FaFilter, FaXmark } from 'react-icons/fa6';
+import PromptStepsGuide from '@/components/prompts/PromptStepsGuide';
+import { PromptCardSkeleton } from '@/components/ui/Skeleton';
+import { PromptProject } from '@/types/prompts';
+import { AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { FaArrowLeft, FaFilter, FaMagnifyingGlass, FaTerminal, FaXmark } from 'react-icons/fa6';
+
+import { fetchPublicPromptProjects } from '@/services';
 
 export default function PromptsPage() {
-  const [projects, setProjects] = useState<PromptProject[]>(INITIAL_PROMPT_PROJECTS);
+  const [projects, setProjects] = useState<PromptProject[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('All');
   const [loading, setLoading] = useState(false);
@@ -18,12 +21,9 @@ export default function PromptsPage() {
     async function fetchAll() {
       try {
         setLoading(true);
-        const res = await fetch('/api/prompt-projects');
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && json.data.length > 0) {
-            setProjects(json.data);
-          }
+        const data = await fetchPublicPromptProjects();
+        if (data && data.length > 0) {
+          setProjects(data);
         }
       } catch (err) {
         console.error('Error fetching prompts:', err);
@@ -155,19 +155,17 @@ export default function PromptsPage() {
                 key={tag}
                 type="button"
                 onClick={() => setSelectedTag(tag)}
-                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all duration-200 cursor-pointer ${
-                  isSelected
-                    ? 'bg-neon-blue text-slate-950 font-bold shadow-md shadow-neon-blue/20 scale-[1.02]'
-                    : 'glass-pill text-secondary hover:text-[var(--text-main)] hover:border-black/20 dark:hover:border-white/20'
-                }`}
+                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all duration-200 cursor-pointer ${isSelected
+                  ? 'bg-neon-blue text-slate-950 font-bold shadow-md shadow-neon-blue/20 scale-[1.02]'
+                  : 'glass-pill text-secondary hover:text-[var(--text-main)] hover:border-black/20 dark:hover:border-white/20'
+                  }`}
               >
                 <span>{tag}</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                    isSelected
-                      ? 'bg-slate-950/20 text-slate-950'
-                      : 'bg-black/5 dark:bg-white/5 text-secondary/80 group-hover:text-[var(--text-main)]'
-                  }`}
+                  className={`text-[10px] px-1.5 py-0.2 rounded-md ${isSelected
+                    ? 'bg-slate-950/20 text-slate-950'
+                    : 'bg-black/5 dark:bg-white/5 text-secondary/80 group-hover:text-[var(--text-main)]'
+                    }`}
                 >
                   {count}
                 </span>
@@ -189,7 +187,13 @@ export default function PromptsPage() {
       </div>
 
       {/* Projects Grid */}
-      {filteredProjects.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <PromptCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : filteredProjects.length === 0 ? (
         <div className="text-center py-20 glass-card rounded-3xl border border-dashed border-black/10 dark:border-white/10 space-y-3">
           <p className="text-secondary text-sm font-mono">No prompt projects matched your search criteria.</p>
           {hasActiveFilters && (

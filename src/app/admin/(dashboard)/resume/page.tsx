@@ -13,12 +13,15 @@ import {
   FaFilePdf,
 } from 'react-icons/fa6';
 
+import {
+  fetchAdminResume,
+  updateResumeDirectUrl,
+  uploadResumeFile,
+  ResumeSettingsData,
+} from '@/services';
+
 export default function AdminResumePage() {
-  const [currentResume, setCurrentResume] = useState<{
-    resumeUrl: string;
-    resumeFilename?: string;
-    updatedAt?: string;
-  } | null>(null);
+  const [currentResume, setCurrentResume] = useState<ResumeSettingsData | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [directUrl, setDirectUrl] = useState('');
@@ -34,16 +37,13 @@ export default function AdminResumePage() {
   const fetchResume = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/resume');
-      const json = await res.json();
-      if (json.success && json.data) {
-        setCurrentResume(json.data);
-        if (json.data.resumeUrl && json.data.resumeUrl.startsWith('http')) {
-          setDirectUrl(json.data.resumeUrl);
-        }
-        if (json.data.resumeFilename) {
-          setDirectName(json.data.resumeFilename);
-        }
+      const data = await fetchAdminResume();
+      setCurrentResume(data);
+      if (data.resumeUrl && data.resumeUrl.startsWith('http')) {
+        setDirectUrl(data.resumeUrl);
+      }
+      if (data.resumeFilename) {
+        setDirectName(data.resumeFilename);
       }
     } catch (err) {
       console.error('Failed to load resume info:', err);
@@ -73,21 +73,11 @@ export default function AdminResumePage() {
 
     try {
       setIsSavingUrl(true);
-      const res = await fetch('/api/admin/resume', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: directUrl.trim(),
-          filename: directName.trim() || 'Curriculum_Vitae.pdf',
-        }),
-      });
-
-      const json = await res.json();
-      if (!res.ok) {
-        throw new Error(json.error || 'Failed to update resume link');
-      }
-
-      setCurrentResume(json.data);
+      const data = await updateResumeDirectUrl(
+        directUrl.trim(),
+        directName.trim() || 'Curriculum_Vitae.pdf'
+      );
+      setCurrentResume(data);
       showToast('success', 'Resume link updated successfully! The download button now points to this link.');
     } catch (err: any) {
       showToast('error', err.message || 'Error updating resume link');
@@ -106,23 +96,8 @@ export default function AdminResumePage() {
 
     try {
       setIsUploadingFile(true);
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      if (directName.trim()) {
-        formData.append('filename', directName.trim());
-      }
-
-      const res = await fetch('/api/admin/resume', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const json = await res.json();
-      if (!res.ok) {
-        throw new Error(json.error || 'Failed to upload file');
-      }
-
-      setCurrentResume(json.data);
+      const data = await uploadResumeFile(selectedFile, directName.trim());
+      setCurrentResume(data);
       setSelectedFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';

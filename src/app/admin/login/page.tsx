@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaLock, FaUser } from 'react-icons/fa6';
+import { loginAdmin } from '@/services';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -19,18 +20,7 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/admin/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
+      await loginAdmin({ username, password });
       router.push('/admin');
       router.refresh();
     } catch (err) {

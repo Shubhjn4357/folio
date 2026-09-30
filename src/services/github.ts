@@ -47,13 +47,24 @@ export interface RepoDetails {
  */
 export async function fetchUserRepos(username: string, limit: number = 30): Promise<GitHubRepo[]> {
   try {
+    const headers: Record<string, string> = {
+      'User-Agent': 'Portfolio-NextJS-App',
+      'Accept': 'application/vnd.github.v3+json',
+    };
+    if (typeof process !== 'undefined' && process.env?.GITHUB_TOKEN) {
+      headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`;
+    }
+
     const response = await fetch(
       `${GITHUB_API_BASE}/users/${username}/repos?sort=updated&per_page=${limit}`,
-      { next: { revalidate: 3600 } }
+      { 
+        headers,
+        next: { revalidate: 3600 } 
+      }
     );
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch repos: ${response.status}`);
+      throw new Error(`Failed to fetch repos: ${response.status} ${response.statusText}`);
     }
     
     return response.json();

@@ -4,26 +4,29 @@ import { db, isDbConfigured } from '@/lib/db';
 import { settings } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
-interface SettingsData {
+export interface SettingsData {
   resumeUrl: string;
   resumeFilename?: string;
   updatedAt?: string;
 }
 
 const SETTINGS_FILE = path.join(process.cwd(), 'data', 'settings.json');
+const PUBLIC_SETTINGS_FILE = path.join(process.cwd(), 'public', 'resume-settings.json');
 
 /**
- * Convert any Google Drive sharing or view URL into a direct download URL
+ * Convert any Google Drive sharing, document, or preview URL into a direct download URL
  */
 export function formatGoogleDriveUrl(url: string, mode: 'download' | 'view' = 'download'): string {
   if (!url || typeof url !== 'string') return '';
   const clean = url.trim();
-  if (clean.includes('drive.google.com')) {
-    // Pattern 1: /file/d/FILE_ID/
-    const match1 = clean.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+
+  if (clean.includes('drive.google.com') || clean.includes('docs.google.com')) {
+    // Pattern 1: /file/d/FILE_ID or /document/d/FILE_ID or /d/FILE_ID
+    const match1 = clean.match(/(?:\/file\/d\/|\/document\/d\/|\/d\/)([a-zA-Z0-9_-]+)/);
     // Pattern 2: id=FILE_ID
     const match2 = clean.match(/[?&]id=([a-zA-Z0-9_-]+)/);
     const fileId = (match1 && match1[1]) || (match2 && match2[1]);
+
     if (fileId) {
       if (mode === 'download') {
         return `https://drive.google.com/uc?export=download&id=${fileId}`;
@@ -31,27 +34,40 @@ export function formatGoogleDriveUrl(url: string, mode: 'download' | 'view' = 'd
       return `https://drive.google.com/file/d/${fileId}/view`;
     }
   }
+
   return clean;
 }
 
-// Helper to ensure data directory exists
-function ensureDataDir() {
-  const dir = path.dirname(SETTINGS_FILE);
+// Helper to ensure directory exists
+function ensureDir(filePath: string) {
+  const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 }
 
-// Read local settings file fallback
+// Read local settings file fallback (checks data/settings.json then public/resume-settings.json)
 function readLocalSettings(): SettingsData {
   try {
     if (fs.existsSync(SETTINGS_FILE)) {
       const content = fs.readFileSync(SETTINGS_FILE, 'utf-8');
-      return JSON.parse(content);
+      const parsed = JSON.parse(content);
+      if (parsed?.resumeUrl) return parsed;
     }
   } catch (err) {
-    console.warn('Failed to read local settings file:', err);
+    console.warn('Failed to read data/settings.json:', err);
   }
+
+  try {
+    if (fs.existsSync(PUBLIC_SETTINGS_FILE)) {
+      const content = fs.readFileSync(PUBLIC_SETTINGS_FILE, 'utf-8');
+      const parsed = JSON.parse(content);
+      if (parsed?.resumeUrl) return parsed;
+    }
+  } catch (err) {
+    console.warn('Failed to read public/resume-settings.json:', err);
+  }
+
   return {
     resumeUrl: '',
     resumeFilename: '',
@@ -59,13 +75,20 @@ function readLocalSettings(): SettingsData {
   };
 }
 
-// Write local settings file fallback
+// Write local settings file to both data/settings.json and public/resume-settings.json
 function writeLocalSettings(data: SettingsData) {
   try {
-    ensureDataDir();
+    ensureDir(SETTINGS_FILE);
     fs.writeFileSync(SETTINGS_FILE, JSON.stringify(data, null, 2), 'utf-8');
   } catch (err) {
-    console.error('Failed to write local settings file:', err);
+    console.error('Failed to write data/settings.json:', err);
+  }
+
+  try {
+    ensureDir(PUBLIC_SETTINGS_FILE);
+    fs.writeFileSync(PUBLIC_SETTINGS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('Failed to write public/resume-settings.json:', err);
   }
 }
 
@@ -85,17 +108,21 @@ export async function getResumeSettings(): Promise<SettingsData> {
       if (record?.value) {
         try {
           const parsed = JSON.parse(record.value);
-          return {
-            resumeUrl: parsed.url || record.value,
-            resumeFilename: parsed.filename || 'resume.pdf',
-            updatedAt: record.updatedAt?.toISOString() || new Date().toISOString(),
-          };
+          if (parsed?.url || parsed?.resumeUrl) {
+            return {
+              resumeUrl: parsed.url || parsed.resumeUrl,
+              resumeFilename: parsed.filename || parsed.resumeFilename || 'Curriculum_Vitae.pdf',
+              updatedAt: record.updatedAt?.toISOString() || new Date().toISOString(),
+            };
+          }
         } catch {
-          return {
-            resumeUrl: record.value,
-            resumeFilename: 'resume.pdf',
-            updatedAt: record.updatedAt?.toISOString() || new Date().toISOString(),
-          };
+          if (record.value.trim()) {
+            return {
+              resumeUrl: record.value.trim(),
+              resumeFilename: 'Curriculum_Vitae.pdf',
+              updatedAt: record.updatedAt?.toISOString() || new Date().toISOString(),
+            };
+          }
         }
       }
     } catch (err) {
@@ -103,7 +130,7 @@ export async function getResumeSettings(): Promise<SettingsData> {
     }
   }
 
-  // 2. Fall back to local file settings
+  // 2. Fall back to local file settings (data/settings.json or public/resume-settings.json)
   const local = readLocalSettings();
   if (local.resumeUrl) {
     return local;
@@ -121,7 +148,7 @@ export async function getResumeSettings(): Promise<SettingsData> {
 
   return {
     resumeUrl: '',
-    resumeFilename: '',
+    resumeFilename: 'Curriculum_Vitae.pdf',
     updatedAt: '',
   };
 }
@@ -129,10 +156,10 @@ export async function getResumeSettings(): Promise<SettingsData> {
 /**
  * Update the active resume URL
  */
-export async function saveResumeSettings(url: string, filename: string = 'resume.pdf'): Promise<SettingsData> {
+export async function saveResumeSettings(url: string, filename: string = 'Curriculum_Vitae.pdf'): Promise<SettingsData> {
   const payload: SettingsData = {
-    resumeUrl: url,
-    resumeFilename: filename,
+    resumeUrl: url.trim(),
+    resumeFilename: filename.trim() || 'Curriculum_Vitae.pdf',
     updatedAt: new Date().toISOString(),
   };
 
@@ -148,7 +175,7 @@ export async function saveResumeSettings(url: string, filename: string = 'resume
         .where(eq(settings.key, 'resume_url'))
         .limit(1);
 
-      const jsonValue = JSON.stringify({ url, filename });
+      const jsonValue = JSON.stringify({ url: payload.resumeUrl, filename: payload.resumeFilename });
 
       if (existing.length > 0) {
         await db

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import type { Blog } from '@/lib/db/schema';
 import { FaArrowLeft } from 'react-icons/fa6';
+import { fetchBlogById, updateBlog } from '@/services';
 
 export default function EditBlogPage() {
   const router = useRouter();
@@ -28,10 +29,7 @@ export default function EditBlogPage() {
 
   const fetchBlog = async () => {
     try {
-      const res = await fetch(`/api/blogs/${blogId}`);
-      if (!res.ok) throw new Error('Blog not found');
-      const data = await res.json();
-      const blog: Blog = data.blog;
+      const blog: Blog = await fetchBlogById(blogId);
       setFormData({
         title: blog.title,
         content: blog.content,
@@ -52,14 +50,7 @@ export default function EditBlogPage() {
     setSaving(true);
 
     try {
-      const res = await fetch(`/api/blogs/${blogId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) throw new Error('Failed to update blog');
-
+      await updateBlog(blogId, formData);
       router.push('/admin/blogs');
     } catch (error) {
       console.error('Error updating blog:', error);

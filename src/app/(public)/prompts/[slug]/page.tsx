@@ -4,10 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { PromptProject } from '@/types/prompts';
 import { MarkdownRenderer } from '@/components/ui';
+import { PromptDetailSkeleton } from '@/components/ui/Skeleton';
 import PromptStepsGuide from '@/components/prompts/PromptStepsGuide';
+import { fetchPublicPromptProjectBySlug } from '@/services';
 import {
   FaArrowLeft,
   FaCopy,
@@ -15,7 +16,6 @@ import {
   FaGithub,
   FaArrowUpRightFromSquare,
   FaTerminal,
-  FaWandMagicSparkles,
   FaCode,
   FaEye,
 } from 'react-icons/fa6';
@@ -38,12 +38,9 @@ export default function PromptDetailPage() {
     async function loadProject() {
       try {
         setLoading(true);
-        const res = await fetch(`/api/prompt-projects/${slug}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data) {
-            setProject(json.data);
-          }
+        const data = await fetchPublicPromptProjectBySlug(slug);
+        if (data) {
+          setProject(data);
         }
       } catch (err) {
         console.error('Failed to load prompt project:', err);
@@ -70,11 +67,7 @@ export default function PromptDetailPage() {
   const effectiveRepoUrl = urlParam || project?.repoUrl;
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-2 border-neon-blue border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <PromptDetailSkeleton />;
   }
 
   if (!project) {

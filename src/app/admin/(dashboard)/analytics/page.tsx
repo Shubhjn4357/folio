@@ -25,30 +25,10 @@ import {
   FaCalendarDays,
 } from 'react-icons/fa6';
 import { CustomSelect, SelectOption } from '@/components/ui';
+import { AdminAnalyticsSkeleton } from '@/components/ui/Skeleton';
+import { fetchAnalytics as getAnalyticsData, AnalyticsData } from '@/services';
 
 export const dynamic = 'force-dynamic';
-
-interface AnalyticsData {
-  totalViews: number;
-  uniqueVisitors: number;
-  bounceRate: number;
-  avgPagesPerSession: number;
-  visitorsByPage: Array<{ page: string; count: number }>;
-  visitorsByDay: Array<{ date: string; count: number }>;
-  devices: Array<{ name: string; value: number }>;
-  countries: Array<{ name: string; value: number }>;
-  recentVisitors: Array<{
-    id: number;
-    page: string;
-    userAgent: string;
-    city: string;
-    country: string;
-    deviceType: string;
-    browser: string;
-    os: string;
-    createdAt: string;
-  }>;
-}
 
 const COLORS = ['#00f3ff', '#bc13fe', '#fc4778', '#10b981', '#6366f1'];
 
@@ -69,8 +49,8 @@ export default function AnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
-      const res = await fetch(`/api/analytics?days=${days}`);
-      const analyticsData = await res.json();
+      setLoading(true);
+      const analyticsData = await getAnalyticsData(days);
       setData(analyticsData);
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -80,11 +60,7 @@ export default function AnalyticsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-neon-purple border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <AdminAnalyticsSkeleton />;
   }
 
   if (!data) {

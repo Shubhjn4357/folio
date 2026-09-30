@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { styles } from '@/styles';
-import { PromptProject, INITIAL_PROMPT_PROJECTS } from '@/types/prompts';
-import PromptStepsGuide from './PromptStepsGuide';
+import { PromptProject } from '@/types/prompts';
 import PromptProjectCard from './PromptProjectCard';
 import { FaTerminal, FaArrowRight, FaWandMagicSparkles } from 'react-icons/fa6';
 
 export default function PromptsSection() {
-  const [projects, setProjects] = useState<PromptProject[]>(INITIAL_PROMPT_PROJECTS);
+  const [projects, setProjects] = useState<PromptProject[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -32,7 +31,7 @@ export default function PromptsSection() {
     }
     loadProjects();
   }, []);
-
+  if(!projects || projects.length === 0) return null;
   return (
     <section id="prompts" className={`${styles.padding} max-w-7xl mx-auto relative z-0`}>
       <span className="hash-span" id="prompts-nav">&nbsp;</span>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaArrowLeft } from 'react-icons/fa6';
+import { createBlog } from '@/services';
 
 function NewBlogForm() {
   const router = useRouter();
@@ -22,18 +23,11 @@ function NewBlogForm() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/blogs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) throw new Error('Failed to create blog');
-
+      await createBlog(formData);
       router.push('/admin/blogs');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating blog:', error);
-      alert('Failed to create blog post');
+      alert(error.message || 'Failed to create blog post');
     } finally {
       setLoading(false);
     }
