@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { db, isDbConfigured } from '@/lib/db';
+import { db, sql, isDbConfigured } from '@/lib/db';
 import { settings } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
@@ -12,6 +12,25 @@ export interface SettingsData {
 
 const SETTINGS_FILE = path.join(process.cwd(), 'data', 'settings.json');
 const PUBLIC_SETTINGS_FILE = path.join(process.cwd(), 'public', 'resume-settings.json');
+
+/**
+ * Auto-ensure settings table exists in Neon Postgres database
+ */
+async function ensureSettingsTable(): Promise<void> {
+  if (!isDbConfigured) return;
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS settings (
+        id SERIAL PRIMARY KEY,
+        key VARCHAR(100) NOT NULL UNIQUE,
+        value TEXT NOT NULL,
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `;
+  } catch (err) {
+    console.warn('Could not auto-ensure settings table:', err);
+  }
+}
 
 /**
  * Convert any Google Drive sharing, document, or preview URL into a direct download URL
@@ -96,7 +115,17 @@ function writeLocalSettings(data: SettingsData) {
  * Get the current active resume URL and details
  */
 export async function getResumeSettings(): Promise<SettingsData> {
-  // 1. Try fetching from Database if configured
+  // 1. Check environment variables (ideal for Vercel/cloud config)
+  const envUrl = process.env.RESUME_URL || process.env.NEXT_PUBLIC_RESUME_URL;
+  if (envUrl && envUrl.trim()) {
+    return {
+      resumeUrl: envUrl.trim(),
+      resumeFilename: process.env.RESUME_FILENAME || 'Curriculum_Vitae.pdf',
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  // 2. Try fetching from Database if configured
   if (isDbConfigured) {
     try {
       const [record] = await db
@@ -126,11 +155,12 @@ export async function getResumeSettings(): Promise<SettingsData> {
         }
       }
     } catch (err) {
-      console.warn('Error reading resume from DB, falling back to local storage:', err);
+      console.warn('Error reading resume from DB, attempting table creation:', err);
+      await ensureSettingsTable();
     }
   }
 
-  // 2. Fall back to local file settings (data/settings.json or public/resume-settings.json)
+  // 3. Fall back to local file settings (data/settings.json or public/resume-settings.json)
   const local = readLocalSettings();
   if (local.resumeUrl) {
     return local;
@@ -169,6 +199,8 @@ export async function saveResumeSettings(url: string, filename: string = 'Curric
   // If DB configured, upsert into settings table
   if (isDbConfigured) {
     try {
+      await ensureSettingsTable();
+
       const existing = await db
         .select()
         .from(settings)

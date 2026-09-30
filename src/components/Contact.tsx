@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SectionWrapper } from "../hoc";
 import { FaEnvelope, FaFileArrowDown, FaCheck } from "react-icons/fa6";
 import { fetchPublicResume, submitContactMessage } from "@/services";
+import { email } from "@/constants";
 
 export const Contact: React.FC = () => {
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -109,45 +110,60 @@ export const Contact: React.FC = () => {
             {/* Quick Actions */}
             <div className="mt-8 pt-6 border-t border-black/5 dark:border-white/5 space-y-3">
               <a
-                href="mailto:shubhjn4357@gmail.com"
+                href={`mailto:${email}`}
                 className="glass-pill px-4 py-3 rounded-2xl flex items-center justify-between text-sm font-mono text-secondary hover:text-[var(--text-main)] transition-colors group"
               >
                 <div className="flex items-center gap-3">
                   <FaEnvelope className="text-neon-purple w-4 h-4" />
-                  <span>shubhjn4357@gmail.com</span>
+                  <span>{email}</span>
                 </div>
                 <span className="opacity-40 group-hover:opacity-100 group-hover:translate-x-1 transition-all">&rarr;</span>
               </a>
 
               {/* Dynamic Curriculum Vitae Button */}
               {(() => {
-                const finalHref = downloadUrl || resumeUrl || '/api/resume?download=true';
+                const hasConfiguredResume = Boolean(downloadUrl || resumeUrl);
+                const finalHref = downloadUrl || resumeUrl || '#';
                 const isExternal = finalHref.startsWith('http://') || finalHref.startsWith('https://');
                 const isDrive = finalHref.includes('drive.google.com') || resumeUrl.includes('drive.google.com') || finalHref.includes('docs.google.com');
 
                 return (
-                  <a
-                    href={finalHref}
-                    target={isExternal || finalHref.startsWith('/api/resume') ? '_blank' : undefined}
-                    rel="noopener noreferrer"
-                    download={!isExternal && !finalHref.startsWith('/api/resume') ? resumeFilename : undefined}
-                    className="glass-pill px-4 py-3 rounded-2xl flex items-center justify-between text-sm font-mono text-secondary hover:text-[var(--text-main)] transition-colors group cursor-pointer"
-                    title={resumeUrl ? 'Download or open resume' : 'Download CV'}
-                  >
-                    <div className="flex items-center gap-3">
-                      <FaFileArrowDown className="text-neon-blue w-4 h-4" />
-                      <span>Download Curriculum Vitae</span>
-                    </div>
-                    <span className="opacity-40 group-hover:opacity-100 transition-opacity">
-                      {isDrive
-                        ? 'DRIVE ↗'
-                        : isExternal
-                        ? 'LINK ↗'
-                        : resumeUrl.endsWith('.pdf')
-                        ? 'PDF ↓'
-                        : 'DOWNLOAD ↗'}
-                    </span>
-                  </a>
+                  <div>
+                    <a
+                      href={hasConfiguredResume ? finalHref : undefined}
+                      onClick={(e) => {
+                        if (!hasConfiguredResume) {
+                          e.preventDefault();
+                          alert('Resume link has not been configured yet. Please configure it in Admin > Resume / CV or set RESUME_URL in environment variables.');
+                        }
+                      }}
+                      target={isExternal ? '_blank' : undefined}
+                      rel="noopener noreferrer"
+                      download={!isExternal && hasConfiguredResume ? resumeFilename : undefined}
+                      className={`glass-pill px-4 py-3 rounded-2xl flex items-center justify-between text-sm font-mono transition-colors group cursor-pointer ${
+                        hasConfiguredResume
+                          ? 'text-secondary hover:text-[var(--text-main)]'
+                          : 'text-secondary/60 hover:text-secondary'
+                      }`}
+                      title={hasConfiguredResume ? (resumeUrl ? 'Download or open resume' : 'Download CV') : 'Resume link not configured yet'}
+                    >
+                      <div className="flex items-center gap-3">
+                        <FaFileArrowDown className="text-neon-blue w-4 h-4" />
+                        <span>Download Curriculum Vitae</span>
+                      </div>
+                      <span className="opacity-40 group-hover:opacity-100 transition-opacity">
+                        {isDrive
+                          ? 'DRIVE ↗'
+                          : isExternal
+                          ? 'LINK ↗'
+                          : resumeUrl.endsWith('.pdf')
+                          ? 'PDF ↓'
+                          : hasConfiguredResume
+                          ? 'DOWNLOAD ↗'
+                          : 'NOT SET'}
+                      </span>
+                    </a>
+                  </div>
                 );
               })()}
             </div>

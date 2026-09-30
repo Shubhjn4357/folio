@@ -8,7 +8,7 @@ const databaseUrl = process.env.DATABASE_URL || 'postgresql://placeholder:placeh
 export const isDbConfigured = Boolean(process.env.DATABASE_URL);
 
 // Create Neon SQL connection
-const sql = neon(databaseUrl);
+export const sql = neon(databaseUrl);
 
 // Create Drizzle instance with schema
 export const db = drizzle(sql, { schema });

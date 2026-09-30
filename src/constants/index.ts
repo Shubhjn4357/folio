@@ -328,5 +328,5 @@ export const socialLinks = [
     color: "text-pink-500",
   },
 ];
-
-export { services, technologies, experiences, testimonials };
+const email = "shubhamjain.com.in@gmail.com";
+export { services, technologies, experiences, testimonials, email };

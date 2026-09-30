@@ -138,10 +138,6 @@ export default function AdminSidebar() {
               </div>
               <div>
                 <h2 className="font-display font-semibold text-sm text-[var(--text-main)]">Admin Studio</h2>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="beacon-dot" />
-                  <span className="mono-label text-[9px] text-secondary">Console</span>
-                </div>
               </div>
             </Link>
           </div>
