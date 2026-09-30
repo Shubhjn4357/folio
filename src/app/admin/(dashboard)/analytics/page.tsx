@@ -1,21 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  Legend
-} from 'recharts';
+import dynamic from 'next/dynamic';
 import {
   FaEye,
   FaUsers,
@@ -28,9 +14,29 @@ import { CustomSelect, SelectOption } from '@/components/ui';
 import { AdminAnalyticsSkeleton } from '@/components/ui/Skeleton';
 import { fetchAnalytics as getAnalyticsData, AnalyticsData } from '@/services';
 
-export const dynamic = 'force-dynamic';
+const TrafficVelocityChart = dynamic(
+  () => import('@/components/dashboard/AnalyticsCharts').then((mod) => mod.TrafficVelocityChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-72 w-full animate-pulse bg-black/5 dark:bg-white/5 rounded-2xl" />,
+  }
+);
 
-const COLORS = ['#00f3ff', '#bc13fe', '#fc4778', '#10b981', '#6366f1'];
+const DeviceSharesChart = dynamic(
+  () => import('@/components/dashboard/AnalyticsCharts').then((mod) => mod.DeviceSharesChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-64 w-full animate-pulse bg-black/5 dark:bg-white/5 rounded-2xl" />,
+  }
+);
+
+const TopPagesChart = dynamic(
+  () => import('@/components/dashboard/AnalyticsCharts').then((mod) => mod.TopPagesChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-64 w-full animate-pulse bg-black/5 dark:bg-white/5 rounded-2xl" />,
+  }
+);
 
 const DAY_OPTIONS: SelectOption<number>[] = [
   { value: 7, label: 'Last 7 days' },
@@ -140,33 +146,7 @@ export default function AnalyticsPage() {
             <span className="mono-label text-[10px] text-neon-blue">Live Series</span>
           </div>
 
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data.visitorsByDay}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(150,150,150,0.1)" />
-                <XAxis dataKey="date" stroke="currentColor" className="text-secondary text-[11px] font-mono" />
-                <YAxis stroke="currentColor" className="text-secondary text-[11px] font-mono" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgba(10, 14, 30, 0.95)',
-                    borderColor: 'rgba(255,255,255,0.1)',
-                    borderRadius: '16px',
-                    color: '#fff',
-                    fontFamily: 'monospace',
-                    fontSize: '12px',
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#bc13fe"
-                  strokeWidth={2.5}
-                  dot={{ r: 3, fill: '#bc13fe' }}
-                  activeDot={{ r: 5 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          <TrafficVelocityChart data={data.visitorsByDay} />
         </div>
 
         {/* Device Breakdown */}
@@ -176,35 +156,7 @@ export default function AnalyticsPage() {
             <p className="text-secondary text-xs">Platforms accessing the site</p>
           </div>
 
-          <div className="h-64 flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data.devices}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={85}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {data.devices.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgba(10, 14, 30, 0.95)',
-                    borderColor: 'rgba(255,255,255,0.1)',
-                    borderRadius: '12px',
-                    color: '#fff',
-                    fontFamily: 'monospace',
-                  }}
-                />
-                <Legend formatter={(value) => <span className="text-xs font-mono text-secondary">{value}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <DeviceSharesChart data={data.devices} />
         </div>
       </div>
 
@@ -217,25 +169,7 @@ export default function AnalyticsPage() {
             <p className="text-secondary text-xs">Total hit count per URI path</p>
           </div>
 
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.visitorsByPage} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(150,150,150,0.1)" />
-                <XAxis type="number" stroke="currentColor" className="text-secondary text-[11px] font-mono" />
-                <YAxis type="category" dataKey="page" width={110} stroke="currentColor" className="text-secondary text-[11px] font-mono" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgba(10, 14, 30, 0.95)',
-                    borderColor: 'rgba(255,255,255,0.1)',
-                    borderRadius: '12px',
-                    color: '#fff',
-                    fontFamily: 'monospace',
-                  }}
-                />
-                <Bar dataKey="count" fill="#00f3ff" radius={[0, 6, 6, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <TopPagesChart data={data.visitorsByPage} />
         </div>
 
         {/* Top Countries */}
