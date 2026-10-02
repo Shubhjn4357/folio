@@ -1,0 +1,966 @@
+/* ==========================================================================
+   PURRISTA — Coffee & Kinetic Character Hero Design System
+   Matches the uploaded Purrista reference aesthetic with high fidelity
+   ========================================================================== */
+
+:root {
+  /* Warm Caramel, Mocha & Studio Coffee Lighting */
+  --bg-deep-roast: #1a0e08;
+  --bg-mocha: #2d1810;
+  --bg-caramel-ambient: #bc7d4d;
+  --bg-honey-highlight: #d79664;
+  
+  --primary-gold: #ffbe3b;
+  --primary-amber: #ff9f2d;
+  --accent-caramel: #e67e22;
+  
+  --cream-pure: #faf6f0;
+  --cream-soft: #ede4d8;
+  --cream-dim: #c5b4a4;
+  --espresso-dark: #1f120a;
+  --espresso-rich: #140b06;
+  
+  --card-glass: rgba(50, 26, 16, 0.48);
+  --card-glass-hover: rgba(65, 34, 21, 0.65);
+  --border-glass: rgba(255, 205, 150, 0.16);
+  --border-glass-bright: rgba(255, 190, 59, 0.4);
+
+  --font-brand: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-pill: 9999px;
+  --radius-card: 20px;
+  --radius-inner: 14px;
+
+  --transition-fast: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reset & Universal Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: var(--bg-deep-roast);
+  color: var(--cream-pure);
+  font-family: var(--font-brand);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.purrista-theme {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   Full-Screen Background Ambient Lighting & Gradients
+   Matches the warm caramel/mocha studio lighting of the reference
+   ========================================================================== */
+.purrista-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-gradient-mesh {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 65% 55% at 50% 52%, #b57648 0%, #8e5430 45%, #422214 80%, #1c0e08 100%);
+  opacity: 0.95;
+}
+
+.bg-warm-light {
+  position: absolute;
+  top: 15%;
+  left: 45%;
+  width: 75vw;
+  height: 75vh;
+  transform: translate(-50%, -20%);
+  background: radial-gradient(circle, rgba(255, 185, 105, 0.28) 0%, rgba(220, 135, 75, 0.12) 50%, transparent 75%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.bg-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(20, 10, 6, 0.6) 80%, rgba(14, 7, 4, 0.9) 100%);
+}
+
+/* Dynamic Cursor Spotlight Following Pointer */
+.cursor-spotlight {
+  position: fixed;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 215, 160, 0.08) 0%, rgba(255, 170, 70, 0.02) 45%, transparent 70%);
+  mix-blend-mode: screen;
+  transition: opacity 0.3s ease;
+  will-change: left, top;
+}
+
+/* ==========================================================================
+   Top Navigation Bar
+   ========================================================================== */
+.navbar {
+  position: relative;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 3.5rem;
+  background: transparent;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+}
+
+.brand-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ff9f2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(255, 159, 45, 0.45);
+  transition: transform var(--transition-fast);
+}
+
+.brand-link:hover .brand-icon-box {
+  transform: scale(1.08) rotate(-6deg);
+}
+
+.brand-svg {
+  width: 24px;
+  height: 24px;
+}
+
+.brand-name {
+  font-family: var(--font-brand);
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 2.75rem;
+}
+
+.nav-item {
+  color: var(--cream-soft);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0.85;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.nav-item:hover {
+  opacity: 1;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+/* Frosted Search Pill Button */
+.search-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--cream-pure);
+  font-family: var(--font-brand);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.search-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Frosted Cart Circle Button */
+.cart-circle-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--cream-pure);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cart-circle-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: scale(1.06);
+}
+
+.cart-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ff9f2d;
+  color: #1a0e08;
+  font-size: 0.65rem;
+  font-weight: 800;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   Full-Screen Hero Layout
+   ========================================================================== */
+.hero-fullscreen {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4rem;
+  min-height: calc(100vh - 140px);
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Center Character Stage & High-Performance 96-Frame Canvas
+   ========================================================================== */
+.character-viewport {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 5;
+  pointer-events: none; /* Mouse moves over full hero */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cat-base-img,
+.cat-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.cat-base-img {
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.cat-canvas {
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.cat-canvas.is-active {
+  opacity: 1;
+}
+
+/* Feather vignette softens canvas perimeter seamlessly into background */
+.cat-feather-vignette {
+  position: absolute;
+  inset: -2px;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: inset 0 0 70px 30px rgba(35, 18, 11, 0.45);
+}
+
+/* ==========================================================================
+   Left Column: Headline, Description & Call-to-Actions
+   ========================================================================== */
+.hero-left-content {
+  position: relative;
+  z-index: 25;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  margin-top: -1.5rem;
+}
+
+/* "NOW BREWING" Pill */
+.brewing-badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(250, 246, 240, 0.88);
+  backdrop-filter: blur(10px);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+}
+
+.badge-icon {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--primary-amber);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-text {
+  font-family: var(--font-brand);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #2b180f;
+}
+
+/* Main Display Title */
+.hero-title {
+  font-family: var(--font-brand);
+  font-size: clamp(3rem, 4.3vw, 4.6rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--cream-pure);
+}
+
+.highlight-caffeinated {
+  color: var(--primary-gold);
+}
+
+/* Description Text */
+.hero-copy {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--cream-dim);
+  max-width: 380px;
+}
+
+/* CTA Row (Price + Order Now + View Menu) */
+.cta-action-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 0.4rem;
+}
+
+.price-display {
+  font-family: var(--font-brand);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--cream-pure);
+  margin-right: 0.2rem;
+  letter-spacing: -0.02em;
+}
+
+/* Order Now Pill */
+.order-now-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: var(--espresso-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 0.6rem 0.5rem 1.4rem;
+  border-radius: var(--radius-pill);
+  color: #fff;
+  font-family: var(--font-brand);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(18, 9, 5, 0.45);
+  transition: all var(--transition-fast);
+}
+
+.order-now-pill:hover {
+  background: #120904;
+  border-color: rgba(255, 190, 59, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(18, 9, 5, 0.6);
+}
+
+.order-now-pill .arrow-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-gold);
+  color: #1a0e08;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast);
+}
+
+.order-now-pill:hover .arrow-circle {
+  transform: translate(2px, -2px);
+}
+
+/* View Menu Pill */
+.view-menu-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(240, 230, 220, 0.88);
+  backdrop-filter: blur(12px);
+  border: none;
+  padding: 0.5rem 1.35rem 0.5rem 0.6rem;
+  border-radius: var(--radius-pill);
+  color: #24140c;
+  font-family: var(--font-brand);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transition: all var(--transition-fast);
+}
+
+.view-menu-pill:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+}
+
+.view-menu-pill .play-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-amber);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast);
+}
+
+.view-menu-pill:hover .play-circle {
+  transform: scale(1.08);
+}
+
+/* Scattered Coffee Beans at Bottom-Left */
+.coffee-beans-cluster {
+  position: absolute;
+  bottom: -4.5rem;
+  left: 0;
+  display: flex;
+  gap: 0.6rem;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.bean {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+  transition: transform 0.4s ease;
+}
+
+/* ==========================================================================
+   Right Column: Glassmorphic Coffee Cards & Rotating Stamp
+   ========================================================================== */
+.hero-right-content {
+  position: relative;
+  z-index: 25;
+  width: 350px;
+  min-width: 350px;
+  max-width: 350px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: -1.5rem;
+}
+
+/* Shared Glassmorphic Card Styling */
+.glass-card {
+  background: var(--card-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-card);
+  box-shadow: 0 20px 45px -12px rgba(18, 9, 5, 0.6);
+  transition: all var(--transition-smooth);
+}
+
+.glass-card:hover {
+  background: var(--card-glass-hover);
+  border-color: var(--border-glass-bright);
+}
+
+/* Morning Ritual Kit Card */
+.ritual-card {
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  flex-shrink: 0;
+}
+
+.card-pill-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.tag-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(255, 190, 59, 0.2);
+  color: var(--primary-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tag-title {
+  font-family: var(--font-brand);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--primary-gold);
+}
+
+.ritual-desc {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--cream-soft);
+  opacity: 0.88;
+}
+
+/* Product Showcase Card with Drink Items */
+.product-showcase-card {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem 1.15rem;
+  flex-shrink: 0;
+}
+
+.cup-items-row {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cup-card-item {
+  flex: 1;
+  min-width: 130px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  background: rgba(25, 13, 8, 0.45);
+  border: 1px solid rgba(255, 205, 150, 0.12);
+  border-radius: var(--radius-inner);
+  padding: 1.1rem 0.85rem 0.95rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.cup-card-item:hover {
+  background: rgba(45, 24, 15, 0.7);
+  border-color: rgba(255, 190, 59, 0.35);
+  transform: translateY(-3px);
+}
+
+.cup-card-item.active {
+  background: rgba(45, 24, 15, 0.85);
+  border-color: rgba(255, 190, 59, 0.55);
+  box-shadow: 0 10px 25px -5px rgba(255, 190, 59, 0.25);
+}
+
+/* "Cat Approved" Yellow Pill Tag */
+.cat-approved-tag {
+  position: absolute;
+  top: -11px;
+  background: var(--primary-gold);
+  color: #1c0e07;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.22rem 0.6rem;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
+.cat-approved-tag .star-glyph {
+  font-size: 0.72rem;
+}
+
+/* 3D Coffee Cup Visuals & Interactive Physics */
+.cup-graphic {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  perspective: 600px;
+  width: 82px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.cup-3d-svg {
+  width: 82px;
+  height: 110px;
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 10px 14px rgba(10, 5, 2, 0.5));
+  transition: transform var(--transition-smooth), filter var(--transition-smooth);
+}
+
+.cup-card-item:hover .cup-3d-svg {
+  transform: perspective(600px) rotateY(-8deg) rotateX(5deg) translateY(-6px) scale(1.08);
+  filter: drop-shadow(0 16px 22px rgba(10, 5, 2, 0.65)) drop-shadow(0 0 14px rgba(255, 190, 59, 0.28));
+}
+
+.cup-card-item.active .cup-3d-svg {
+  transform: perspective(600px) rotateY(-4deg) translateY(-3px) scale(1.04);
+  filter: drop-shadow(0 12px 18px rgba(10, 5, 2, 0.55)) drop-shadow(0 0 12px rgba(255, 190, 59, 0.35));
+}
+
+.cup-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.cup-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--cream-pure);
+}
+
+.cup-style {
+  font-family: var(--font-brand);
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--primary-gold);
+  letter-spacing: 0.06em;
+}
+
+.cup-peek {
+  opacity: 0.6;
+  max-width: 60px;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Rotating Circular Stamp: "• KEEP MOVING • MOVE YOUR CURSOR •"
+   ========================================================================== */
+.interactive-stamp-container {
+  align-self: flex-end;
+  position: relative;
+  width: 105px;
+  height: 105px;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.rotating-text-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: spin-stamp 14s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes spin-stamp {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.stamp-circular-text {
+  font-family: var(--font-brand);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  fill: var(--cream-dim);
+  text-transform: uppercase;
+}
+
+.stamp-center-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--espresso-dark);
+  border: 1px solid rgba(255, 205, 150, 0.25);
+  color: var(--cream-pure);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
+  transition: all var(--transition-fast);
+}
+
+.interactive-stamp-container:hover .stamp-center-btn {
+  background: var(--primary-gold);
+  color: #1a0e08;
+  transform: translate(-50%, -50%) scale(1.12);
+  box-shadow: 0 6px 20px rgba(255, 190, 59, 0.45);
+}
+
+/* ==========================================================================
+   Bottom Center Scrubber Capsule Pill
+   Matches the minimalist dash / pill indicator in screenshot
+   ========================================================================== */
+.bottom-scrub-dock {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.scrub-capsule {
+  position: relative;
+  width: 80px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: width var(--transition-smooth), height var(--transition-smooth), background var(--transition-fast);
+}
+
+.bottom-scrub-dock:hover .scrub-capsule {
+  width: 240px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.scrub-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--primary-gold);
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
+
+.scrub-handle {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border: 2px solid var(--primary-gold);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.bottom-scrub-dock:hover .scrub-handle {
+  opacity: 1;
+}
+
+.scrub-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--cream-dim);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.bottom-scrub-dock:hover .scrub-meta {
+  opacity: 1;
+}
+
+.meta-dot {
+  color: var(--primary-gold);
+}
+
+.tracking-mode-badge {
+  color: var(--primary-gold);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Order Toast Notification
+   ========================================================================== */
+.order-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 100;
+  background: rgba(30, 16, 10, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--primary-gold);
+  border-radius: var(--radius-card);
+  padding: 0.9rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: all var(--transition-smooth);
+}
+
+.order-toast.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.toast-icon {
+  font-size: 1.5rem;
+}
+
+.toast-title {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--cream-pure);
+}
+
+.toast-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--cream-soft);
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .hero-fullscreen {
+    padding: 0 2rem;
+  }
+  .navbar {
+    padding: 1.25rem 2rem;
+  }
+  .hero-left-content {
+    max-width: 380px;
+  }
+  .hero-right-content {
+    width: 290px;
+  }
+  .character-viewport {
+    width: 90vw;
+  }
+}
+
+@media (max-width: 960px) {
+  .hero-fullscreen {
+    flex-direction: column;
+    padding: 2rem 1.5rem 6rem 1.5rem;
+    min-height: auto;
+    gap: 3rem;
+  }
+  .character-viewport {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    max-width: 580px;
+    margin: 1rem 0;
+  }
+  .hero-left-content,
+  .hero-right-content {
+    margin-top: 0;
+    max-width: 580px;
+    width: 100%;
+  }
+  .interactive-stamp-container {
+    align-self: flex-start;
+  }
+  .nav-menu {
+    display: none;
+  }
+  .bottom-scrub-dock {
+    position: fixed;
+  }
+}
+
+@media (max-width: 540px) {
+  .hero-title {
+    font-size: 2.6rem;
+  }
+  .cta-action-row {
+    flex-wrap: wrap;
+  }
+  .navbar {
+    padding: 1rem 1.25rem;
+  }
+}

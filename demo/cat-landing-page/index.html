@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PURRISTA — Stay curious, stay caffeinated</title>
+  <meta name="description" content="Purrista Coffee — Small-batch beans, oat milk by default, and an interactive fluffball quality-control officer tracking your cursor in real time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="purrista-theme">
+
+  <!-- Fullscreen Ambient Coffee Gradient & Lighting -->
+  <div class="purrista-bg" aria-hidden="true">
+    <div class="bg-gradient-mesh"></div>
+    <div class="bg-warm-light"></div>
+    <div class="bg-vignette"></div>
+  </div>
+
+  <!-- Dynamic Cursor Spotlight -->
+  <div id="cursor-spotlight" class="cursor-spotlight" aria-hidden="true"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <a href="#" class="brand-link" aria-label="Purrista Coffee Home">
+      <div class="brand-icon-box">
+        <!-- Coffee cup with cute cat ears SVG -->
+        <svg viewBox="0 0 32 32" class="brand-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 13C7 10.5 8 9 9.5 9L11 12H21L22.5 9C24 9 25 10.5 25 13C25 21 21 24.5 16 24.5C11 24.5 7 21 7 13Z" fill="#ff9f2d"/>
+          <path d="M22 14H24.5C26 14 27 15.2 27 16.5C27 18.2 25.5 19.5 23.5 19.5H21.5" stroke="#ff9f2d" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="12.5" rx="7.5" ry="2.5" fill="#422212"/>
+          <circle cx="13" cy="16.5" r="1.2" fill="#2d160b"/>
+          <circle cx="19" cy="16.5" r="1.2" fill="#2d160b"/>
+          <path d="M15.2 18.2C15.6 18.6 16.4 18.6 16.8 18.2" stroke="#2d160b" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="brand-name">PURRISTA</span>
+    </a>
+
+    <!-- Center Navigation Links -->
+    <nav class="nav-menu" aria-label="Main menu">
+      <a href="#menu" class="nav-item">Menu</a>
+      <a href="#rewards" class="nav-item">Rewards</a>
+      <a href="#journal" class="nav-item">Journal</a>
+      <a href="#visit" class="nav-item">Visit</a>
+    </nav>
+
+    <!-- Right Utility Buttons -->
+    <div class="nav-actions">
+      <button class="search-pill-btn" id="search-btn" aria-label="Search drinks and food">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>Search</span>
+      </button>
+
+      <button class="cart-circle-btn" id="cart-btn" aria-label="Shopping Cart">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span class="cart-badge" id="cart-count">1</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Fullscreen Interactive Hero Section -->
+  <main class="hero-fullscreen" id="hero-main">
+    
+    <!-- Central Character Canvas Stage (Full screen anchor) -->
+    <div class="character-viewport" id="stage">
+      <!-- Instant Base Image to preserve composition seamlessly -->
+      <img src="assets/cat-image.jpg" alt="Purrista fluffball quality control officer" class="cat-base-img" id="cat-base">
+      
+      <!-- Interactive 96-Frame Canvas -->
+      <canvas id="purrista-canvas" class="cat-canvas"></canvas>
+      
+      <!-- Soft vignette to blend canvas into full-screen mocha background -->
+      <div class="cat-feather-vignette" aria-hidden="true"></div>
+    </div>
+
+    <!-- Left Column: Editorial Headline & Actions -->
+    <section class="hero-left-content">
+      <!-- "Now Brewing" Pill Badge -->
+      <div class="brewing-badge">
+        <span class="badge-icon">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </span>
+        <span class="badge-text">NOW BREWING</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="hero-title">
+        Stay curious,<br>
+        stay <span class="highlight-caffeinated">caffeinated.</span>
+      </h1>
+
+      <!-- Description Paragraph -->
+      <p class="hero-copy">
+        Small-batch beans, oat milk by default, and a fluffball quality-control officer who taste-tests every order twice.
+      </p>
+
+      <!-- Price & CTA Buttons Group -->
+      <div class="cta-action-row">
+        <div class="price-display" id="active-price">$4.50</div>
+        
+        <button class="order-now-pill" id="order-btn" aria-label="Order coffee now">
+          <span class="btn-text">Order Now</span>
+          <span class="arrow-circle">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </span>
+        </button>
+
+        <button class="view-menu-pill" id="menu-btn" aria-label="View menu video">
+          <span class="play-circle">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </span>
+          <span class="btn-text">View menu</span>
+        </button>
+      </div>
+
+      <!-- Coffee Beans Scattered at Bottom Left -->
+      <div class="coffee-beans-cluster" aria-hidden="true">
+        <svg class="bean bean-1" viewBox="0 0 24 16" width="22" height="15" fill="#321b10">
+          <ellipse cx="12" cy="8" rx="10" ry="7" transform="rotate(-15 12 8)" fill="#351a0d"/>
+          <path d="M5 8C8 6 16 10 19 8" stroke="#1d0e07" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <svg class="bean bean-2" viewBox="0 0 24 16" width="17" height="12" fill="#3d2113">
+          <ellipse cx="12" cy="8" rx="9" ry="6" transform="rotate(35 12 8)" fill="#442415"/>
+          <path d="M5 8C9 10 15 6 19 8" stroke="#221109" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <svg class="bean bean-3" viewBox="0 0 24 16" width="14" height="10" fill="#2d170c">
+          <ellipse cx="12" cy="8" rx="8" ry="5" transform="rotate(-40 12 8)" fill="#2a1309"/>
+          <path d="M6 8C9 7 15 9 18 8" stroke="#180a05" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Right Column: Glassmorphic Coffee Cards & Rotating Badge -->
+    <aside class="hero-right-content">
+      
+      <!-- Morning Ritual Kit Card -->
+      <div class="glass-card ritual-card">
+        <div class="card-pill-tag">
+          <span class="tag-icon">
+            <!-- Sparkle / Morning sun icon -->
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </span>
+          <span class="tag-title">MORNING RITUAL KIT</span>
+        </div>
+        <p class="ritual-desc">A starter bundle for slow mornings and quiet curiosity.</p>
+      </div>
+
+      <!-- Coffee Cups Showcase Card with 3D Models -->
+      <div class="glass-card product-showcase-card">
+        <div class="cup-items-row">
+          
+          <!-- Product Item 1: Espresso (3D Dark Matte Cup) -->
+          <div class="cup-card-item" id="cup-espresso" data-name="Espresso" data-price="$3.75">
+            <div class="cup-graphic espresso-graphic">
+              <svg viewBox="0 0 100 135" class="cup-3d-svg" xmlns="http://www.w3.org/2000/svg" aria-label="3D Espresso Cup">
+                <defs>
+                  <radialGradient id="espresso-shadow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#0a0503" stop-opacity="0.85"/>
+                    <stop offset="100%" stop-color="#0a0503" stop-opacity="0"/>
+                  </radialGradient>
+                  <!-- Obsidian Charcoal Cup Body -->
+                  <linearGradient id="espresso-cup-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#140b07"/>
+                    <stop offset="22%" stop-color="#2a1810"/>
+                    <stop offset="55%" stop-color="#1c100a"/>
+                    <stop offset="85%" stop-color="#100805"/>
+                    <stop offset="100%" stop-color="#080402"/>
+                  </linearGradient>
+                  <!-- Dark Roast Sleeve -->
+                  <linearGradient id="espresso-sleeve-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#28150c"/>
+                    <stop offset="25%" stop-color="#422416"/>
+                    <stop offset="60%" stop-color="#341b10"/>
+                    <stop offset="85%" stop-color="#221108"/>
+                    <stop offset="100%" stop-color="#170a04"/>
+                  </linearGradient>
+                  <filter id="flap-shadow-espresso" x="-20%" y="-20%" width="160%" height="160%">
+                    <feDropShadow dx="-1.5" dy="1.5" stdDeviation="1.2" flood-color="#000000" flood-opacity="0.75"/>
+                  </filter>
+                </defs>
+                <!-- Ground Contact Shadow -->
+                <ellipse cx="50" cy="126" rx="23" ry="5.5" fill="url(#espresso-shadow)"/>
+                <!-- Tapered Cup Body -->
+                <path d="M 23 35 L 30 119 A 20 5.5 0 0 0 70 119 L 77 35 Z" fill="url(#espresso-cup-grad)"/>
+                <path d="M 30 119 A 20 5.5 0 0 0 70 119 A 20 5.5 0 0 1 30 119 Z" fill="#ffbe3b" opacity="0.15"/>
+                <!-- Sleeve Wrap -->
+                <path d="M 24.8 54 Q 50 63 75.2 54 L 71.5 96 Q 50 105 28.5 96 Z" fill="url(#espresso-sleeve-grad)"/>
+                <path d="M 24.8 54 Q 50 63 75.2 54" stroke="#ffbe3b" stroke-width="0.7" fill="none" opacity="0.3"/>
+                <path d="M 28.5 96 Q 50 105 71.5 96" stroke="#000" stroke-width="1" fill="none" opacity="0.6"/>
+                <!-- Embossed Stamp -->
+                <text x="44" y="78" font-family="'Outfit', sans-serif" font-size="7" font-weight="800" fill="#ffbe3b" opacity="0.7" letter-spacing="0.08em">ESPRESSO</text>
+                <!-- Seam Flap on Right -->
+                <path d="M 64.5 56.5 L 72.5 55.5 L 69 96.5 L 61 97.5 Z" fill="#2c160c" filter="url(#flap-shadow-espresso)"/>
+                <path d="M 64.5 56.5 L 72.5 55.5 L 69 96.5 L 61 97.5 Z" stroke="#1a0c06" stroke-width="0.6" fill="none"/>
+                <!-- 3D Stepped Lid -->
+                <path d="M 19 31 L 19 35 A 31 7.5 0 0 0 81 35 L 81 31 A 31 7.5 0 0 1 19 31 Z" fill="#140b07"/>
+                <ellipse cx="50" cy="31" rx="31" ry="7.5" fill="#20130d"/>
+                <path d="M 21.5 25 L 21.5 30 A 28.5 7 0 0 0 78.5 30 L 78.5 25 A 28.5 7 0 0 1 21.5 25 Z" fill="#180e08"/>
+                <ellipse cx="50" cy="25" rx="28.5" ry="7" fill="#24160e"/>
+                <path d="M 26 15 L 26 23 A 24 6 0 0 0 74 23 L 74 15 A 24 6 0 0 1 26 15 Z" fill="#120a06"/>
+                <ellipse cx="50" cy="15" rx="24" ry="6" fill="#1e110a"/>
+                <!-- Drinking Spout Recess -->
+                <ellipse cx="50" cy="13.5" rx="10" ry="3" fill="#080402"/>
+                <ellipse cx="50" cy="14" rx="8" ry="2" fill="#030101"/>
+                <path d="M 42 13.5 A 8 2.5 0 0 0 58 13.5" stroke="#3d2417" stroke-width="0.8" fill="none"/>
+              </svg>
+            </div>
+            <div class="cup-info">
+              <span class="cup-name">Espresso</span>
+              <span class="cup-style">BOLD & SHORT</span>
+            </div>
+          </div>
+
+          <!-- Product Item 2: Cappuccino (3D White Cup with Kraft Sleeve & Black Lid — Direct 3D Reference Replica) -->
+          <div class="cup-card-item active" id="cup-cappuccino" data-name="Cappuccino" data-price="$4.50">
+            <div class="cat-approved-tag">
+              <span class="star-glyph">★</span>
+              <span>Cat approved</span>
+            </div>
+            <div class="cup-graphic cappuccino-graphic">
+              <svg viewBox="0 0 100 135" class="cup-3d-svg" xmlns="http://www.w3.org/2000/svg" aria-label="3D Cappuccino Cup">
+                <defs>
+                  <radialGradient id="cappuccino-shadow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#0e0704" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#0e0704" stop-opacity="0"/>
+                  </radialGradient>
+                  <!-- Pure White 3D Cup Body Gradient -->
+                  <linearGradient id="white-cup-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#dedad4"/>
+                    <stop offset="22%" stop-color="#ffffff"/>
+                    <stop offset="55%" stop-color="#f5f2ed"/>
+                    <stop offset="85%" stop-color="#d6d0c7"/>
+                    <stop offset="100%" stop-color="#bab3a8"/>
+                  </linearGradient>
+                  <!-- 3D Black Lid Gradients -->
+                  <linearGradient id="black-lid-cyl" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#181818"/>
+                    <stop offset="25%" stop-color="#383838"/>
+                    <stop offset="55%" stop-color="#262626"/>
+                    <stop offset="85%" stop-color="#171717"/>
+                    <stop offset="100%" stop-color="#0f0f0f"/>
+                  </linearGradient>
+                  <linearGradient id="black-lid-top-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#363636"/>
+                    <stop offset="100%" stop-color="#1f1f1f"/>
+                  </linearGradient>
+                  <!-- Kraft Cardboard Sleeve Gradient -->
+                  <linearGradient id="kraft-sleeve-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#693d22"/>
+                    <stop offset="25%" stop-color="#945d37"/>
+                    <stop offset="60%" stop-color="#834f2d"/>
+                    <stop offset="85%" stop-color="#62371c"/>
+                    <stop offset="100%" stop-color="#4d2913"/>
+                  </linearGradient>
+                  <filter id="flap-shadow-cappuccino" x="-20%" y="-20%" width="160%" height="160%">
+                    <feDropShadow dx="-1.5" dy="1.5" stdDeviation="1.2" flood-color="#180c05" flood-opacity="0.65"/>
+                  </filter>
+                </defs>
+                <!-- Ground Contact Shadow -->
+                <ellipse cx="50" cy="126" rx="24" ry="5.5" fill="url(#cappuccino-shadow)"/>
+                <!-- White Tapered Cup Body -->
+                <path d="M 23 35 L 30 119 A 20 5.5 0 0 0 70 119 L 77 35 Z" fill="url(#white-cup-grad)"/>
+                <path d="M 30 119 A 20 5.5 0 0 0 70 119 A 20 5.5 0 0 1 30 119 Z" fill="#b0a99e" opacity="0.6"/>
+                <!-- Kraft Cardboard Sleeve (Wraps around cup) -->
+                <path d="M 24.8 54 Q 50 63 75.2 54 L 71.5 96 Q 50 105 28.5 96 Z" fill="url(#kraft-sleeve-grad)"/>
+                <path d="M 24.8 54 Q 50 63 75.2 54" stroke="#a36940" stroke-width="0.8" fill="none" opacity="0.5"/>
+                <path d="M 28.5 96 Q 50 105 71.5 96" stroke="#482511" stroke-width="1" fill="none" opacity="0.7"/>
+                <!-- Folded Seam Flap on Right (Matching 3D model) -->
+                <path d="M 64.5 56.5 L 72.5 55.5 L 69 96.5 L 61 97.5 Z" fill="#784728" filter="url(#flap-shadow-cappuccino)"/>
+                <path d="M 64.5 56.5 L 72.5 55.5 L 69 96.5 L 61 97.5 Z" stroke="#522e17" stroke-width="0.6" fill="none"/>
+                <!-- 3D Black Lid: 1. Bottom Flange -->
+                <path d="M 19 31 L 19 35 A 31 7.5 0 0 0 81 35 L 81 31 A 31 7.5 0 0 1 19 31 Z" fill="url(#black-lid-cyl)"/>
+                <ellipse cx="50" cy="31" rx="31" ry="7.5" fill="#252525"/>
+                <!-- 2. Middle Ring -->
+                <path d="M 21.5 25 L 21.5 30 A 28.5 7 0 0 0 78.5 30 L 78.5 25 A 28.5 7 0 0 1 21.5 25 Z" fill="url(#black-lid-cyl)"/>
+                <ellipse cx="50" cy="25" rx="28.5" ry="7" fill="#222222"/>
+                <!-- 3. Top Cylindrical Dome -->
+                <path d="M 26 15 L 26 23 A 24 6 0 0 0 74 23 L 74 15 A 24 6 0 0 1 26 15 Z" fill="url(#black-lid-cyl)"/>
+                <ellipse cx="50" cy="15" rx="24" ry="6" fill="url(#black-lid-top-grad)"/>
+                <!-- 4. Drinking Spout Slot -->
+                <ellipse cx="50" cy="13.5" rx="10" ry="3" fill="#0f0f0f"/>
+                <ellipse cx="50" cy="14" rx="8" ry="2" fill="#050505"/>
+                <path d="M 42 13.5 A 8 2.5 0 0 0 58 13.5" stroke="#3d3d3d" stroke-width="0.8" fill="none"/>
+              </svg>
+            </div>
+            <div class="cup-info">
+              <span class="cup-name">Cappuccino</span>
+              <span class="cup-style">FOAM FORWARD</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Rotating "MOVE YOUR CURSOR • KEEP MOVING" Circular Stamp -->
+      <div class="interactive-stamp-container" id="stamp-trigger" title="Scrubbing across 96 frames active">
+        <svg viewBox="0 0 140 140" class="rotating-text-svg" aria-hidden="true">
+          <path id="stamp-circle-path" d="M 70, 70 m -50, 0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0" fill="none"/>
+          <text class="stamp-circular-text">
+            <textPath href="#stamp-circle-path" startOffset="0%">
+              • KEEP MOVING • MOVE YOUR CURSOR •
+            </textPath>
+          </text>
+        </svg>
+        <!-- Center Action Button -->
+        <div class="stamp-center-btn" id="stamp-center-btn" aria-label="Toggle frame scrubbing mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <polyline points="7 7 17 7 17 17"></polyline>
+          </svg>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Bottom Center: Scrubber Capsule Pill -->
+    <div class="bottom-scrub-dock" id="bottom-dock">
+      <div class="scrub-capsule" id="scrub-capsule" title="Full Screen 96-Frame Timeline (Drag to scrub)">
+        <div class="scrub-fill" id="scrub-fill"></div>
+        <div class="scrub-handle" id="scrub-handle"></div>
+      </div>
+      <div class="scrub-meta">
+        <span id="frame-counter">Frame: 0 / 95</span>
+        <span class="meta-dot">•</span>
+        <span id="time-counter">0.00s</span>
+        <span class="meta-dot">•</span>
+        <span class="tracking-mode-badge" id="mode-badge">Tracking: Natural Look</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Interactive Order Toast / Notification -->
+  <div class="order-toast" id="order-toast" role="status" aria-live="polite">
+    <div class="toast-icon">☕</div>
+    <div class="toast-body">
+      <p class="toast-title" id="toast-title">Added to order!</p>
+      <p class="toast-subtitle" id="toast-sub">Fluffball officer has approved your brew.</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
